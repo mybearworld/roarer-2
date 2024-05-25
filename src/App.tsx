@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Account } from "./components/Account";
 import { Button } from "./components/Button";
 
 export const App = () => {
@@ -30,7 +31,9 @@ export const App = () => {
         </Button>
         <div className="flex justify-between">
           <div></div>
-          <div></div>
+          <div>
+            <Account />
+          </div>
         </div>
       </div>
     </div>
