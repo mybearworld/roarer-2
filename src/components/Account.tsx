@@ -3,12 +3,13 @@ import * as Popover from "@radix-ui/react-popover";
 import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
 import { Input } from "./Input";
+import { ProfilePicture } from "./ProfilePicture";
 import { useAPI } from "../lib/api";
 
 export const Account = () => {
   const credentials = useAPI((store) => store.credentials);
 
-  return credentials ? <AccountMenu /> : <SignInButton />;
+  return credentials ? <AccountMenu {...credentials} /> : <SignInButton />;
 };
 
 const SignInButton = () => {
@@ -118,11 +119,10 @@ const SignInButton = () => {
   );
 };
 
-const AccountMenu = () => {
-  const credentials = useAPI((store) => store.credentials);
-  const user = useAPI((store) =>
-    credentials ? store.users[credentials.username] : undefined,
-  );
-
-  return <>Hello! Your quote is {user?.quote}</>;
+type AccountMenuProps = {
+  username: string;
+  token: string;
+};
+const AccountMenu = (props: AccountMenuProps) => {
+  return <ProfilePicture username={props.username} />;
 };
