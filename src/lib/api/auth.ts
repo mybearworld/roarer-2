@@ -2,6 +2,7 @@ import { z } from "zod";
 import { StateCreator } from "zustand";
 import { Store } from ".";
 import { getCloudlink } from "./cloudlink";
+import { USER_SCHEMA } from "./users";
 
 const AUTH_RESPONSE = z
   .object({
@@ -10,7 +11,7 @@ const AUTH_RESPONSE = z
     val: z.object({
       mode: z.literal("auth"),
       payload: z.object({
-        account: z.unknown(), // todo
+        account: USER_SCHEMA,
         token: z.string(),
       }),
     }),
@@ -35,7 +36,7 @@ export type AuthSlice = {
 };
 export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
   set,
-  _get,
+  get,
 ) => {
   return {
     credentials: null,
@@ -57,6 +58,7 @@ export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
             set({
               credentials: { username, token: parsed.data.val.payload.token },
             });
+            get().addUser(parsed.data.val.payload.account);
             resolve({ error: false });
           });
           cloudlink.send({

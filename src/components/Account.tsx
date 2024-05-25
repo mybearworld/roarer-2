@@ -8,7 +8,7 @@ import { useAPI } from "../lib/api";
 export const Account = () => {
   const credentials = useAPI((store) => store.credentials);
 
-  return credentials ? <>Hello, {credentials.username}</> : <SignInButton />;
+  return credentials ? <AccountMenu /> : <SignInButton />;
 };
 
 const SignInButton = () => {
@@ -116,4 +116,13 @@ const SignInButton = () => {
       </Popover.Portal>
     </Popover.Root>
   );
+};
+
+const AccountMenu = () => {
+  const credentials = useAPI((store) => store.credentials);
+  const user = useAPI((store) =>
+    credentials ? store.users[credentials.username] : undefined,
+  );
+
+  return <>Hello! Your quote is {user?.quote}</>;
 };
