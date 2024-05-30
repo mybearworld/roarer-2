@@ -1,9 +1,11 @@
+import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
 import { ChevronRight } from "lucide-react";
 import { useAPI } from "../lib/api";
 
 export type ChatsProps = {
   onChatClick: (chat: string) => void;
+  currentChat: string;
 };
 export const Chats = (props: ChatsProps) => {
   const [chats, userChats, credentials] = useAPI(
@@ -60,9 +62,18 @@ export const Chats = (props: ChatsProps) => {
 
   return (
     <div>
-      <Chat chat="home" onClick={props.onChatClick} />
+      <Chat
+        chat="home"
+        onClick={props.onChatClick}
+        current={props.currentChat === "home"}
+      />
       {sortedChats.map((chat) => (
-        <Chat key={chat} chat={chat} onClick={props.onChatClick} />
+        <Chat
+          key={chat}
+          chat={chat}
+          onClick={props.onChatClick}
+          current={props.currentChat === chat}
+        />
       ))}
     </div>
   );
@@ -71,6 +82,7 @@ export const Chats = (props: ChatsProps) => {
 type ChatProps = {
   chat: string;
   onClick: (id: string) => void;
+  current: boolean;
 };
 const Chat = (props: ChatProps) => {
   const [credentials, baseChat, chatPosts, posts, loadChat, loadChatPosts] =
@@ -120,7 +132,10 @@ const Chat = (props: ChatProps) => {
 
   return (
     <button
-      className="flex w-full items-center px-2 py-1 text-left hover:bg-gray-100"
+      className={twMerge(
+        "flex w-full items-center px-2 py-1 text-left",
+        props.current ? "bg-gray-100" : "bg-white hover:bg-gray-100",
+      )}
       type="button"
       onClick={() => {
         props.onClick(props.chat);

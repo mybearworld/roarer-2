@@ -39,7 +39,7 @@ export const App = () => {
             <Account />
           </div>
         </div>
-        <Chats onChatClick={setChat} />
+        <Chats onChatClick={setChat} currentChat={chat} />
       </div>
     </div>
   );
