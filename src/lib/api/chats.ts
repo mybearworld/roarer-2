@@ -90,14 +90,16 @@ export const createChatsSlice: StateCreator<Store, [], [], ChatsSlice> = (
         fetch(`https://api.meower.org/chats/${encodeURIComponent(chat)}`),
         CHAT_SCHEMA,
       );
-      set((state) => ({
-        chats: {
-          ...state.chats,
-          [chat]: response.error
-            ? { error: true, message: response.message }
-            : { error: false, ...response.response },
-        },
-      }));
+      if (response.error) {
+        set((state) => ({
+          chats: {
+            ...state.chats,
+            [chat]: { error: true, message: response.message },
+          },
+        }));
+        return;
+      }
+      get().addChat(response.response);
       loadingChats.delete(chat);
     },
   };

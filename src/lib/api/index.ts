@@ -20,7 +20,6 @@ export const useAPI = create<Store>()((...args) => {
   };
 });
 const state = useAPI.getState();
-state.loadMore();
 const storedUsername = localStorage.getItem(USERNAME_STORAGE);
 const storedToken = localStorage.getItem(TOKEN_STORAGE);
 if (storedUsername && storedToken) {
