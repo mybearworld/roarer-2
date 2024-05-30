@@ -31,8 +31,6 @@ const UPDATE_USER_SCHEMA = z.object({
   }),
 });
 
-z.object({}).omit;
-
 export type UsersSlice = {
   users: Record<string, Errorable<User>>;
   addUser: (user: User) => void;
@@ -58,7 +56,6 @@ export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
         return;
       }
       const newUser = { ...user, ...parsed.data.val.payload };
-      console.log("setting to", newUser);
       set((state) => ({
         users: {
           ...state.users,
