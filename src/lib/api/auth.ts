@@ -34,6 +34,7 @@ export type AuthSlice = {
     password: string,
     signUp?: boolean,
   ) => Promise<{ error: true; message: string } | { error: false }>;
+  signOut: () => void;
 };
 export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
   set,
@@ -72,6 +73,10 @@ export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
           });
         });
       });
+    },
+    signOut: () => {
+      set({ credentials: null });
+      location.reload();
     },
   };
 };

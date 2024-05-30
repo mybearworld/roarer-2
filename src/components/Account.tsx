@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
+import { ChevronDown } from "lucide-react";
 import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
 import { Input } from "./Input";
@@ -122,5 +123,31 @@ type AccountMenuProps = {
   token: string;
 };
 const AccountMenu = (props: AccountMenuProps) => {
-  return <ProfilePicture username={props.username} />;
+  const signOut = useAPI((store) => store.signOut);
+
+  return (
+    <Popover.Root>
+      <Popover.Trigger className="flex items-center">
+        <ProfilePicture username={props.username} />
+        <ChevronDown />
+      </Popover.Trigger>
+      <Popover.Anchor />
+      <Popover.Portal>
+        <Popover.Content
+          className="z-10 flex flex-col rounded-lg border border-gray-200"
+          align="end"
+          sideOffset={4}
+        >
+          <span className="px-2 pt-1 text-sm font-bold">{props.username}</span>
+          <button
+            className="px-2 py-1 text-left hover:bg-gray-100"
+            type="button"
+            onClick={signOut}
+          >
+            Sign out
+          </button>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  );
 };
