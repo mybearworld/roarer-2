@@ -32,11 +32,12 @@ const UPDATE_USER_SCHEMA = z.object({
 });
 
 export type UsersSlice = {
-  users: Record<string, User>;
+  users: Record<
+    string,
+    (User & { error: false }) | { error: true; message: string }
+  >;
   addUser: (user: User) => void;
-  loadUser: (
-    username: string,
-  ) => Promise<{ error: true; message: string } | { error: false }>;
+  loadUser: (username: string) => Promise<void>;
 };
 export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
   set,
@@ -51,12 +52,10 @@ export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
       const username = parsed.data.val.payload._id;
       const user = get().users[username];
       if (!user) {
-        const response = await get().loadUser(username);
-        if (response.error) {
-          console.warn(
-            `${username} changed their profile, but when fetching them the API returned ${response.message}`,
-          );
-        }
+        await get().loadUser(username);
+        return;
+      }
+      if (user.error) {
         return;
       }
       const newUser = { ...user, ...parsed.data.val.payload };
@@ -70,17 +69,24 @@ export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
     });
   });
   const gettingUsers = new Set<string>();
+  const addErrored = (username: string, message: string) => {
+    set((state) => ({
+      users: { ...state.users, [username]: { error: true, message } },
+    }));
+  };
   return {
     users: {},
     addUser: (user) => {
-      set((state) => ({ users: { ...state.users, [user._id]: user } }));
+      set((state) => ({
+        users: { ...state.users, [user._id]: { ...user, error: false } },
+      }));
     },
     loadUser: async (username) => {
       if (gettingUsers.has(username) || username in get().users) {
-        return { error: false };
+        return;
       }
       gettingUsers.add(username);
-      const response = orError(USER_SCHEMA).parse(
+      const response = orError(USER_SCHEMA).safeParse(
         await (
           await fetch(
             `https://api.meower.org/users/${encodeURIComponent(username)}`,
@@ -88,10 +94,14 @@ export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
         ).json(),
       );
       if (response.error) {
-        return { error: true, message: response.type };
+        addErrored(username, "schema");
+        return;
       }
-      get().addUser(response);
-      return { error: false };
+      if (response.data.error) {
+        addErrored(username, response.data.type);
+        return;
+      }
+      get().addUser(response.data);
     },
   };
 };

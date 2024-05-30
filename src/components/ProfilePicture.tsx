@@ -19,7 +19,11 @@ export const ProfilePicture = (props: ProfilePictureProps) => {
 
   return (
     <ProfilePictureBase
-      pfp={user ?? { avatar: "", avatar_color: "", pfp_data: 500 }}
+      pfp={
+        user && !user.error
+          ? user
+          : { avatar: "", avatar_color: "", pfp_data: 500 }
+      }
     />
   );
 };
