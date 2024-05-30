@@ -4,13 +4,18 @@ import { useAPI } from "../lib/api";
 import { profilePictures } from "../assets/pfp";
 
 export type ProfilePictureProps = {
-  username: string;
+  username: string | undefined;
 };
 export const ProfilePicture = (props: ProfilePictureProps) => {
   const [user, loadUser] = useAPI(
-    useShallow((state) => [state.users[props.username], state.loadUser]),
+    useShallow((state) => [
+      props.username ? state.users[props.username] : undefined,
+      state.loadUser,
+    ]),
   );
-  loadUser(props.username);
+  if (props.username) {
+    loadUser(props.username);
+  }
 
   return (
     <ProfilePictureBase

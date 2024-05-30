@@ -2,13 +2,14 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Account } from "./components/Account";
 import { Button } from "./components/Button";
+import { Posts } from "./components/Posts";
 
 export const App = () => {
   const [showSideNav, setShowSideNav] = useState(false);
 
   return (
     <div className="flex h-screen divide-x divide-gray-200 overflow-auto text-gray-900">
-      <div className="relative min-w-[65%] w-full bg-white p-2">
+      <div className="relative w-full min-w-[65%] bg-white p-2">
         <Button
           className="absolute right-0 top-0 h-14 rounded-none rounded-es-lg p-0 lg:hidden"
           onClick={() => setShowSideNav(true)}
@@ -16,6 +17,7 @@ export const App = () => {
         >
           <ChevronLeft aria-hidden />
         </Button>
+        <Posts />
       </div>
       <div
         className={`${

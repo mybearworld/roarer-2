@@ -75,6 +75,9 @@ export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
       set((state) => ({ users: { ...state.users, [user._id]: user } }));
     },
     loadUser: async (username) => {
+      if (username in get().users) {
+        return { error: false }
+      }
       const response = orError(USER_SCHEMA).parse(
         await (
           await fetch(
