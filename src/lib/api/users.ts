@@ -2,7 +2,7 @@ import { z } from "zod";
 import { StateCreator } from "zustand";
 import { Store } from ".";
 import { getCloudlink } from "./cloudlink";
-import { buildLoad, Errorable } from "./utils";
+import { request, Errorable } from "./utils";
 
 export const USER_SCHEMA = z.object({
   _id: z.string(),
@@ -64,6 +64,8 @@ export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
       }));
     });
   });
+
+  const loadingUsers = new Set<string>();
   return {
     users: {},
     addUser: (user) => {
@@ -71,22 +73,24 @@ export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
         users: { ...state.users, [user._id]: { ...user, error: false } },
       }));
     },
-    loadUser: buildLoad({
-      url: (username) =>
-        `https://api.meower.org/users/${encodeURIComponent(username)}`,
-      schema: USER_SCHEMA,
-      alreadyLoaded: (username) => username in get().users,
-      onError: (username, message) => {
-        set((state) => ({
-          users: {
-            ...state.users,
-            [username]: { error: true, message },
-          },
-        }));
-      },
-      onSuccess: (user) => {
-        get().addUser(user);
-      },
-    }),
+    loadUser: async (username: string) => {
+      if (username in get().users || loadingUsers.has(username)) {
+        return;
+      }
+      loadingUsers.add(username);
+      const response = await request(
+        fetch(`https://api.meower.org/users/${encodeURIComponent(username)}`),
+        USER_SCHEMA,
+      );
+      set((state) => ({
+        users: {
+          ...state.users,
+          [username]: response.error
+            ? { error: true, message: response.message }
+            : { error: false, ...response.response },
+        },
+      }));
+      loadingUsers.delete(username);
+    },
   };
 };

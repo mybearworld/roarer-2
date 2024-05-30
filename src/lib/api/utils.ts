@@ -16,36 +16,26 @@ export const loadMore = (amount: number) => {
   return { page, remove };
 };
 
-export type BuildLoadOptions<TSchema extends ZodSchema> = {
-  url: (id: string) => string;
-  schema: TSchema;
-  alreadyLoaded: (id: string) => boolean;
-  onError: (id: string, msg: string) => void;
-  onSuccess: (item: z.infer<TSchema>) => void;
+export type RequestReturn<TSchema extends ZodSchema> =
+  | { error: true; message: string }
+  | { error: false; response: z.infer<TSchema> };
+export const request = async <TSchema extends ZodSchema>(
+  fetchCall: Promise<Response>,
+  schema: TSchema,
+): Promise<RequestReturn<TSchema>> => {
+  let response;
+  try {
+    response = orError(schema).parse(await (await fetchCall).json());
+  } catch (e) {
+    console.warn("API returned invalid JSON or schema didn't match", e);
+    return { error: true, message: "schema" };
+  }
+  if ("error" in response && response.error) {
+    return { error: true, message: response.type };
+  }
+  return { error: false, response };
 };
-export const buildLoad = <TSchema extends ZodSchema>(
-  options: BuildLoadOptions<TSchema>,
-) => {
-  const loading = new Set();
-  return async (id: string) => {
-    if (loading.has(id) || options.alreadyLoaded(id)) {
-      return;
-    }
-    loading.add(id);
-    const response = orError(options.schema).safeParse(
-      await (await fetch(options.url(id))).json(),
-    );
-    if (response.error) {
-      options.onError(id, "schema");
-      return;
-    }
-    if ("error" in response.data && response.data.error) {
-      options.onError(id, response.data.type);
-      return;
-    }
-    options.onSuccess(response.data);
-  };
-};
+
 
 export type Errorable<T> =
   | (T & { error: false })
