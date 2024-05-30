@@ -32,6 +32,7 @@ export type AuthSlice = {
   logIn: (
     username: string,
     password: string,
+    signUp?: boolean,
   ) => Promise<{ error: true; message: string } | { error: false }>;
 };
 export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
@@ -40,7 +41,7 @@ export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
 ) => {
   return {
     credentials: null,
-    logIn: (username, password) => {
+    logIn: (username, password, signUp = false) => {
       return new Promise((resolve) => {
         getCloudlink().then((cloudlink) => {
           cloudlink.on("packet", (packet: unknown) => {
@@ -62,7 +63,7 @@ export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
             resolve({ error: false });
           });
           cloudlink.send({
-            cmd: "authpswd",
+            cmd: signUp ? "gen_account" : "authpswd",
             val: {
               username,
               pswd: password,

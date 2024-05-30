@@ -29,11 +29,9 @@ const SignInButton = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    if (mode === "sign in") {
-      const loginResult = await logIn(username, password);
-      if (loginResult.error) {
-        setError(loginResult.message);
-      }
+    const loginResult = await logIn(username, password, mode === "sign up");
+    if (loginResult.error) {
+      setError(loginResult.message);
     }
     setLoading(false);
   };
