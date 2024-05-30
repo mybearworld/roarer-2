@@ -1,6 +1,6 @@
-import { z, ZodSchema as ZodObject } from "zod";
+import { z, ZodSchema } from "zod";
 
-export const orError = <TSchema extends ZodObject>(schema: TSchema) => {
+export const orError = <TSchema extends ZodSchema>(schema: TSchema) => {
   return schema.and(z.object({ error: z.literal(false) })).or(
     z.object({
       error: z.literal(true),
@@ -16,14 +16,14 @@ export const loadMore = (amount: number) => {
   return { page, remove };
 };
 
-export type BuildLoadOptions<TSchema extends ZodObject> = {
+export type BuildLoadOptions<TSchema extends ZodSchema> = {
   url: (id: string) => string;
   schema: TSchema;
   alreadyLoaded: (id: string) => boolean;
   onError: (id: string, msg: string) => void;
   onSuccess: (item: z.infer<TSchema>) => void;
 };
-export const buildLoad = <TSchema extends ZodObject>(
+export const buildLoad = <TSchema extends ZodSchema>(
   options: BuildLoadOptions<TSchema>,
 ) => {
   const loading = new Set();
