@@ -2,7 +2,7 @@ import { z } from "zod";
 import { StateCreator } from "zustand";
 import { Store } from ".";
 import { getCloudlink } from "./cloudlink";
-import { orError } from "./utils";
+import { orError, Errorable } from "./utils";
 
 export const USER_SCHEMA = z.object({
   _id: z.string(),
@@ -34,7 +34,7 @@ const UPDATE_USER_SCHEMA = z.object({
 export type UsersSlice = {
   users: Record<
     string,
-    (User & { error: false }) | { error: true; message: string }
+    Errorable<User>
   >;
   addUser: (user: User) => void;
   loadUser: (username: string) => Promise<void>;

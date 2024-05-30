@@ -15,3 +15,7 @@ export const loadMore = (amount: number) => {
   const remove = PER_PAGE - (amount % PER_PAGE);
   return { page, remove };
 };
+
+export type Errorable<T> =
+  | (T & { error: false })
+  | { error: true; message: string };
