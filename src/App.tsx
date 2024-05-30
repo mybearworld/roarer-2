@@ -7,6 +7,7 @@ import { Posts } from "./components/Posts";
 
 export const App = () => {
   const [showSideNav, setShowSideNav] = useState(false);
+  const [chat, setChat] = useState("home");
 
   return (
     <div className="flex h-screen max-h-screen divide-x divide-gray-200 overflow-auto text-gray-900">
@@ -18,7 +19,7 @@ export const App = () => {
         >
           <ChevronLeft aria-hidden />
         </Button>
-        <Posts />
+        <Posts chat={chat} />
       </div>
       <div
         className={`${
@@ -38,7 +39,7 @@ export const App = () => {
             <Account />
           </div>
         </div>
-        <Chats />
+        <Chats onChatClick={setChat} />
       </div>
     </div>
   );

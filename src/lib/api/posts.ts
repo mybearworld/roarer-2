@@ -79,9 +79,26 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
       }
       state.addPost(post);
       set((state) => {
-        const chat = state.chats[post.post_origin];
         const chatPosts = state.chatPosts[post.post_origin];
-        if (!chat || !chatPosts || chatPosts.error) {
+        if (!chatPosts || chatPosts.error) {
+          return {};
+        }
+        return {
+          chatPosts: {
+            ...state.chatPosts,
+            [post.post_origin]: {
+              ...chatPosts,
+              posts: [post.post_id, ...chatPosts.posts],
+            },
+          },
+        };
+      });
+      set((state) => {
+        if (post.post_origin === "home") {
+          return {};
+        }
+        const chat = state.chats[post.post_origin];
+        if (!chat) {
           return {};
         }
         return {
@@ -90,13 +107,6 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
             [post.post_origin]: {
               ...chat,
               last_active: Date.now() / 1000,
-            },
-          },
-          chatPosts: {
-            ...state.chatPosts,
-            [post.post_origin]: {
-              ...chatPosts,
-              posts: [post.post_id, ...chatPosts.posts],
             },
           },
         };

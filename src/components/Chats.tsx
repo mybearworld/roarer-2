@@ -2,7 +2,10 @@ import { useShallow } from "zustand/react/shallow";
 import { ChevronRight } from "lucide-react";
 import { useAPI } from "../lib/api";
 
-export const Chats = () => {
+export type ChatsProps = {
+  onChatClick: (chat: string) => void;
+};
+export const Chats = (props: ChatsProps) => {
   const [chats, userChats, credentials] = useAPI(
     useShallow((store) => [store.chats, store.userChats, store.credentials]),
   );
@@ -57,8 +60,9 @@ export const Chats = () => {
 
   return (
     <div>
+      <Chat chat="home" onClick={props.onChatClick} />
       {sortedChats.map((chat) => (
-        <Chat key={chat} chat={chat} />
+        <Chat key={chat} chat={chat} onClick={props.onChatClick} />
       ))}
     </div>
   );
@@ -66,25 +70,31 @@ export const Chats = () => {
 
 type ChatProps = {
   chat: string;
+  onClick: (id: string) => void;
 };
 const Chat = (props: ChatProps) => {
-  const [credentials, chat, chatPosts, posts, loadChat, loadChatPosts] = useAPI(
-    useShallow((state) => [
-      state.credentials,
-      state.chats[props.chat],
-      state.chatPosts[props.chat],
-      state.posts,
-      state.loadChat,
-      state.loadChatPosts,
-    ]),
-  );
-  loadChat(props.chat);
+  const [credentials, baseChat, chatPosts, posts, loadChat, loadChatPosts] =
+    useAPI(
+      useShallow((state) => [
+        state.credentials,
+        state.chats[props.chat],
+        state.chatPosts[props.chat],
+        state.posts,
+        state.loadChat,
+        state.loadChatPosts,
+      ]),
+    );
+  if (props.chat !== "home") {
+    loadChat(props.chat);
+  }
   loadChatPosts(props.chat);
 
-  if (!chat) {
+  const chat = props.chat === "home" ? "home" : baseChat;
+
+  if (chat !== "home" && !chat) {
     return <>Loading chat...</>;
   }
-  if (chat.error) {
+  if (chat !== "home" && chat.error) {
     return (
       <div>
         <p>There was an error loading this chat.</p>
@@ -92,11 +102,11 @@ const Chat = (props: ChatProps) => {
       </div>
     );
   }
-  if (chat.deleted) {
+  if (chat !== "home" && chat.deleted) {
     return <></>;
   }
 
-  const isDM = !chat.owner;
+  const isDM = chat !== "home" && !chat.owner;
   let latestPost;
   if (chatPosts !== undefined && !chatPosts.error) {
     for (const id of chatPosts.posts) {
@@ -112,12 +122,17 @@ const Chat = (props: ChatProps) => {
     <button
       className="flex w-full items-center px-2 py-1 text-left hover:bg-gray-100"
       type="button"
+      onClick={() => {
+        props.onClick(props.chat);
+      }}
     >
       <div className="grow">
         <div className="font-bold">
           {isDM
             ? chat.members.find((member) => member !== credentials?.username)
-            : chat.nickname}
+            : chat === "home"
+              ? "Home"
+              : chat.nickname}
         </div>
         <p className="line-clamp-1">
           {chatPosts === undefined ? (

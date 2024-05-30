@@ -2,14 +2,17 @@ import { useAPI } from "../lib/api";
 import { useShallow } from "zustand/react/shallow";
 import { Post } from "./Post";
 
-export const Posts = () => {
+export type PostProps = {
+  chat: string;
+};
+export const Posts = (props: PostProps) => {
   const [home, loadChatPosts] = useAPI(
-    useShallow((state) => [state.chatPosts.home, state.loadChatPosts]),
+    useShallow((state) => [state.chatPosts[props.chat], state.loadChatPosts]),
   );
-  loadChatPosts("home");
+  loadChatPosts(props.chat);
 
   if (!home) {
-    return <>Loading post...</>;
+    return <>Loading posts...</>;
   }
   if (home.error) {
     return (
