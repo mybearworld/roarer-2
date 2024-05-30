@@ -24,6 +24,9 @@ const AUTH_RESPONSE = z
     }),
   );
 
+export const USERNAME_STORAGE = "roarer2:username";
+export const TOKEN_STORAGE = "roarer2:token";
+
 export type AuthSlice = {
   credentials: {
     username: string;
@@ -32,7 +35,7 @@ export type AuthSlice = {
   logIn: (
     username: string,
     password: string,
-    signUp?: boolean,
+    options: { signUp: boolean; keepLoggedIn: boolean },
   ) => Promise<{ error: true; message: string } | { error: false }>;
   signOut: () => void;
 };
@@ -42,7 +45,7 @@ export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
 ) => {
   return {
     credentials: null,
-    logIn: (username, password, signUp = false) => {
+    logIn: (username, password, options) => {
       return new Promise((resolve) => {
         getCloudlink().then((cloudlink) => {
           cloudlink.on("packet", (packet: unknown) => {
@@ -60,11 +63,18 @@ export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
             set({
               credentials: { username, token: parsed.data.val.payload.token },
             });
+            if (options.keepLoggedIn) {
+              localStorage.setItem(USERNAME_STORAGE, username);
+              localStorage.setItem(
+                TOKEN_STORAGE,
+                parsed.data.val.payload.token,
+              );
+            }
             get().addUser(parsed.data.val.payload.account);
             resolve({ error: false });
           });
           cloudlink.send({
-            cmd: signUp ? "gen_account" : "authpswd",
+            cmd: options.signUp ? "gen_account" : "authpswd",
             val: {
               username,
               pswd: password,
@@ -75,6 +85,8 @@ export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
       });
     },
     signOut: () => {
+      localStorage.removeItem(USERNAME_STORAGE);
+      localStorage.removeItem(TOKEN_STORAGE);
       set({ credentials: null });
       location.reload();
     },

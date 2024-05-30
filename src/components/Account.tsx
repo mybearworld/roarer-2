@@ -17,6 +17,7 @@ const SignInButton = () => {
   const [mode, setMode] = useState<"sign in" | "sign up">("sign in");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [keepLoggedIn, setKeepLoggedIn] = useState(true);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [tosAgreed, setTosAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,10 @@ const SignInButton = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    const loginResult = await logIn(username, password, mode === "sign up");
+    const loginResult = await logIn(username, password, {
+      signUp: mode === "sign up",
+      keepLoggedIn,
+    });
     if (loginResult.error) {
       setError(loginResult.message);
     }
@@ -66,31 +70,35 @@ const SignInButton = () => {
               onInput={(e) => setPassword(e.currentTarget.value)}
             />
             {mode === "sign up" ? (
-              <>
-                <Input
-                  label="Confirm password"
-                  placeholder="Confirm password"
-                  value={confirmPassword}
-                  type="password"
-                  required
-                  onInput={(e) => setConfirmPassword(e.currentTarget.value)}
-                />
-                <label className="flex items-center gap-2 ">
-                  <Checkbox checked={tosAgreed} onInput={setTosAgreed} />
-                  <span>
-                    I agree to Meower's{" "}
-                    <a
-                      className="font-bold text-lime-600"
-                      target="_blank"
-                      href="https://meower.org/legal"
-                    >
-                      terms
-                    </a>
-                    .
-                  </span>
-                </label>
-              </>
-            ) : null}
+              <Input
+                label="Confirm password"
+                placeholder="Confirm password"
+                value={confirmPassword}
+                type="password"
+                required
+                onInput={(e) => setConfirmPassword(e.currentTarget.value)}
+              />
+            ) : undefined}
+            <label className="flex items-center gap-2 ">
+              <Checkbox checked={keepLoggedIn} onInput={setKeepLoggedIn} />
+              <span>Keep me logged in</span>
+            </label>
+            {mode === "sign up" ? (
+              <label className="flex items-center gap-2 ">
+                <Checkbox checked={tosAgreed} onInput={setTosAgreed} />
+                <span>
+                  I agree to Meower's{" "}
+                  <a
+                    className="font-bold text-lime-600"
+                    target="_blank"
+                    href="https://meower.org/legal"
+                  >
+                    terms
+                  </a>
+                  .
+                </span>
+              </label>
+            ) : undefined}
             {error ? <div className="text-red-500">{error}</div> : null}
             <div className={"flex gap-2"}>
               <Button
