@@ -6,14 +6,14 @@ export type PostProps = {
 };
 export const Post = (props: PostProps) => {
   const post = useAPI((state) => state.posts[props.id]);
-  if (post?.isDeleted) {
+  if (post && !post.error && post.isDeleted) {
     return;
   }
 
   return (
     <div className="flex gap-3">
       <div>
-        <ProfilePicture username={post?.u} />
+        <ProfilePicture username={post?.error ? undefined : post?.u} />
       </div>
       <div className="relative grow rounded-lg rounded-ss-none bg-gray-100 px-2 py-1">
         <div
@@ -21,10 +21,18 @@ export const Post = (props: PostProps) => {
           aria-hidden
         />
         {post ? (
-          <>
-            <div className="text-sm font-bold">{post.u}</div>
-            <div>{post.p}</div>
-          </>
+          post.error ? (
+            <>
+              There was an error loading this post.
+              <br />
+              Message: {post.message}
+            </>
+          ) : (
+            <>
+              <div className="text-sm font-bold">{post.u}</div>
+              <div>{post.p}</div>
+            </>
+          )
         ) : (
           "Loading..."
         )}

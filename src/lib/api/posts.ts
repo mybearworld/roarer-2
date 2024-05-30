@@ -2,7 +2,7 @@ import { z } from "zod";
 import { StateCreator } from "zustand";
 import { Store } from ".";
 import { getCloudlink } from "./cloudlink";
-import { loadMore, orError } from "./utils";
+import { Errorable, loadMore, orError } from "./utils";
 
 export type Attachment = z.infer<typeof ATTACHMENT_SCHEMA>;
 const ATTACHMENT_SCHEMA = z.object({
@@ -43,7 +43,7 @@ const POST_DELETE_PACKET_SCHEMA = z.object({
 
 export type PostsSlice = {
   home: string[];
-  posts: Record<string, Post | { isDeleted: true }>;
+  posts: Record<string, Errorable<Post | { isDeleted: true }>>;
   addPost: (post: Post) => void;
   loadMore: () => Promise<{ error: true; message: string } | { error: false }>;
 };
@@ -74,11 +74,12 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
       set((state) => ({
         posts: {
           ...state.posts,
-          [parsed.data.val.id]: { isDeleted: true },
+          [parsed.data.val.id]: { isDeleted: true, error: false },
         },
       }));
     });
   });
+
   return {
     home: [],
     posts: {},
@@ -86,7 +87,7 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
       set((state) => ({
         posts: {
           ...state.posts,
-          [post.post_id]: post,
+          [post.post_id]: { ...post, error: false },
         },
       }));
     },
