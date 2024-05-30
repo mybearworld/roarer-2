@@ -69,15 +69,17 @@ export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
       }));
     });
   });
+  const gettingUsers = new Set<string>();
   return {
     users: {},
     addUser: (user) => {
       set((state) => ({ users: { ...state.users, [user._id]: user } }));
     },
     loadUser: async (username) => {
-      if (username in get().users) {
-        return { error: false }
+      if (gettingUsers.has(username) || username in get().users) {
+        return { error: false };
       }
+      gettingUsers.add(username);
       const response = orError(USER_SCHEMA).parse(
         await (
           await fetch(
