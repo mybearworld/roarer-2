@@ -60,6 +60,10 @@ export type PostsSlice = {
     | { error: true; message: string }
     | { error: false; posts: string[]; stop: boolean }
   >;
+  post: (
+    content: string,
+    chat: string,
+  ) => Promise<{ error: true; message: string } | { error: false }>;
 };
 export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
   set,
@@ -189,6 +193,27 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
         posts: posts.map((post) => post.post_id),
         stop: page === response.response.pages,
       };
+    },
+    post: async (content, chat) => {
+      const state = get();
+      const response = await request(
+        fetch(
+          `https://api.meower.org/${chat === "home" ? "home" : `posts/${encodeURIComponent(chat)}`}`,
+          {
+            headers: {
+              ...(state.credentials ? { Token: state.credentials.token } : {}),
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ content }),
+            method: "POST",
+          },
+        ),
+        POST_SCHEMA,
+      );
+      if (response.error) {
+        return { error: true, message: response.message };
+      }
+      return { error: false };
     },
   };
 };
