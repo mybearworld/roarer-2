@@ -70,7 +70,9 @@ export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
                 parsed.data.val.payload.token,
               );
             }
-            get().addUser(parsed.data.val.payload.account);
+            const state = get();
+            state.addUser(parsed.data.val.payload.account);
+            state.loadChats();
             resolve({ error: false });
           });
           cloudlink.send({

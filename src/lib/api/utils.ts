@@ -36,6 +36,9 @@ export const request = async <TSchema extends ZodSchema>(
   return { error: false, response };
 };
 
+export const maybeToken = (token: string | undefined) => {
+  return token ? { Token: token } : {};
+};
 
 export type Errorable<T> =
   | (T & { error: false })

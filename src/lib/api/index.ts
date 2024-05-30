@@ -5,14 +5,16 @@ import {
   USERNAME_STORAGE,
   TOKEN_STORAGE,
 } from "./auth";
+import { createChatsSlice, ChatsSlice } from "./chats";
 import { createPostsSlice, PostsSlice } from "./posts";
 import { createUsersSlice, UsersSlice } from "./users";
 
-export type Store = AuthSlice & PostsSlice & UsersSlice;
+export type Store = AuthSlice & ChatsSlice & PostsSlice & UsersSlice;
 
 export const useAPI = create<Store>()((...args) => {
   return {
     ...createAuthSlice(...args),
+    ...createChatsSlice(...args),
     ...createPostsSlice(...args),
     ...createUsersSlice(...args),
   };
