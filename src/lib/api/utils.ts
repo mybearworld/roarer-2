@@ -28,7 +28,7 @@ export const request = async <TSchema extends ZodSchema>(
     response = orError(schema).parse(await (await fetchCall).json());
   } catch (e) {
     console.warn("API returned invalid JSON or schema didn't match", e);
-    return { error: true, message: "schema" };
+    return { error: true, message: (e as Error)?.message };
   }
   if ("error" in response && response.error) {
     return { error: true, message: response.type };
