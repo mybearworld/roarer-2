@@ -32,6 +32,17 @@ export const Chats = () => {
       </div>
     );
   }
+  if (userChats.chats.length === 0) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center text-center">
+        <p className="text-lg font-bold">No chats yet!</p>
+        <p>
+          Ask someone on a better client than this to add you to one or to DM
+          you.
+        </p>
+      </div>
+    );
+  }
 
   const lastActive = (id: string) => {
     const chat = chats[id];
@@ -57,14 +68,18 @@ type ChatProps = {
   chat: string;
 };
 const Chat = (props: ChatProps) => {
-  const [credentials, chat, loadChat] = useAPI(
+  const [credentials, chat, chatPosts, posts, loadChat, loadChatPosts] = useAPI(
     useShallow((state) => [
       state.credentials,
       state.chats[props.chat],
+      state.chatPosts[props.chat],
+      state.posts,
       state.loadChat,
+      state.loadChatPosts,
     ]),
   );
   loadChat(props.chat);
+  loadChatPosts(props.chat);
 
   if (!chat) {
     return <>Loading chat...</>;
@@ -82,6 +97,16 @@ const Chat = (props: ChatProps) => {
   }
 
   const isDM = !chat.owner;
+  let latestPost;
+  if (chatPosts !== undefined && !chatPosts.error) {
+    for (const id of chatPosts.posts) {
+      const post = posts[id];
+      if (post && !post.error && !post.isDeleted) {
+        latestPost = post;
+        break;
+      }
+    }
+  }
 
   return (
     <button
@@ -95,9 +120,17 @@ const Chat = (props: ChatProps) => {
             : chat.nickname}
         </div>
         <p className="line-clamp-1">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit sed
-          maxime perspiciatis tempore nam rem corporis recusandae sapiente
-          excepturi ratione, id, voluptatum rerum facilis itaque temporibus.
+          {chatPosts === undefined ? (
+            <>Loading posts... </>
+          ) : chatPosts.error ? (
+            <>Failed to get posts: {chatPosts.message}</>
+          ) : !latestPost ? (
+            <span>No posts yet!</span>
+          ) : (
+            <span>
+              {latestPost.u}: {latestPost.p.split("\n")[0]}
+            </span>
+          )}
         </p>
       </div>
       <ChevronRight className="min-w-5" />

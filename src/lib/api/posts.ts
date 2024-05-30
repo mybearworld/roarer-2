@@ -79,11 +79,19 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
       }
       state.addPost(post);
       set((state) => {
+        const chat = state.chats[post.post_origin];
         const chatPosts = state.chatPosts[post.post_origin];
-        if (!chatPosts || chatPosts.error) {
+        if (!chat || !chatPosts || chatPosts.error) {
           return {};
         }
         return {
+          chats: {
+            ...state.chats,
+            [post.post_origin]: {
+              ...chat,
+              last_active: Date.now() / 1000,
+            },
+          },
           chatPosts: {
             ...state.chatPosts,
             [post.post_origin]: {
@@ -108,6 +116,7 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
     });
   });
 
+  const loadingPosts = new Set();
   return {
     posts: {},
     chatPosts: {},
@@ -124,6 +133,10 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
       if (state.chatPosts[id]) {
         return false;
       }
+      if (loadingPosts.has(id)) {
+        return false;
+      }
+      loadingPosts.add(id);
       const response = await state.loadPosts(id, 0);
       set((state) => ({
         chatPosts: {
@@ -137,6 +150,7 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
               },
         },
       }));
+      loadingPosts.delete(id);
       return true;
     },
     loadPosts: async (id: string, current: number) => {
