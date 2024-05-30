@@ -2,7 +2,7 @@ import { z } from "zod";
 import { StateCreator } from "zustand";
 import { Store } from ".";
 import { getCloudlink } from "./cloudlink";
-import { orError, Errorable } from "./utils";
+import { buildLoad, Errorable } from "./utils";
 
 export const USER_SCHEMA = z.object({
   _id: z.string(),
@@ -31,11 +31,10 @@ const UPDATE_USER_SCHEMA = z.object({
   }),
 });
 
+z.object({}).omit;
+
 export type UsersSlice = {
-  users: Record<
-    string,
-    Errorable<User>
-  >;
+  users: Record<string, Errorable<User>>;
   addUser: (user: User) => void;
   loadUser: (username: string) => Promise<void>;
 };
@@ -68,12 +67,6 @@ export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
       }));
     });
   });
-  const gettingUsers = new Set<string>();
-  const addErrored = (username: string, message: string) => {
-    set((state) => ({
-      users: { ...state.users, [username]: { error: true, message } },
-    }));
-  };
   return {
     users: {},
     addUser: (user) => {
@@ -81,27 +74,22 @@ export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
         users: { ...state.users, [user._id]: { ...user, error: false } },
       }));
     },
-    loadUser: async (username) => {
-      if (gettingUsers.has(username) || username in get().users) {
-        return;
-      }
-      gettingUsers.add(username);
-      const response = orError(USER_SCHEMA).safeParse(
-        await (
-          await fetch(
-            `https://api.meower.org/users/${encodeURIComponent(username)}`,
-          )
-        ).json(),
-      );
-      if (response.error) {
-        addErrored(username, "schema");
-        return;
-      }
-      if (response.data.error) {
-        addErrored(username, response.data.type);
-        return;
-      }
-      get().addUser(response.data);
-    },
+    loadUser: buildLoad({
+      url: (username) =>
+        `https://api.meower.org/users/${encodeURIComponent(username)}`,
+      schema: USER_SCHEMA,
+      alreadyLoaded: (username) => username in get().users,
+      onError: (username, message) => {
+        set((state) => ({
+          users: {
+            ...state.users,
+            [username]: { error: true, message },
+          },
+        }));
+      },
+      onSuccess: (user) => {
+        get().addUser(user);
+      },
+    }),
   };
 };
