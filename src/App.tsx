@@ -24,7 +24,7 @@ export const App = () => {
       <div
         className={`${
           showSideNav ? "" : "hidden"
-        } absolute right-0 top-0 z-10 h-screen max-h-screen w-[--size] overflow-auto bg-white p-2 [--size:min(theme(spacing.96),90vw)] lg:sticky lg:top-0 lg:block lg:w-auto lg:min-w-[35%]`}
+        } absolute right-0 top-0 z-10 h-screen max-h-screen w-[--size] overflow-auto bg-white py-2 [--size:min(theme(spacing.96),90vw)] lg:sticky lg:top-0 lg:block lg:w-auto lg:min-w-[35%]`}
       >
         <Button
           className="absolute right-[--size] top-0 h-14 rounded-none rounded-es-lg p-0 lg:hidden"
