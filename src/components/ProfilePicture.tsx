@@ -38,7 +38,7 @@ export type ProfilePictureBaseProps = {
 export const ProfilePictureBase = (props: ProfilePictureBaseProps) => {
   return (
     <img
-      className="h-10 w-10 rounded-lg border border-[--border-color] [border-style:--border-style]"
+      className="h-10 min-h-10 w-10 min-w-10 rounded-lg border border-[--border-color] [border-style:--border-style]"
       style={
         {
           "--border-color": "#" + props.pfp.avatar_color,
