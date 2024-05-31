@@ -1,10 +1,7 @@
-import LinesEllipsis from "react-lines-ellipsis";
-import responsiveHOC from "react-lines-ellipsis/lib/responsiveHOC";
 import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
 import { ChevronRight } from "lucide-react";
 import { useAPI } from "../lib/api";
-const ResponsiveEllipsis = responsiveHOC()(LinesEllipsis);
 
 export type ChatsProps = {
   onChatClick: (chat: string) => void;
@@ -144,7 +141,7 @@ const Chat = (props: ChatProps) => {
         props.onClick(props.chat);
       }}
     >
-      <div className="grow">
+      <div className="min-w-0 grow">
         <div className="font-bold">
           {isDM
             ? chat.members.find((member) => member !== credentials?.username)
@@ -160,10 +157,9 @@ const Chat = (props: ChatProps) => {
           ) : !latestPost ? (
             <span>No posts yet!</span>
           ) : (
-            <ResponsiveEllipsis
-              maxLine={1}
-              text={`${latestPost.u}: ${latestPost.p}`}
-            />
+            <div className="line-clamp-1 overflow-ellipsis">
+              {latestPost.u}: {latestPost.p}
+            </div>
           )}
         </div>
       </div>
