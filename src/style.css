@@ -5,8 +5,9 @@
 @layer base {
   :root {
     --z-sidebar: 10;
-    --z-popup-bg: 20;
-    --z-popup: 30;
+    --z-above-sidebar: 20;
+    --z-popup-bg: 30;
+    --z-popup: 40;
   }
 
   @font-face {
