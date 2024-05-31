@@ -21,7 +21,7 @@ export const Post = (props: PostProps) => {
       <div>
         <ProfilePicture username={post?.error ? undefined : post?.u} />
       </div>
-      <div className="relative grow rounded-lg rounded-ss-none bg-gray-100 px-2 py-1">
+      <div className="relative min-w-0 grow break-words rounded-lg rounded-ss-none bg-gray-100 px-2 py-1">
         <div
           className="absolute left-[calc(-0.5rem-theme(spacing.2))] top-0 box-content h-0 w-0 border-[length:0.5rem] border-transparent border-r-gray-100"
           aria-hidden
