@@ -1,7 +1,10 @@
+import LinesEllipsis from "react-lines-ellipsis";
+import responsiveHOC from "react-lines-ellipsis/lib/responsiveHOC";
 import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
 import { ChevronRight } from "lucide-react";
 import { useAPI } from "../lib/api";
+const ResponsiveEllipsis = responsiveHOC()(LinesEllipsis);
 
 export type ChatsProps = {
   onChatClick: (chat: string) => void;
@@ -61,7 +64,7 @@ export const Chats = (props: ChatsProps) => {
   );
 
   return (
-    <div>
+    <div className="max-w-full">
       <Chat
         chat="home"
         onClick={props.onChatClick}
@@ -133,7 +136,7 @@ const Chat = (props: ChatProps) => {
   return (
     <button
       className={twMerge(
-        "flex w-full items-center px-2 py-1 text-left",
+        "flex w-full max-w-full items-center px-2 py-1 text-left",
         props.current ? "bg-gray-100" : "bg-white hover:bg-gray-100",
       )}
       type="button"
@@ -149,7 +152,7 @@ const Chat = (props: ChatProps) => {
               ? "Home"
               : chat.nickname}
         </div>
-        <p className="line-clamp-1">
+        <div>
           {chatPosts === undefined ? (
             <>Loading posts... </>
           ) : chatPosts.error ? (
@@ -157,11 +160,12 @@ const Chat = (props: ChatProps) => {
           ) : !latestPost ? (
             <span>No posts yet!</span>
           ) : (
-            <span>
-              {latestPost.u}: {latestPost.p.split("\n")[0]}
-            </span>
+            <ResponsiveEllipsis
+              maxLine={1}
+              text={`${latestPost.u}: ${latestPost.p}`}
+            />
           )}
-        </p>
+        </div>
       </div>
       <ChevronRight className="min-w-5" />
     </button>

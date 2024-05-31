@@ -33,7 +33,7 @@ export const App = () => {
         >
           <ChevronRight />
         </Button>
-        <div className="mb-2 flex justify-between">
+        <div className="mb-2 flex justify-between px-2">
           <div></div>
           <div>
             <Account />

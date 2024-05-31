@@ -12,10 +12,12 @@
   "dependencies": {
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-toggle": "^1.0.3",
+    "@types/react-lines-ellipsis": "^0.15.6",
     "@williamhorning/cloudlink": "^4.1.1",
     "lucide-react": "^0.379.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-lines-ellipsis": "^0.15.4",
     "tailwind-merge": "^2.3.0",
     "zod": "^3.23.8",
     "zustand": "^4.5.2"
