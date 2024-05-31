@@ -41,10 +41,16 @@ export type EnterPostProps = {
   chat: string;
 };
 const EnterPost = (props: EnterPostProps) => {
-  const post = useAPI((state) => state.post);
+  const [post, credentials] = useAPI(
+    useShallow((state) => [state.post, state.credentials]),
+  );
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState("");
   const [posting, setPosting] = useState(false);
+
+  if (!credentials) {
+    return <></>;
+  }
 
   const handlePost = async (e?: FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
