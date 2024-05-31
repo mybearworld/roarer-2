@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --z-sidebar: 10;
+    --z-popup-bg: 20;
+    --z-popup: 30;
+  }
+
   @font-face {
     font-family: "Inter";
     src: url("./assets/fonts/InterVariable.ttf");

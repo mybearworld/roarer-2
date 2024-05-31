@@ -32,7 +32,7 @@ export const App = () => {
       <div
         className={`${
           showSideNav ? "" : "hidden"
-        } absolute right-0 top-0 z-10 h-screen max-h-screen w-[--nav-bar-size] overflow-auto bg-white py-2 lg:sticky lg:top-0 lg:block lg:w-auto lg:min-w-[35%]`}
+        } absolute right-0 top-0 z-[--z-sidebar] h-screen max-h-screen w-[--nav-bar-size] overflow-auto bg-white py-2 lg:sticky lg:top-0 lg:block lg:w-auto lg:min-w-[35%]`}
       >
         <div className="mb-2 flex justify-between px-2">
           <div></div>
