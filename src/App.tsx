@@ -15,7 +15,7 @@ export const App = () => {
       <div className="relative max-h-screen w-full min-w-[65%] overflow-auto bg-white p-2">
         <Button
           className={twMerge(
-            "absolute top-0 h-14 rounded-none rounded-es-lg p-0 lg:hidden",
+            "absolute bottom-[50%] z-[--z-sidebar] h-14 rounded-none rounded-s-lg p-0 lg:hidden",
             showSideNav ? "right-[--nav-bar-size]" : "right-0",
           )}
           onClick={() => setShowSideNav((n) => !n)}
