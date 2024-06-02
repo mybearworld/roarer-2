@@ -1,5 +1,5 @@
 import { KeyboardEvent, FormEvent, useState, useRef } from "react";
-import { CirclePlus, SendHorizontal } from "lucide-react";
+import { CirclePlus, SendHorizontal, X } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
 import { trimmedPost } from "../lib/reply";
@@ -42,7 +42,7 @@ export const Posts = (props: PostsProps) => {
       <EnterPost
         chat={props.chat}
         reply={reply}
-        onPosted={() => setReply(undefined)}
+        removeReply={() => setReply(undefined)}
       />
       {home.posts.map((post) => (
         <Post
@@ -60,7 +60,7 @@ export const Posts = (props: PostsProps) => {
 export type EnterPostProps = {
   chat: string;
   reply?: Reply | undefined;
-  onPosted?: () => void;
+  removeReply?: () => void;
 };
 const EnterPost = (props: EnterPostProps) => {
   const [post, credentials] = useAPI(
@@ -97,7 +97,7 @@ const EnterPost = (props: EnterPostProps) => {
     setState("writing");
     setPostContent("");
     setAttachments([]);
-    props.onPosted?.();
+    props.removeReply?.();
   };
 
   const handleInput = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -187,7 +187,22 @@ const EnterPost = (props: EnterPostProps) => {
             </button>
           </>
         }
-        above={props.reply ? <Post id={props.reply.id} reply /> : undefined}
+        above={
+          props.reply ? (
+            <div className="flex gap-2">
+              <div className="grow">
+                <Post id={props.reply.id} reply />
+              </div>
+              <button
+                type="button"
+                aria-label="Remove reply"
+                onClick={() => props.removeReply?.()}
+              >
+                <X aria-hidden />
+              </button>
+            </div>
+          ) : undefined
+        }
         below={
           <div className="flex flex-wrap gap-2">
             {attachments.map((attachment) => (
