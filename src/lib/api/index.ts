@@ -7,15 +7,21 @@ import {
 } from "./auth";
 import { createChatsSlice, ChatsSlice } from "./chats";
 import { createPostsSlice, PostsSlice } from "./posts";
+import { createUlistSlice, UlistSlice } from "./ulist";
 import { createUsersSlice, UsersSlice } from "./users";
 
-export type Store = AuthSlice & ChatsSlice & PostsSlice & UsersSlice;
+export type Store = AuthSlice &
+  ChatsSlice &
+  PostsSlice &
+  UlistSlice &
+  UsersSlice;
 
 export const useAPI = create<Store>()((...args) => {
   return {
     ...createAuthSlice(...args),
     ...createChatsSlice(...args),
     ...createPostsSlice(...args),
+    ...createUlistSlice(...args),
     ...createUsersSlice(...args),
   };
 });

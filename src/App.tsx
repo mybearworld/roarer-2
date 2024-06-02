@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import * as Tabs from "@radix-ui/react-tabs";
 import { twMerge } from "tailwind-merge";
 import { Account } from "./components/Account";
 import { Chats } from "./components/Chats";
 import { Button } from "./components/Button";
 import { Posts } from "./components/Posts";
+import { Ulist } from "./components/Ulist";
 
 export const App = () => {
   const [showSideNav, setShowSideNav] = useState(false);
@@ -29,19 +31,38 @@ export const App = () => {
         </Button>
         <Posts chat={chat} />
       </div>
-      <div
+      <Tabs.Root
+        defaultValue="ulist"
         className={`${
           showSideNav ? "" : "hidden"
         } absolute right-0 top-0 z-[--z-sidebar] h-screen max-h-screen w-[--nav-bar-size] overflow-auto bg-white py-2 lg:sticky lg:top-0 lg:block lg:w-auto lg:min-w-[35%]`}
       >
-        <div className="mb-2 flex justify-between px-2">
-          <div></div>
+        <Tabs.List className="mb-2 flex justify-between px-2">
+          <div className="flex items-center gap-2">
+            <Tabs.Trigger
+              className="border-b-2 border-transparent aria-selected:border-lime-500 aria-selected:font-bold"
+              value="ulist"
+            >
+              Users
+            </Tabs.Trigger>
+            <Tabs.Trigger
+              className="border-b-2 border-transparent aria-selected:border-lime-500 aria-selected:font-bold"
+              value="chats"
+            >
+              Chats
+            </Tabs.Trigger>
+          </div>
           <div>
             <Account />
           </div>
-        </div>
-        <Chats onChatClick={setChat} currentChat={chat} />
-      </div>
+        </Tabs.List>
+        <Tabs.Content value="ulist">
+          <Ulist />
+        </Tabs.Content>
+        <Tabs.Content value="chats">
+          <Chats onChatClick={setChat} currentChat={chat} />
+        </Tabs.Content>
+      </Tabs.Root>
     </div>
   );
 };

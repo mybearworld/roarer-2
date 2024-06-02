@@ -1,10 +1,12 @@
 import { CSSProperties } from "react";
+import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { profilePictures } from "../assets/pfp";
 
 export type ProfilePictureProps = {
   username: string | undefined;
+  className?: string;
 };
 export const ProfilePicture = (props: ProfilePictureProps) => {
   const [user, loadUser] = useAPI(
@@ -24,6 +26,7 @@ export const ProfilePicture = (props: ProfilePictureProps) => {
           ? user
           : { avatar: "", avatar_color: "", pfp_data: 500 }
       }
+      className={props.className}
     />
   );
 };
@@ -34,11 +37,15 @@ export type ProfilePictureBaseProps = {
     avatar_color: string;
     pfp_data: number | null;
   };
+  className?: string;
 };
 export const ProfilePictureBase = (props: ProfilePictureBaseProps) => {
   return (
     <img
-      className="h-10 min-h-10 w-10 min-w-10 rounded-lg border border-[--border-color] [border-style:--border-style]"
+      className={twMerge(
+        "h-10 min-h-10 w-10 min-w-10 rounded-lg border border-[--border-color] [border-style:--border-style]",
+        props.className,
+      )}
       style={
         {
           "--border-color": "#" + props.pfp.avatar_color,
