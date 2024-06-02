@@ -153,8 +153,11 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
         return;
       }
       loadingPosts.add(post);
+      const state = get();
       const response = await request(
-        fetch(`https://api.meower.org/posts?id=${encodeURIComponent(post)}`),
+        fetch(`https://api.meower.org/posts?id=${encodeURIComponent(post)}`, {
+          headers: state.credentials ? { Token: state.credentials.token } : {},
+        }),
         POST_SCHEMA,
       );
       set((state) => ({
