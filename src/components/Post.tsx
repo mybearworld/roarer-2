@@ -3,7 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
-import { getReply } from "../lib/getReply";
+import { getReply } from "../lib/reply";
 import { Attachment, Post as APIPost } from "../lib/api/posts";
 import { byteToHuman } from "../lib/byteToHuman";
 import { Popup } from "./Popup";
