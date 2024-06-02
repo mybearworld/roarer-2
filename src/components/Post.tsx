@@ -2,7 +2,7 @@ import { File } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useRef } from "react";
 import { useAPI } from "../lib/api";
-import { Attachment } from "../lib/api/posts";
+import { Attachment, Post as APIPost } from "../lib/api/posts";
 import { byteToHuman } from "../lib/byteToHuman";
 import { Popup } from "./Popup";
 import { ProfilePicture } from "./ProfilePicture";
@@ -34,17 +34,26 @@ export const Post = (props: PostProps) => {
               Message: {post.message}
             </>
           ) : (
-            <>
-              <div className="text-sm font-bold">{post.u}</div>
-              <div>{post.p}</div>
-              <Attachments attachments={post.attachments} />
-            </>
+            <PostBase post={post} />
           )
         ) : (
           "Loading..."
         )}
       </div>
     </div>
+  );
+};
+
+type PostBaseProps = {
+  post: APIPost;
+};
+const PostBase = (props: PostBaseProps) => {
+  return (
+    <>
+      <div className="text-sm font-bold">{props.post.u}</div>
+      <div>{props.post.p}</div>
+      <Attachments attachments={props.post.attachments} />
+    </>
   );
 };
 
