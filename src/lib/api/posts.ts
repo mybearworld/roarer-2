@@ -4,7 +4,10 @@ import { Store } from ".";
 import { getCloudlink } from "./cloudlink";
 import { Errorable, loadMore, request } from "./utils";
 
-export type Attachment = z.infer<typeof ATTACHMENT_SCHEMA>;
+export type Attachment = Omit<
+  z.infer<typeof ATTACHMENT_SCHEMA>,
+  "height" | "width"
+> & { width?: number; height?: number };
 const ATTACHMENT_SCHEMA = z.object({
   filename: z.string(),
   height: z.number(),
@@ -64,6 +67,7 @@ export type PostsSlice = {
   post: (
     content: string,
     chat: string,
+    attachments?: string[],
   ) => Promise<{ error: true; message: string } | { error: false }>;
 };
 export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
@@ -215,7 +219,7 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
         stop: page === response.response.pages,
       };
     },
-    post: async (content, chat) => {
+    post: async (content, chat, attachments) => {
       const state = get();
       const response = await request(
         fetch(
@@ -225,7 +229,7 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
               ...(state.credentials ? { Token: state.credentials.token } : {}),
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ content }),
+            body: JSON.stringify({ content, attachments }),
             method: "POST",
           },
         ),

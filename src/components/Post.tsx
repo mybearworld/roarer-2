@@ -1,4 +1,4 @@
-import { File, Reply } from "lucide-react";
+import { File, Reply, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useSwipeable } from "react-swipeable";
 import { CSSProperties, ReactNode, useRef, useState } from "react";
@@ -7,6 +7,7 @@ import { useAPI } from "../lib/api";
 import { getReply } from "../lib/reply";
 import { Attachment, Post as APIPost } from "../lib/api/posts";
 import { byteToHuman } from "../lib/byteToHuman";
+import { Button } from "./Button";
 import { Popup } from "./Popup";
 import {
   NO_PROFILE_PICTURE,
@@ -187,25 +188,37 @@ const Attachments = (props: AttachmentsProps) => {
   );
 };
 
-type AttachmentProps = {
+export type AttachmentViewProps = {
   attachment: Attachment;
+  onRemove?: (id: string) => void;
 };
-const AttachmentView = (props: AttachmentProps) => {
+export const AttachmentView = (props: AttachmentViewProps) => {
   const download = useRef<HTMLAnchorElement>(null);
 
   if (props.attachment.mime.startsWith("image/")) {
     return (
       <Popup
         trigger={
-          <img
-            key={props.attachment.id}
-            className="h-36 w-36 rounded-xl object-cover"
-            src={`https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
-            alt={props.attachment.filename}
-            title={props.attachment.filename}
-            width={props.attachment.width}
-            height={props.attachment.height}
-          />
+          <div className="relative h-36 w-36">
+            <img
+              key={props.attachment.id}
+              className="h-36 w-36 rounded-xl object-cover"
+              src={`https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
+              alt={props.attachment.filename}
+              title={props.attachment.filename}
+              width={props.attachment.width}
+              height={props.attachment.height}
+            />
+            {props.onRemove ? (
+              <Button
+                className="absolute right-2 top-2 opacity-50 hover:opacity-100"
+                aria-label="Remove"
+                onClick={() => props.onRemove?.(props.attachment.id)}
+              >
+                <X />
+              </Button>
+            ) : undefined}
+          </div>
         }
       >
         <div className="flex flex-col gap-2">

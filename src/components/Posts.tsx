@@ -1,11 +1,13 @@
-import { KeyboardEvent, FormEvent, useState } from "react";
-import { SendHorizontal } from "lucide-react";
+import { KeyboardEvent, FormEvent, useState, useRef } from "react";
+import { CirclePlus, SendHorizontal } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
 import { trimmedPost } from "../lib/reply";
+import { uploadFile } from "../lib/upload";
 import { useShallow } from "zustand/react/shallow";
 import { Textarea } from "./Input";
-import { Post } from "./Post";
+import { AttachmentView, Post } from "./Post";
+import { Attachment } from "../lib/api/posts";
 
 type Reply = {
   id: string;
@@ -66,7 +68,11 @@ const EnterPost = (props: EnterPostProps) => {
   );
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState("");
-  const [posting, setPosting] = useState(false);
+  const [state, setState] = useState<"posting" | "writing" | "uploading">(
+    "writing",
+  );
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const fileInput = useRef<HTMLInputElement | null>(null);
 
   if (!credentials) {
     return <></>;
@@ -74,18 +80,23 @@ const EnterPost = (props: EnterPostProps) => {
 
   const handlePost = async (e?: FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    setPosting(true);
+    if (state !== "writing") {
+      return;
+    }
+    setState("posting");
     const response = await post(
       (props.reply
         ? `@${props.reply.username} ${trimmedPost(props.reply.content)} (${props.reply.id})\n`
         : "") + postContent,
       props.chat,
+      attachments.map((attachment) => attachment.id),
     );
     if (response.error) {
       setError(response.message);
     }
-    setPosting(false);
+    setState("writing");
     setPostContent("");
+    setAttachments([]);
     props.onPosted?.();
   };
 
@@ -96,21 +107,107 @@ const EnterPost = (props: EnterPostProps) => {
     }
   };
 
+  const upload = async (files: FileList) => {
+    const errors: string[] = [];
+    setState("uploading");
+    (
+      await Promise.all(
+        [...files].map(async (file) => {
+          const uploadedFile = await uploadFile(file, "attachments");
+          console.log(uploadedFile);
+          if (uploadedFile.error) {
+            return { type: "error", message: uploadedFile.message } as const;
+          } else {
+            return {
+              type: "file",
+              file: {
+                filename: file.name,
+                id: uploadedFile.response.id,
+                mime: file.type,
+                size: file.size,
+              } satisfies Attachment,
+            } as const;
+          }
+        }),
+      )
+    ).forEach((result) => {
+      if (result.type === "error") {
+        errors.push(result.message);
+        return;
+      }
+      setAttachments((attachments) => [...attachments, result.file]);
+    });
+    if (errors.length) {
+      setError(`Some files couldn't be uploaded. Errors: ${errors.join(",")}`);
+    }
+    setState("writing");
+  };
+
   return (
     <form onSubmit={handlePost} className={twMerge("w-full")}>
       <Textarea
         value={postContent}
         onChange={(e) => setPostContent(e.currentTarget.value)}
         onKeyDown={handleInput}
-        disabled={posting}
+        disabled={state !== "writing"}
+        before={
+          <>
+            <button
+              type="button"
+              aria-label="Upload attachment"
+              disabled={state !== "writing"}
+              onClick={() => fileInput.current?.click()}
+            >
+              <input
+                type="file"
+                hidden
+                multiple
+                onInput={async (e) => {
+                  const files = e.currentTarget.files;
+                  if (!files) {
+                    return;
+                  }
+                  await upload(files);
+                  e.currentTarget.value = "";
+                }}
+                ref={fileInput}
+              />
+              <CirclePlus aria-hidden />
+            </button>
+          </>
+        }
         after={
           <>
-            <button type="submit" aria-label="Send" disabled={posting}>
+            <button
+              type="submit"
+              aria-label="Send"
+              disabled={state !== "writing"}
+            >
               <SendHorizontal aria-hidden />
             </button>
           </>
         }
         above={props.reply ? <Post id={props.reply.id} reply /> : undefined}
+        below={
+          <div className="flex flex-wrap gap-2">
+            {attachments.map((attachment) => (
+              <AttachmentView
+                attachment={attachment}
+                key={attachment.id}
+                onRemove={(id) =>
+                  setAttachments((attachments) =>
+                    attachments.filter((attachment) => attachment.id !== id),
+                  )
+                }
+              />
+            ))}
+          </div>
+        }
+        onPaste={(e) => {
+          if (e.clipboardData.files.length) {
+            upload(e.clipboardData.files);
+          }
+        }}
       />
       {error ? <span className="text-red-500">{error}</span> : undefined}
     </form>

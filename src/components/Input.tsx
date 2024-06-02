@@ -49,7 +49,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {props.before}
           <textarea
             {...{ ...textareaProps, className: undefined }}
-            className="h-full grow resize-none outline-0"
+            className="mx-2 h-full grow resize-none bg-transparent outline-0"
             ref={ref}
           />
           {props.after}
