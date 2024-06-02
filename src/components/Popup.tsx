@@ -5,10 +5,14 @@ export type PopupProps = {
   trigger: ReactNode;
   triggerAsChild?: boolean;
   children: ReactNode;
+  controlled?: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+  };
 };
 export const Popup = (props: PopupProps) => {
   return (
-    <Dialog.Root>
+    <Dialog.Root {...(props.controlled ?? {})}>
       <Dialog.Trigger asChild={props.triggerAsChild}>
         {props.trigger}
       </Dialog.Trigger>

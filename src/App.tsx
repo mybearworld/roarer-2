@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { twMerge } from "tailwind-merge";
+import { useShallow } from "zustand/react/shallow";
+import { useAPI } from "./lib/api";
 import { Account } from "./components/Account";
 import { Chats } from "./components/Chats";
 import { Button } from "./components/Button";
@@ -10,7 +12,9 @@ import { Ulist } from "./components/Ulist";
 
 export const App = () => {
   const [showSideNav, setShowSideNav] = useState(false);
-  const [chat, setChat] = useState("home");
+  const [openChat, setOpenChat] = useAPI(
+    useShallow((state) => [state.openChat, state.setOpenChat]),
+  );
 
   return (
     <div className="flex h-screen max-h-screen divide-x divide-gray-200 overflow-auto text-gray-900 [--nav-bar-size:min(theme(spacing.96),90vw)]">
@@ -29,7 +33,7 @@ export const App = () => {
             <ChevronLeft aria-hidden />
           )}
         </Button>
-        <Posts chat={chat} />
+        <Posts chat={openChat} />
       </div>
       <Tabs.Root
         defaultValue="ulist"
@@ -60,7 +64,7 @@ export const App = () => {
           <Ulist />
         </Tabs.Content>
         <Tabs.Content value="chats">
-          <Chats onChatClick={setChat} currentChat={chat} />
+          <Chats onChatClick={setOpenChat} currentChat={openChat} />
         </Tabs.Content>
       </Tabs.Root>
     </div>

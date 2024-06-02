@@ -38,12 +38,18 @@ export type ChatsSlice = {
   addChat: (chat: Chat) => void;
   loadChats: () => Promise<void>;
   loadChat: (chat: string) => Promise<void>;
+  getDM: (
+    username: string,
+  ) => Promise<
+    { error: true; message: string } | { error: false; chat: string }
+  >;
 };
 export const createChatsSlice: StateCreator<Store, [], [], ChatsSlice> = (
   set,
   get,
 ) => {
   const loadingChats = new Set<string>();
+  const dmsByUsername = new Map<string, string>();
   return {
     userChats: undefined,
     chats: {},
@@ -101,6 +107,44 @@ export const createChatsSlice: StateCreator<Store, [], [], ChatsSlice> = (
       }
       get().addChat(response.response);
       loadingChats.delete(chat);
+    },
+    getDM: async (username: string) => {
+      const state = get();
+      const dm = dmsByUsername.get(username);
+      if (dm) {
+        return { error: false, chat: dm };
+      }
+      // unlike the other endpoints, _this_ endpoint doesn't have an error
+      // flag and just throws with only a status code
+      let response;
+      try {
+        response = CHAT_SCHEMA.parse(
+          await (
+            await fetch(
+              `https://api.meower.org/users/${encodeURIComponent(username)}/dm`,
+              {
+                headers: state.credentials
+                  ? { Token: state.credentials.token }
+                  : {},
+              },
+            )
+          ).json(),
+        );
+      } catch (e) {
+        return { error: true, message: (e as Error).message };
+      }
+      get().addChat(response);
+      set((state) => ({
+        userChats:
+          state.userChats === undefined || state.userChats.error
+            ? state.userChats
+            : {
+                ...state.userChats,
+                chats: [...state.userChats.chats, response._id],
+              }, // this should type error. why is it not
+      }));
+      dmsByUsername.set(username, response._id);
+      return { error: false, chat: response._id };
     },
   };
 };

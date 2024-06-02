@@ -7,12 +7,14 @@ import {
 } from "./auth";
 import { createChatsSlice, ChatsSlice } from "./chats";
 import { createPostsSlice, PostsSlice } from "./posts";
+import { createRoarerSlice, RoarerSlice } from "./roarer";
 import { createUlistSlice, UlistSlice } from "./ulist";
 import { createUsersSlice, UsersSlice } from "./users";
 
 export type Store = AuthSlice &
   ChatsSlice &
   PostsSlice &
+  RoarerSlice &
   UlistSlice &
   UsersSlice;
 
@@ -21,6 +23,7 @@ export const useAPI = create<Store>()((...args) => {
     ...createAuthSlice(...args),
     ...createChatsSlice(...args),
     ...createPostsSlice(...args),
+    ...createRoarerSlice(...args),
     ...createUlistSlice(...args),
     ...createUsersSlice(...args),
   };
