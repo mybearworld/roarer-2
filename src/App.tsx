@@ -37,7 +37,7 @@ export const App = () => {
           showSideNav ? "" : "hidden"
         } absolute right-0 top-0 z-[--z-sidebar] h-screen max-h-screen w-[--nav-bar-size] overflow-auto bg-white py-2 lg:sticky lg:top-0 lg:block lg:w-auto lg:min-w-[35%]`}
       >
-        <Tabs.List className="mb-2 flex justify-between px-2">
+        <Tabs.List className="mb-2 flex h-8 items-center justify-between px-2">
           <div className="flex items-center gap-2">
             <Tabs.Trigger
               className="border-b-2 border-transparent aria-selected:border-lime-500 aria-selected:font-bold"
