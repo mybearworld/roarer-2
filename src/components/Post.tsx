@@ -1,4 +1,4 @@
-import { File, Reply } from "lucide-react";
+import { File, Popsicle, Reply } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useSwipeable } from "react-swipeable";
 import { CSSProperties, ReactNode, useRef, useState } from "react";
@@ -131,7 +131,7 @@ const PostBase = (props: PostBaseProps) => {
                 <Post id={reply.id} reply />
               </div>
             ) : undefined}
-            <div>{post}</div>
+            <div class={props.reply ? "line-clamp-1" : ""}>{post}</div>
             {!props.reply ? (
               <Attachments attachments={props.post.attachments} />
             ) : undefined}
