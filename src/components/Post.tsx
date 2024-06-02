@@ -131,7 +131,7 @@ const PostBase = (props: PostBaseProps) => {
                 <Post id={reply.id} reply />
               </div>
             ) : undefined}
-            <div class={props.reply ? "line-clamp-1" : ""}>{post}</div>
+            <div className={props.reply ? "line-clamp-1" : ""}>{post}</div>
             {!props.reply ? (
               <Attachments attachments={props.post.attachments} />
             ) : undefined}
