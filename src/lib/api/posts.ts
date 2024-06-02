@@ -60,6 +60,7 @@ export type PostsSlice = {
     | { error: true; message: string }
     | { error: false; posts: string[]; stop: boolean }
   >;
+  loadPost: (id: string) => Promise<void>;
   post: (
     content: string,
     chat: string,
@@ -130,7 +131,8 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
     });
   });
 
-  const loadingPosts = new Set();
+  const loadingPosts = new Set<string>();
+  const loadingChats = new Set<string>();
   return {
     posts: {},
     chatPosts: {},
@@ -142,15 +144,34 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
         },
       }));
     },
+    loadPost: async (post: string) => {
+      if (post in get().posts || loadingPosts.has(post)) {
+        return;
+      }
+      loadingPosts.add(post);
+      const response = await request(
+        fetch(`https://api.meower.org/posts?id=${encodeURIComponent(post)}`),
+        POST_SCHEMA,
+      );
+      set((state) => ({
+        posts: {
+          ...state.posts,
+          [post]: response.error
+            ? { error: true, message: response.message }
+            : { error: false, ...response.response },
+        },
+      }));
+      loadingPosts.delete(post);
+    },
     loadChatPosts: async (id: string) => {
       const state = get();
       if (state.chatPosts[id]) {
         return false;
       }
-      if (loadingPosts.has(id)) {
+      if (loadingChats.has(id)) {
         return false;
       }
-      loadingPosts.add(id);
+      loadingChats.add(id);
       const response = await state.loadPosts(id, 0);
       set((state) => ({
         chatPosts: {
@@ -164,7 +185,7 @@ export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
               },
         },
       }));
-      loadingPosts.delete(id);
+      loadingChats.delete(id);
       return true;
     },
     loadPosts: async (id: string, current: number) => {

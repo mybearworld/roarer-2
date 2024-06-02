@@ -1,29 +1,47 @@
 import { File } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useRef } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
+import { getReply } from "../lib/getReply";
 import { Attachment, Post as APIPost } from "../lib/api/posts";
 import { byteToHuman } from "../lib/byteToHuman";
 import { Popup } from "./Popup";
 import { ProfilePicture } from "./ProfilePicture";
+import { twMerge } from "tailwind-merge";
 
 export type PostProps = {
   id: string;
+  reply?: boolean;
 };
 export const Post = (props: PostProps) => {
-  const post = useAPI((state) => state.posts[props.id]);
+  const [post, loadPost] = useAPI(
+    useShallow((state) => [state.posts[props.id], state.loadPost]),
+  );
   if (post && !post.error && post.isDeleted) {
     return;
   }
+  loadPost(props.id);
 
   return (
     <div className="flex gap-3">
       <div>
-        <ProfilePicture username={post?.error ? undefined : post?.u} />
+        <ProfilePicture
+          className={props.reply ? "h-7 min-h-7 w-7 min-w-7" : ""}
+          username={post?.error ? undefined : post?.u}
+        />
       </div>
-      <div className="relative min-w-0 grow break-words rounded-lg rounded-ss-none bg-gray-100 px-2 py-1">
+      <div
+        className={twMerge(
+          "relative min-w-0 grow break-words rounded-lg rounded-ss-none px-2 py-1",
+          props.reply ? "bg-gray-200" : "bg-gray-100",
+        )}
+      >
         <div
-          className="absolute left-[calc(-0.5rem-theme(spacing.2))] top-0 box-content h-0 w-0 border-[length:0.5rem] border-transparent border-r-gray-100"
+          className={twMerge(
+            "absolute left-[calc(-0.5rem-theme(spacing.2))] top-0 box-content h-0 w-0 border-[length:0.5rem] border-transparent border-r-gray-100",
+            props.reply ? "border-r-gray-200" : "border-r-gray-100",
+          )}
           aria-hidden
         />
         {post ? (
@@ -34,7 +52,7 @@ export const Post = (props: PostProps) => {
               Message: {post.message}
             </>
           ) : (
-            <PostBase post={post} />
+            <PostBase post={post} reply={props.reply} />
           )
         ) : (
           "Loading..."
@@ -46,14 +64,36 @@ export const Post = (props: PostProps) => {
 
 type PostBaseProps = {
   post: APIPost;
+  reply?: boolean;
 };
 const PostBase = (props: PostBaseProps) => {
+  const reply = getReply(props.post.p);
+  const post = reply
+    ? reply.id
+      ? reply.postContent
+      : reply.replyText + reply.postContent
+    : props.post.p;
+
   return (
-    <>
-      <div className="text-sm font-bold">{props.post.u}</div>
-      <div>{props.post.p}</div>
-      <Attachments attachments={props.post.attachments} />
-    </>
+    <div
+      className={twMerge(
+        "flex",
+        props.reply ? "flex-row items-center gap-2" : "flex-col",
+      )}
+    >
+      <div className={twMerge("font-bold", props.reply ? "" : "text-sm")}>
+        {props.post.u}
+      </div>
+      {!props.reply && reply?.id ? (
+        <div className="mt-2">
+          <Post id={reply.id} reply />
+        </div>
+      ) : undefined}
+      <div>{post}</div>
+      {!props.reply ? (
+        <Attachments attachments={props.post.attachments} />
+      ) : undefined}
+    </div>
   );
 };
 
@@ -61,6 +101,10 @@ type AttachmentsProps = {
   attachments: Attachment[];
 };
 const Attachments = (props: AttachmentsProps) => {
+  if (!props.attachments.length) {
+    return;
+  }
+
   return (
     <div className="flex flex-wrap gap-2">
       {props.attachments.map((attachment) => (
