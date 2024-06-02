@@ -1,4 +1,3 @@
-import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { ProfilePicture } from "./ProfilePicture";
 
