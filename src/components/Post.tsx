@@ -1,4 +1,4 @@
-import { File, Popsicle, Reply } from "lucide-react";
+import { File, Reply } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useSwipeable } from "react-swipeable";
 import { CSSProperties, ReactNode, useRef, useState } from "react";
