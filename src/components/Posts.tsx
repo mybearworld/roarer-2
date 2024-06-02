@@ -2,14 +2,22 @@ import { KeyboardEvent, FormEvent, useState } from "react";
 import { SendHorizontal } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
+import { trimmedPost } from "../lib/reply";
 import { useShallow } from "zustand/react/shallow";
 import { Textarea } from "./Input";
 import { Post } from "./Post";
+
+type Reply = {
+  id: string;
+  content: string;
+  username: string;
+};
 
 export type PostsProps = {
   chat: string;
 };
 export const Posts = (props: PostsProps) => {
+  const [reply, setReply] = useState<Reply>();
   const [home, loadChatPosts] = useAPI(
     useShallow((state) => [state.chatPosts[props.chat], state.loadChatPosts]),
   );
@@ -29,9 +37,19 @@ export const Posts = (props: PostsProps) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <EnterPost chat={props.chat} />
+      <EnterPost
+        chat={props.chat}
+        reply={reply}
+        onPosted={() => setReply(undefined)}
+      />
       {home.posts.map((post) => (
-        <Post key={post} id={post} />
+        <Post
+          key={post}
+          id={post}
+          onReply={(id, content, username) =>
+            setReply({ id, content, username })
+          }
+        />
       ))}
     </div>
   );
@@ -39,6 +57,8 @@ export const Posts = (props: PostsProps) => {
 
 export type EnterPostProps = {
   chat: string;
+  reply?: Reply | undefined;
+  onPosted?: () => void;
 };
 const EnterPost = (props: EnterPostProps) => {
   const [post, credentials] = useAPI(
@@ -55,12 +75,18 @@ const EnterPost = (props: EnterPostProps) => {
   const handlePost = async (e?: FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
     setPosting(true);
-    const response = await post(postContent, props.chat);
+    const response = await post(
+      (props.reply
+        ? `@${props.reply.username} ${trimmedPost(props.reply.content)} (${props.reply.id})\n`
+        : "") + postContent,
+      props.chat,
+    );
     if (response.error) {
       setError(response.message);
     }
     setPosting(false);
     setPostContent("");
+    props.onPosted?.();
   };
 
   const handleInput = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -84,6 +110,7 @@ const EnterPost = (props: EnterPostProps) => {
             </button>
           </>
         }
+        above={props.reply ? <Post id={props.reply.id} reply /> : undefined}
       />
       {error ? <span className="text-red-500">{error}</span> : undefined}
     </form>

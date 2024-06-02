@@ -4,6 +4,12 @@ import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { profilePictures } from "../assets/pfp";
 
+export const NO_PROFILE_PICTURE = {
+  avatar: "",
+  avatar_color: "",
+  pfp_data: 500,
+};
+
 export type ProfilePictureProps = {
   username: string | undefined;
   className?: string;
@@ -21,11 +27,7 @@ export const ProfilePicture = (props: ProfilePictureProps) => {
 
   return (
     <ProfilePictureBase
-      pfp={
-        user && !user.error
-          ? user
-          : { avatar: "", avatar_color: "", pfp_data: 500 }
-      }
+      pfp={user && !user.error ? user : NO_PROFILE_PICTURE}
       className={props.className}
     />
   );

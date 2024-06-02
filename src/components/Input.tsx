@@ -1,4 +1,4 @@
-import { forwardRef, ComponentPropsWithoutRef } from "react";
+import React, { forwardRef, ComponentPropsWithoutRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 export type InputProps = ComponentPropsWithoutRef<"input"> & { label: string };
@@ -27,26 +27,34 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 export type TextareaProps = ComponentPropsWithoutRef<"textarea"> & {
   before?: React.ReactNode;
   after?: React.ReactNode;
+  above?: React.ReactNode;
+  below?: React.ReactNode;
 };
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (props: TextareaProps, ref) => {
     const textareaProps = { ...props };
     delete textareaProps.before;
     delete textareaProps.after;
+    delete textareaProps.above;
+    delete textareaProps.below;
     return (
       <div
         className={twMerge(
-          "flex h-12 rounded-xl border border-gray-200 px-2 transition-colors has-[textarea:focus]:border-transparent has-[textarea:disabled]:opacity-70 has-[textarea:focus]:shadow-sm has-[textarea:focus]:[box-shadow:0_0_0.25rem_theme(colors.lime.600)]",
+          "flex flex-col rounded-xl border border-gray-200 px-2 py-1 transition-colors has-[textarea:focus]:border-transparent has-[textarea:disabled]:opacity-70 has-[textarea:focus]:shadow-sm has-[textarea:focus]:[box-shadow:0_0_0.25rem_theme(colors.lime.600)]",
           props.className,
         )}
       >
-        {props.before}
-        <textarea
-          {...{ ...textareaProps, className: undefined }}
-          className="h-full grow resize-none rounded-xl px-2 py-1 outline-0"
-          ref={ref}
-        />
-        {props.after}
+        {props.above}
+        <div className="flex h-12">
+          {props.before}
+          <textarea
+            {...{ ...textareaProps, className: undefined }}
+            className="h-full grow resize-none outline-0"
+            ref={ref}
+          />
+          {props.after}
+        </div>
+        {props.below}
       </div>
     );
   },

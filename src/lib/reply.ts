@@ -25,3 +25,18 @@ export const getReply = (post: string): Reply | null => {
     replyText,
   };
 };
+
+export const trimmedPost = (post: string) => {
+  const reply = getReply(post);
+  const postContent = reply ? reply.postContent : post;
+  const slicedPostContent = postContent.slice(0, 40);
+  const replacedPostContent = slicedPostContent
+    .slice(0, 40)
+    .replace(/: /g, ":  ") // images shouldn't appear in replies
+    .replace(/!/g, "!\u200c") // markdown images
+    .replace(/`/g, "\\`") // code blocks can span new lines
+    .replace(/\n/g, " ");
+  return `"${replacedPostContent.slice(0, 40).trim()}${
+    postContent.length > 39 ? "…" : ""
+  }"`;
+};
