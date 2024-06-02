@@ -6,10 +6,10 @@ import { useShallow } from "zustand/react/shallow";
 import { Textarea } from "./Input";
 import { Post } from "./Post";
 
-export type PostProps = {
+export type PostsProps = {
   chat: string;
 };
-export const Posts = (props: PostProps) => {
+export const Posts = (props: PostsProps) => {
   const [home, loadChatPosts] = useAPI(
     useShallow((state) => [state.chatPosts[props.chat], state.loadChatPosts]),
   );
