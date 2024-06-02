@@ -1,5 +1,4 @@
 import { useState, ReactNode } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { Button } from "./Button";
