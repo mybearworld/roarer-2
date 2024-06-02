@@ -191,7 +191,7 @@ const EnterPost = (props: EnterPostProps) => {
           props.reply ? (
             <div className="flex gap-2">
               <div className="grow">
-                <Post id={props.reply.id} reply />
+                <Post id={props.reply.id} reply="topLevel" />
               </div>
               <button
                 type="button"

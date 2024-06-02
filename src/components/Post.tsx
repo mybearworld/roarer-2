@@ -18,7 +18,7 @@ import { twMerge } from "tailwind-merge";
 
 export type PostProps = {
   id: string;
-  reply?: boolean;
+  reply?: boolean | "topLevel";
   onReply?: (id: string, content: string, username: string) => void;
 };
 export const Post = (props: PostProps) => {
@@ -58,7 +58,7 @@ export const Post = (props: PostProps) => {
 
 type PostBaseProps = {
   post: APIPost;
-  reply?: boolean;
+  reply?: boolean | "topLevel";
   onReply?: (id: string, content: string, username: string) => void;
 };
 const PostBase = (props: PostBaseProps) => {
@@ -144,7 +144,7 @@ const PostBase = (props: PostBaseProps) => {
 };
 
 type SpeechBubbleProps = {
-  reply?: boolean;
+  reply?: boolean | "topLevel";
   speaker: ReactNode;
   bubble: ReactNode;
 };
@@ -155,13 +155,17 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
       <div
         className={twMerge(
           "relative min-w-0 grow translate-x-[clamp(0px,var(--delta-x),50px)] touch-pan-right break-words rounded-lg rounded-ss-none px-2 py-1",
-          props.reply ? "bg-gray-200" : "bg-gray-100",
+          props.reply && props.reply !== "topLevel"
+            ? "bg-gray-200"
+            : "bg-gray-100",
         )}
       >
         <div
           className={twMerge(
             "absolute left-[calc(-0.5rem-theme(spacing.2))] top-0 box-content h-0 w-0 border-[length:0.5rem] border-transparent border-r-gray-100",
-            props.reply ? "border-r-gray-200" : "border-r-gray-100",
+            props.reply && props.reply !== "topLevel"
+              ? "border-r-gray-200"
+              : "border-r-gray-100",
           )}
           aria-hidden
         />
