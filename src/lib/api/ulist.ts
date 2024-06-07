@@ -15,7 +15,7 @@ export const createUlistSlice: StateCreator<Store, [], [], UlistSlice> = (
         return;
       }
       set({
-        ulist: ulist.split(";").slice(0, -1),
+        ulist: ulist.split(";").slice(0, -1).sort(),
       });
     };
     updateUlist();
