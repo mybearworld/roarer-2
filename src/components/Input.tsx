@@ -1,4 +1,8 @@
-import React, { forwardRef, ComponentPropsWithoutRef } from "react";
+import React, {
+  forwardRef,
+  ComponentPropsWithoutRef,
+  KeyboardEventHandler,
+} from "react";
 import { twMerge } from "tailwind-merge";
 
 export type InputProps = ComponentPropsWithoutRef<"input"> & { label: string };
@@ -37,6 +41,14 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     delete textareaProps.after;
     delete textareaProps.above;
     delete textareaProps.below;
+
+    const handleInput: KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
+      event.currentTarget.style.height = "auto";
+      event.currentTarget.style.height =
+        event.currentTarget.scrollHeight + "px";
+      props.onKeyDown?.(event);
+    };
+
     return (
       <div
         className={twMerge(
@@ -45,11 +57,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         )}
       >
         {props.above}
-        <div className="flex h-12">
+        <div className="flex">
           {props.before}
           <textarea
             {...{ ...textareaProps, className: undefined }}
+            onInput={handleInput}
             className="mx-2 h-full grow resize-none bg-transparent outline-0"
+            rows={1}
             ref={ref}
           />
           {props.after}
