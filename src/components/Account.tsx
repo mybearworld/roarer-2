@@ -136,7 +136,7 @@ const AccountMenu = (props: AccountMenuProps) => {
   return (
     <Popover.Root>
       <Popover.Trigger className="flex items-center">
-        <ProfilePicture username={props.username} />
+        <ProfilePicture username={props.username} dontShowOnline />
         <ChevronDown />
       </Popover.Trigger>
       <Popover.Anchor />

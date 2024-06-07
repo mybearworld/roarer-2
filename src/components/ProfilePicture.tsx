@@ -13,12 +13,14 @@ export const NO_PROFILE_PICTURE = {
 export type ProfilePictureProps = {
   username: string | undefined;
   className?: string;
+  dontShowOnline?: boolean;
 };
 export const ProfilePicture = (props: ProfilePictureProps) => {
-  const [user, loadUser] = useAPI(
+  const [user, loadUser, ulist] = useAPI(
     useShallow((state) => [
       props.username ? state.users[props.username] : undefined,
       state.loadUser,
+      state.ulist,
     ]),
   );
   if (props.username) {
@@ -29,6 +31,13 @@ export const ProfilePicture = (props: ProfilePictureProps) => {
     <ProfilePictureBase
       pfp={user && !user.error ? user : NO_PROFILE_PICTURE}
       className={props.className}
+      online={
+        props.dontShowOnline ?? false
+          ? false
+          : props.username
+            ? ulist.includes(props.username)
+            : false
+      }
     />
   );
 };
@@ -40,28 +49,34 @@ export type ProfilePictureBaseProps = {
     pfp_data: number | null;
   };
   className?: string;
+  online?: boolean;
 };
 export const ProfilePictureBase = (props: ProfilePictureBaseProps) => {
   return (
-    <img
-      className={twMerge(
-        "h-10 min-h-10 w-10 min-w-10 rounded-lg border border-[--border-color] [border-style:--border-style]",
-        props.className,
-      )}
-      style={
-        {
-          "--border-color": "#" + props.pfp.avatar_color,
-          "--border-style":
-            props.pfp.avatar && props.pfp.avatar_color !== "!color"
-              ? "solid"
-              : "none",
-        } as CSSProperties
-      }
-      src={
-        props.pfp.avatar
-          ? `https://uploads.meower.org/icons/${props.pfp.avatar}`
-          : profilePictures.get(props.pfp.pfp_data ?? 500)
-      }
-    />
+    <div className="relative">
+      <img
+        className={twMerge(
+          "h-10 min-h-10 w-10 min-w-10 rounded-lg border border-[--border-color] [border-style:--border-style]",
+          props.className,
+        )}
+        style={
+          {
+            "--border-color": "#" + props.pfp.avatar_color,
+            "--border-style":
+              props.pfp.avatar && props.pfp.avatar_color !== "!color"
+                ? "solid"
+                : "none",
+          } as CSSProperties
+        }
+        src={
+          props.pfp.avatar
+            ? `https://uploads.meower.org/icons/${props.pfp.avatar}`
+            : profilePictures.get(props.pfp.pfp_data ?? 500)
+        }
+      />
+      {props.online ? (
+        <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border border-green-600 bg-green-400" />
+      ) : undefined}
+    </div>
   );
 };
