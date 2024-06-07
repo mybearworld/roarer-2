@@ -97,6 +97,7 @@ const EnterPost = (props: EnterPostProps) => {
     setState("writing");
     setPostContent("");
     setAttachments([]);
+    setError(false);
     props.removeReply?.();
   };
 
