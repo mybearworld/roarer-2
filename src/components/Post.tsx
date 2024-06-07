@@ -9,6 +9,7 @@ import { Attachment, Post as APIPost } from "../lib/api/posts";
 import { byteToHuman } from "../lib/byteToHuman";
 import { Button } from "./Button";
 import { Popup } from "./Popup";
+import { Markdown } from "./Markdown";
 import {
   NO_PROFILE_PICTURE,
   ProfilePicture,
@@ -132,7 +133,15 @@ const PostBase = (props: PostBaseProps) => {
                 <Post id={reply.id} reply />
               </div>
             ) : undefined}
-            <div className={props.reply ? "line-clamp-1" : ""}>{post}</div>
+            <div className={props.reply ? "line-clamp-1" : ""}>
+              <Markdown
+                secondaryBackground={
+                  props.reply === "topLevel" ? false : props.reply
+                }
+              >
+                {post}
+              </Markdown>
+            </div>
             {!props.reply ? (
               <Attachments attachments={props.post.attachments} />
             ) : undefined}
