@@ -166,16 +166,16 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
         className={twMerge(
           "relative min-w-0 grow translate-x-[clamp(0px,var(--delta-x),50px)] touch-pan-right break-words rounded-lg rounded-ss-none px-2 py-1",
           props.reply && props.reply !== "topLevel"
-            ? "bg-gray-200"
-            : "bg-gray-100",
+            ? "bg-gray-200 dark:bg-gray-800"
+            : "bg-gray-100 dark:bg-gray-900",
         )}
       >
         <div
           className={twMerge(
             "absolute left-[calc(-0.5rem-theme(spacing.2))] top-0 box-content h-0 w-0 border-[length:0.5rem] border-transparent border-r-gray-100",
             props.reply && props.reply !== "topLevel"
-              ? "border-r-gray-200"
-              : "border-r-gray-100",
+              ? "border-r-gray-200 dark:border-r-gray-800"
+              : "border-r-gray-100 dark:border-r-gray-900",
           )}
           aria-hidden
         />

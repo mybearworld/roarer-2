@@ -134,7 +134,9 @@ const Chat = (props: ChatProps) => {
     <button
       className={twMerge(
         "flex w-full max-w-full items-center px-2 py-1 text-left",
-        props.current ? "bg-gray-100" : "bg-white hover:bg-gray-100",
+        props.current
+          ? "bg-gray-100 dark:bg-gray-900"
+          : "bg-white hover:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-900",
       )}
       type="button"
       onClick={() => {

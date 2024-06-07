@@ -29,7 +29,7 @@ type UlistUserProps = {
 const UlistUser = (props: UlistUserProps) => {
   return (
     <User username={props.username}>
-      <button className="flex w-full items-center gap-2 bg-white px-2 py-1 hover:bg-gray-100">
+      <button className="flex w-full items-center gap-2 bg-white px-2 py-1 hover:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-900">
         <ProfilePicture
           className="inline-block"
           username={props.username}

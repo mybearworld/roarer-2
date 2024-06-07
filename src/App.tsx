@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, Moon, Sun } from "lucide-react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
@@ -17,8 +17,8 @@ export const App = () => {
   );
 
   return (
-    <div className="flex h-screen max-h-screen divide-x divide-gray-200 overflow-auto text-gray-900 [--nav-bar-size:min(theme(spacing.96),90vw)]">
-      <div className="relative max-h-screen w-full min-w-[65%] overflow-auto bg-white p-2">
+    <div className="flex h-screen max-h-screen divide-x divide-gray-200 overflow-auto bg-white [--nav-bar-size:min(theme(spacing.96),90vw)] dark:divide-gray-800 dark:bg-gray-950">
+      <div className="relative max-h-screen w-full min-w-[65%] overflow-auto bg-white p-2 dark:bg-gray-950">
         <Button
           className={twMerge(
             "absolute bottom-[50%] z-[--z-sidebar] h-14 rounded-none rounded-s-lg p-0 lg:hidden",
@@ -39,24 +39,25 @@ export const App = () => {
         defaultValue="ulist"
         className={`${
           showSideNav ? "" : "hidden"
-        } absolute right-0 top-0 z-[--z-sidebar] h-screen max-h-screen w-[--nav-bar-size] overflow-auto bg-white py-2 lg:sticky lg:top-0 lg:block lg:w-auto lg:min-w-[35%]`}
+        } absolute right-0 top-0 z-[--z-sidebar] h-screen max-h-screen w-[--nav-bar-size] overflow-auto bg-white py-2 lg:sticky lg:top-0 lg:block lg:w-auto lg:min-w-[35%] dark:bg-gray-950`}
       >
         <Tabs.List className="mb-2 flex h-8 items-center justify-between px-2">
           <div className="flex items-center gap-2">
             <Tabs.Trigger
-              className="border-b-2 border-transparent aria-selected:border-lime-500 aria-selected:font-bold"
+              className="border-b-2 border-transparent aria-selected:border-lime-500 aria-selected:font-bold dark:aria-selected:border-lime-600"
               value="ulist"
             >
               Users
             </Tabs.Trigger>
             <Tabs.Trigger
-              className="border-b-2 border-transparent aria-selected:border-lime-500 aria-selected:font-bold"
+              className="border-b-2 border-transparent aria-selected:border-lime-500 aria-selected:font-bold dark:aria-selected:border-lime-600"
               value="chats"
             >
               Chats
             </Tabs.Trigger>
           </div>
-          <div>
+          <div className="flex gap-2">
+            <DarkMode />
             <Account />
           </div>
         </Tabs.List>
@@ -68,5 +69,23 @@ export const App = () => {
         </Tabs.Content>
       </Tabs.Root>
     </div>
+  );
+};
+
+const DARK_MODE_STORAGE = "roarer3:dark";
+const DarkMode = () => {
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem(DARK_MODE_STORAGE) === "true",
+  );
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+    localStorage.setItem(DARK_MODE_STORAGE, JSON.stringify(darkMode));
+  }, [darkMode]);
+
+  return (
+    <button type="button" onClick={() => setDarkMode((d) => !d)}>
+      {darkMode ? <Sun /> : <Moon />}
+    </button>
   );
 };

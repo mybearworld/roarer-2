@@ -50,7 +50,7 @@ const SignInButton = () => {
       <Popover.Portal>
         <Popover.Content asChild align="end" sideOffset={4}>
           <form
-            className="z-[--z-above-sidebar] flex flex-col gap-2 rounded-lg border border-gray-200 bg-white px-2 py-1"
+            className="z-[--z-above-sidebar] flex flex-col gap-2 rounded-lg border border-gray-200 bg-white px-2 py-1 dark:border-gray-800 dark:bg-gray-950"
             onSubmit={handleSubmit}
           >
             <Input
@@ -142,13 +142,13 @@ const AccountMenu = (props: AccountMenuProps) => {
       <Popover.Anchor />
       <Popover.Portal>
         <Popover.Content
-          className="z-[--z-above-sidebar] flex flex-col rounded-lg border border-gray-200 bg-white"
+          className="z-[--z-above-sidebar] flex flex-col rounded-lg border border-gray-200 bg-white dark:bg-gray-950"
           align="end"
           sideOffset={4}
         >
           <span className="px-2 pt-1 text-sm font-bold">{props.username}</span>
           <button
-            className="px-2 py-1 text-left hover:bg-gray-100"
+            className="rounded-e-lg px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
             type="button"
             onClick={signOut}
           >

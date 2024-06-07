@@ -84,7 +84,7 @@ export const ProfilePictureBase = (props: ProfilePictureBaseProps) => {
         }
       />
       {props.online ? (
-        <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border border-green-600 bg-green-400" />
+        <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border border-green-600 bg-green-400 dark:border-green-500 dark:bg-green-600 " />
       ) : undefined}
     </div>
   );

@@ -52,7 +52,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
           </a>
         ),
         blockquote: (props) => (
-          <blockquote className="border-l-2 border-lime-500 pl-2">
+          <blockquote className="border-l-2 border-lime-500 pl-2 dark:border-lime-600">
             {props.children}
           </blockquote>
         ),

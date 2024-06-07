@@ -19,7 +19,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {...inputProps}
           ref={ref}
           className={twMerge(
-            "rounded-xl border border-gray-200 px-2 py-1 transition-colors focus:border-transparent focus:shadow-sm focus:outline-0 focus:[box-shadow:0_0_0.25rem_theme(colors.lime.600)] disabled:opacity-70",
+            "rounded-xl border border-gray-200 bg-transparent px-2 py-1 transition-colors focus:border-transparent focus:shadow-sm focus:outline-0 focus:[box-shadow:0_0_0.25rem_theme(colors.lime.600)] disabled:opacity-70 dark:border-gray-700 dark:focus:[box-shadow:0_0_0.25rem_theme(colors.lime.300)]",
             props.className,
           )}
         />
@@ -52,7 +52,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div
         className={twMerge(
-          "flex flex-col rounded-xl border border-gray-200 px-2 py-1 transition-colors has-[textarea:focus]:border-transparent has-[textarea:disabled]:opacity-70 has-[textarea:focus]:shadow-sm has-[textarea:focus]:[box-shadow:0_0_0.25rem_theme(colors.lime.600)]",
+          "flex flex-col rounded-xl border border-gray-200 px-2 py-1 transition-colors has-[textarea:focus]:border-transparent has-[textarea:disabled]:opacity-70 has-[textarea:focus]:shadow-sm has-[textarea:focus]:[box-shadow:0_0_0.25rem_theme(colors.lime.600)] dark:border-gray-700 dark:has-[textarea:focus]:[box-shadow:0_0_0.25rem_theme(colors.lime.300)]",
           props.className,
         )}
       >
