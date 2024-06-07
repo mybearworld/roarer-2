@@ -7,15 +7,40 @@ import { twMerge } from "tailwind-merge";
 import { hostWhitelist } from "../lib/hostWhitelist";
 
 const IsPreContext = createContext(false);
+const DISALLOWED_INLINE = [
+  "blockquote",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "hr",
+  "img",
+  "input",
+  "li",
+  "ol",
+  "pre",
+  "table",
+  "tbody",
+  "td",
+  "th",
+  "thead",
+  "tr",
+  "ul",
+];
 
 export type MarkdownProps = {
   children: string;
   secondaryBackground?: boolean;
+  inline?: boolean;
 };
 export const Markdown = (mdProps: MarkdownProps) => {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkBreaks]}
+      disallowedElements={mdProps.inline ? DISALLOWED_INLINE : []}
+      unwrapDisallowed
       components={{
         a: (props) => (
           <a

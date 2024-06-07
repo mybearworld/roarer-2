@@ -138,6 +138,7 @@ const PostBase = (props: PostBaseProps) => {
                 secondaryBackground={
                   props.reply === "topLevel" ? false : props.reply
                 }
+                inline={!!props.reply}
               >
                 {post}
               </Markdown>
