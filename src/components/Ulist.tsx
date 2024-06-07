@@ -1,21 +1,30 @@
+import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { ProfilePicture } from "./ProfilePicture";
 import { User } from "./User";
 
 export const Ulist = () => {
-  const ulist = useAPI((state) => state.ulist);
+  const [ulist, credentials] = useAPI(
+    useShallow((state) => [state.ulist, state.credentials]),
+  );
 
   return (
     <div>
-      {ulist.map((user) => (
-        <UlistUser key={user} username={user} />
-      ))}
+      {credentials ? (
+        <UlistUser username={credentials.username} you />
+      ) : undefined}
+      {ulist.map((user) =>
+        user !== credentials?.username ? (
+          <UlistUser key={user} username={user} />
+        ) : undefined,
+      )}
     </div>
   );
 };
 
 type UlistUserProps = {
   username: string;
+  you?: boolean;
 };
 const UlistUser = (props: UlistUserProps) => {
   return (
@@ -26,7 +35,10 @@ const UlistUser = (props: UlistUserProps) => {
           username={props.username}
           size="h-8 min-h-8 w-8 min-w-8"
         />
-        {props.username}
+        <div>
+          {props.username}{" "}
+          {props.you ? <span className="text-sm">(You)</span> : undefined}
+        </div>
       </button>
     </User>
   );
