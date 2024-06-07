@@ -1,4 +1,4 @@
-import { KeyboardEvent, FormEvent, useState, useRef } from "react";
+import { FormEvent, useState, useRef } from "react";
 import { CirclePlus, SendHorizontal, X } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
@@ -101,13 +101,6 @@ const EnterPost = (props: EnterPostProps) => {
     props.removeReply?.();
   };
 
-  const handleInput = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handlePost();
-    }
-  };
-
   const upload = async (files: FileList) => {
     const errors: string[] = [];
     setState("uploading");
@@ -149,8 +142,8 @@ const EnterPost = (props: EnterPostProps) => {
       <Textarea
         value={postContent}
         onChange={(e) => setPostContent(e.currentTarget.value)}
-        onKeyDown={handleInput}
         disabled={state !== "writing"}
+        onEnter={handlePost}
         before={
           <>
             <button

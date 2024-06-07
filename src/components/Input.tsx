@@ -2,6 +2,7 @@ import React, {
   forwardRef,
   ComponentPropsWithoutRef,
   KeyboardEventHandler,
+  FormEventHandler,
 } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -33,6 +34,7 @@ export type TextareaProps = ComponentPropsWithoutRef<"textarea"> & {
   after?: React.ReactNode;
   above?: React.ReactNode;
   below?: React.ReactNode;
+  onEnter?: () => void;
 };
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (props: TextareaProps, ref) => {
@@ -41,12 +43,19 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     delete textareaProps.after;
     delete textareaProps.above;
     delete textareaProps.below;
+    delete textareaProps.onEnter;
 
-    const handleInput: KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
-      event.currentTarget.style.height = "auto";
-      event.currentTarget.style.height =
-        event.currentTarget.scrollHeight + "px";
-      props.onKeyDown?.(event);
+    const handleInput: FormEventHandler<HTMLTextAreaElement> = (e) => {
+      e.currentTarget.style.height = "auto";
+      e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+      props.onInput?.(e);
+    };
+    const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        props.onEnter?.();
+      }
+      props.onKeyDown?.(e);
     };
 
     return (
@@ -62,6 +71,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           <textarea
             {...{ ...textareaProps, className: undefined }}
             onInput={handleInput}
+            onKeyDown={handleKeyDown}
             className="mx-2 h-full grow resize-none bg-transparent py-1 outline-0"
             rows={1}
             ref={ref}
