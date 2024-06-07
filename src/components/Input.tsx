@@ -3,6 +3,9 @@ import React, {
   ComponentPropsWithoutRef,
   KeyboardEventHandler,
   FormEventHandler,
+  useImperativeHandle,
+  useRef,
+  useEffect,
 } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -36,7 +39,7 @@ export type TextareaProps = ComponentPropsWithoutRef<"textarea"> & {
   below?: React.ReactNode;
   onEnter?: () => void;
 };
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
+export const Textarea = forwardRef<HTMLTextAreaElement | null, TextareaProps>(
   (props: TextareaProps, ref) => {
     const textareaProps = { ...props };
     delete textareaProps.before;
@@ -44,10 +47,19 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     delete textareaProps.above;
     delete textareaProps.below;
     delete textareaProps.onEnter;
+    const elementRef = useRef<HTMLTextAreaElement | null>(null);
 
+    useImperativeHandle(ref, () => elementRef.current!);
+
+    const adjustHeight = () => {
+      if (!elementRef.current) {
+        return;
+      }
+      elementRef.current.style.height = "auto";
+      elementRef.current.style.height = elementRef.current.scrollHeight + "px";
+    };
     const handleInput: FormEventHandler<HTMLTextAreaElement> = (e) => {
-      e.currentTarget.style.height = "auto";
-      e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+      adjustHeight();
       props.onInput?.(e);
     };
     const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
@@ -57,6 +69,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       }
       props.onKeyDown?.(e);
     };
+
+    useEffect(() => {
+      adjustHeight();
+    });
 
     return (
       <div
@@ -74,7 +90,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             onKeyDown={handleKeyDown}
             className="mx-2 h-full grow resize-none bg-transparent py-1 outline-0"
             rows={1}
-            ref={ref}
+            ref={elementRef}
           />
           {props.after}
         </div>
