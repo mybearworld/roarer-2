@@ -3,6 +3,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { Button } from "./Button";
 import { Popup } from "./Popup";
+import { Markdown } from "./Markdown";
 import { ProfilePicture } from "./ProfilePicture";
 
 export type UserProps = {
@@ -53,7 +54,7 @@ export const User = (props: UserProps) => {
             </div>
           ) : (
             <>
-              <p>{user.quote}</p>
+              <Markdown>{user.quote ?? ""}</Markdown>
               {credentials && credentials.username !== props.username ? (
                 <Button type="button" onClick={dm}>
                   DM
