@@ -14,6 +14,7 @@ export type ProfilePictureProps = {
   username: string | undefined;
   className?: string;
   dontShowOnline?: boolean;
+  size?: string;
 };
 export const ProfilePicture = (props: ProfilePictureProps) => {
   const [user, loadUser, ulist] = useAPI(
@@ -38,6 +39,7 @@ export const ProfilePicture = (props: ProfilePictureProps) => {
             ? ulist.includes(props.username)
             : false
       }
+      size={props.size}
     />
   );
 };
@@ -50,14 +52,21 @@ export type ProfilePictureBaseProps = {
   };
   className?: string;
   online?: boolean;
+  size?: string;
 };
 export const ProfilePictureBase = (props: ProfilePictureBaseProps) => {
   return (
-    <div className="relative">
+    <div
+      className={twMerge(
+        "relative",
+        props.size ?? "h-10 min-h-10 w-10 min-w-10",
+      )}
+    >
       <img
         className={twMerge(
-          "h-10 min-h-10 w-10 min-w-10 rounded-lg border border-[--border-color] [border-style:--border-style]",
+          "rounded-lg border border-[--border-color] [border-style:--border-style]",
           props.className,
+          props.size ?? "h-10 min-h-10 w-10 min-w-10",
         )}
         style={
           {

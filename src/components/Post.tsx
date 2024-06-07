@@ -96,7 +96,7 @@ const PostBase = (props: PostBaseProps) => {
         reply={props.reply}
         speaker={
           <ProfilePicture
-            className={props.reply ? "h-7 min-h-7 w-7 min-w-7" : ""}
+            size={props.reply ? "h-7 min-h-7 w-7 min-w-7" : undefined}
             username={props.post.u}
           />
         }
