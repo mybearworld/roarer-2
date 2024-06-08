@@ -1,6 +1,5 @@
 import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
-import { ChevronRight } from "lucide-react";
 import { useAPI } from "../lib/api";
 
 export type ChatsProps = {
@@ -128,7 +127,7 @@ const Chat = (props: ChatProps) => {
         props.onClick(props.chat);
       }}
     >
-      <div className="min-w-0 grow">
+      <div className="grow">
         <div className="font-bold">
           {isDM
             ? `@${chat.members.find((member) => member !== credentials?.username)}`
@@ -140,7 +139,6 @@ const Chat = (props: ChatProps) => {
           {!isDM && chat !== "home" ? chat.members.join(", ") : undefined}
         </div>
       </div>
-      <ChevronRight className="w-7 min-w-7" />
     </button>
   );
 };
