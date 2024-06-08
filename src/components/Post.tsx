@@ -272,7 +272,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
           download.current.click();
         }}
         type="button"
-        className="flex h-36 w-36 flex-col items-center justify-center gap-2 rounded-xl bg-lime-200 px-2 py-1 text-center"
+        className="flex h-36 w-36 flex-col items-center justify-center gap-2 rounded-xl bg-lime-200 px-2 py-1 text-center dark:bg-lime-800"
       >
         <File className="h-14 w-14" strokeWidth={1.25} />
         <div>
