@@ -140,7 +140,7 @@ const Chat = (props: ChatProps) => {
           {!isDM && chat !== "home" ? chat.members.join(", ") : undefined}
         </div>
       </div>
-      <ChevronRight className="min-w-5" />
+      <ChevronRight className="w-7 min-w-7" />
     </button>
   );
 };
