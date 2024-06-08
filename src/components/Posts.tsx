@@ -62,9 +62,12 @@ export type TypingIndicatorProps = {
   chat: string;
 };
 const TypingIndicator = (props: TypingIndicatorProps) => {
-  const users = useAPI((state) => state.typingUsers[props.chat]);
+  const [users, credentials] = useAPI(
+    useShallow((state) => [state.typingUsers[props.chat], state.credentials]),
+  );
 
-  const typing = users && users.length;
+  const filteredUsers = users?.filter((user) => user !== credentials?.username);
+  const typing = filteredUsers && filteredUsers.length;
 
   return (
     <div
@@ -77,7 +80,7 @@ const TypingIndicator = (props: TypingIndicatorProps) => {
         className="h-5 min-h-5 w-5 min-w-5"
         aria-label="Typing users:"
       />
-      {typing ? users.join(", ") : "No one is currently typing."}
+      {typing ? filteredUsers.join(", ") : "No one is currently typing."}
     </div>
   );
 };
