@@ -20,19 +20,19 @@ export type PostsProps = {
 };
 export const Posts = (props: PostsProps) => {
   const [reply, setReply] = useState<Reply>();
-  const [home, loadChatPosts] = useAPI(
+  const [posts, loadChatPosts] = useAPI(
     useShallow((state) => [state.chatPosts[props.chat], state.loadChatPosts]),
   );
   loadChatPosts(props.chat);
 
-  if (!home) {
+  if (!posts) {
     return <>Loading posts...</>;
   }
-  if (home.error) {
+  if (posts.error) {
     return (
       <div>
         <p className="font-bold">There was an error loading posts.</p>
-        <p>{home.message}</p>
+        <p>{posts.message}</p>
       </div>
     );
   }
@@ -44,7 +44,7 @@ export const Posts = (props: PostsProps) => {
         reply={reply}
         removeReply={() => setReply(undefined)}
       />
-      {home.posts.map((post) => (
+      {posts.posts.map((post) => (
         <Post
           key={post}
           id={post}
