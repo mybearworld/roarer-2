@@ -14,11 +14,14 @@ const TYPING_SCHEMA = z.object({
 
 export type TypingSlice = {
   typingUsers: Record<string, string[]>;
+  sendTyping: (chat: string) => void;
 };
 export const createTypingSlice: StateCreator<Store, [], [], TypingSlice> = (
   set,
+  get,
 ) => {
   const userDates: Record<string, Record<string, number>> = {};
+  let lastSentIndicator = 0;
   getCloudlink().then((cloudlink) => {
     cloudlink.on("packet", (packet: unknown) => {
       const parsed = TYPING_SCHEMA.safeParse(packet);
@@ -55,5 +58,20 @@ export const createTypingSlice: StateCreator<Store, [], [], TypingSlice> = (
   });
   return {
     typingUsers: {},
+    sendTyping: (chat) => {
+      const state = get();
+      if (lastSentIndicator > Date.now() - 2500) {
+        return;
+      }
+      lastSentIndicator = Date.now();
+      fetch(
+        `https://api.meower.org/${chat === "home" ? "home" : `chats/${chat}`}/typing`,
+        {
+          method: "POST",
+          headers: state.credentials ? { Token: state.credentials.token } : {},
+        },
+      );
+      lastSentIndicator = Date.now();
+    },
   };
 };

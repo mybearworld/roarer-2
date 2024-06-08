@@ -88,8 +88,8 @@ type EnterPostProps = {
   removeReply?: () => void;
 };
 const EnterPost = (props: EnterPostProps) => {
-  const [post, credentials] = useAPI(
-    useShallow((state) => [state.post, state.credentials]),
+  const [post, credentials, sendTyping] = useAPI(
+    useShallow((state) => [state.post, state.credentials, state.sendTyping]),
   );
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState("");
@@ -167,6 +167,7 @@ const EnterPost = (props: EnterPostProps) => {
       <Textarea
         value={postContent}
         onChange={(e) => setPostContent(e.currentTarget.value)}
+        onInput={() => sendTyping(props.chat)}
         disabled={state !== "writing"}
         onEnter={handlePost}
         before={
