@@ -8,7 +8,7 @@ const TYPING_SCHEMA = z.object({
   val: z.object({
     chatid: z.string(),
     u: z.string(),
-    state: z.literal(101),
+    state: z.literal(101).or(z.literal(100)),
   }),
 });
 
