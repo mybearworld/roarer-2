@@ -85,21 +85,16 @@ type ChatProps = {
   current: boolean;
 };
 const Chat = (props: ChatProps) => {
-  const [credentials, baseChat, chatPosts, posts, loadChat, loadChatPosts] =
-    useAPI(
-      useShallow((state) => [
-        state.credentials,
-        state.chats[props.chat],
-        state.chatPosts[props.chat],
-        state.posts,
-        state.loadChat,
-        state.loadChatPosts,
-      ]),
-    );
+  const [credentials, baseChat, loadChat] = useAPI(
+    useShallow((state) => [
+      state.credentials,
+      state.chats[props.chat],
+      state.loadChat,
+    ]),
+  );
   if (props.chat !== "home") {
     loadChat(props.chat);
   }
-  loadChatPosts(props.chat);
 
   const chat = props.chat === "home" ? "home" : baseChat;
 
@@ -119,16 +114,6 @@ const Chat = (props: ChatProps) => {
   }
 
   const isDM = chat !== "home" && !chat.owner;
-  let latestPost;
-  if (chatPosts !== undefined && !chatPosts.error) {
-    for (const id of chatPosts.posts) {
-      const post = posts[id];
-      if (post && !post.error && !post.isDeleted) {
-        latestPost = post;
-        break;
-      }
-    }
-  }
 
   return (
     <button
@@ -146,23 +131,13 @@ const Chat = (props: ChatProps) => {
       <div className="min-w-0 grow">
         <div className="font-bold">
           {isDM
-            ? chat.members.find((member) => member !== credentials?.username)
+            ? `@${chat.members.find((member) => member !== credentials?.username)}`
             : chat === "home"
               ? "Home"
               : chat.nickname}
         </div>
-        <div>
-          {chatPosts === undefined ? (
-            <>Loading posts... </>
-          ) : chatPosts.error ? (
-            <>Failed to get posts: {chatPosts.message}</>
-          ) : !latestPost ? (
-            <span>No posts yet!</span>
-          ) : (
-            <div className="line-clamp-1 overflow-ellipsis">
-              {latestPost.u}: {latestPost.p}
-            </div>
-          )}
+        <div className="line-clamp-1 text-sm text-gray-500 dark:text-gray-400">
+          {!isDM && chat !== "home" ? chat.members.join(", ") : undefined}
         </div>
       </div>
       <ChevronRight className="min-w-5" />
