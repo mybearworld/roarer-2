@@ -118,6 +118,9 @@ export const Markdown = (mdProps: MarkdownProps) => {
             <div className="table-cell">{props.children}</div>
           </li>
         ),
+        p: (props) => (
+          <p className="my-1 first:mt-0 last:mb-0">{props.children}</p>
+        ),
         pre: (props) => (
           <IsPreContext.Provider value={true}>
             {props.children}
