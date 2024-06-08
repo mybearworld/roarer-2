@@ -1,5 +1,5 @@
 import { FormEvent, useState, useRef } from "react";
-import { CirclePlus, SendHorizontal, X } from "lucide-react";
+import { CirclePlus, Keyboard, SendHorizontal, X } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
 import { trimmedPost } from "../lib/reply";
@@ -44,6 +44,7 @@ export const Posts = (props: PostsProps) => {
         reply={reply}
         removeReply={() => setReply(undefined)}
       />
+      <TypingIndicator chat={props.chat} />
       {posts.posts.map((post) => (
         <Post
           key={post}
@@ -57,7 +58,31 @@ export const Posts = (props: PostsProps) => {
   );
 };
 
-export type EnterPostProps = {
+export type TypingIndicatorProps = {
+  chat: string;
+};
+const TypingIndicator = (props: TypingIndicatorProps) => {
+  const users = useAPI((state) => state.typingUsers[props.chat]);
+
+  const typing = users && users.length;
+
+  return (
+    <div
+      className={twMerge(
+        "flex items-center gap-2",
+        typing ? "" : "text-gray-500 dark:text-gray-400",
+      )}
+    >
+      <Keyboard
+        className="h-5 min-h-5 w-5 min-w-5"
+        aria-label="Typing users:"
+      />
+      {typing ? users.join(", ") : "No one is currently typing."}
+    </div>
+  );
+};
+
+type EnterPostProps = {
   chat: string;
   reply?: Reply | undefined;
   removeReply?: () => void;
