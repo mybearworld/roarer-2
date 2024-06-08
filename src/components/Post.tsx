@@ -129,7 +129,7 @@ const PostBase = (props: PostBaseProps) => {
               ) : undefined}
             </div>
             {!props.reply && reply?.id ? (
-              <div>
+              <div className="mt-1">
                 <Post id={reply.id} reply />
               </div>
             ) : undefined}
