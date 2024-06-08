@@ -8,3 +8,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <App />
   </React.StrictMode>,
 );
+
+console.log("%cWarning!", "font-size: 22px; font-weight: bold; color: red;");
+console.log(
+  "This console is intended for developers. If you were told to paste code in here, %cdon't do it!%c It could allow someone to do anything to your Meower account, including getting it banned.",
+  "font-style: italic",
+  "font-style: none",
+);
+console.log(
+  "%c(For Roarer's source code, see https://github.com/mybearworld/roarer-2)",
+  "font-size: 10px",
+);
