@@ -85,15 +85,14 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       }
       const post = parsed.data.val;
       const state = get();
-      const hasLoaded = await state.loadChatPosts(post.post_origin);
-      if (hasLoaded) {
+      if (!state.chatPosts[post.post_origin]) {
         return;
       }
       state.addPost(post);
       set((draft) => {
         const chatPosts = draft.chatPosts[post.post_origin];
         if (!chatPosts || chatPosts.error) {
-          return {};
+          return;
         }
         chatPosts.posts.unshift(post.post_id);
       });
