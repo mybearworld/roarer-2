@@ -92,6 +92,16 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       }
       const post = parsed.data.val;
       const state = get();
+      set((draft) => {
+        if (post.post_origin === "home") {
+          return;
+        }
+        const chat = draft.chats[post.post_origin];
+        if (!chat || chat.error || chat.deleted) {
+          return;
+        }
+        chat.last_active = Date.now() / 1000;
+      });
       if (!state.chatPosts[post.post_origin]) {
         return;
       }
@@ -102,16 +112,6 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
           return;
         }
         chatPosts.posts.unshift(post.post_id);
-      });
-      set((draft) => {
-        if (post.post_origin === "home") {
-          return;
-        }
-        const chat = draft.chats[post.post_origin];
-        if (!chat || chat.error || chat.deleted) {
-          return;
-        }
-        chat.last_active = Date.now() / 1000;
       });
     });
     cloudlink.on("direct", (packet: unknown) => {
