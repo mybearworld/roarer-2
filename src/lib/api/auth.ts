@@ -56,15 +56,20 @@ export const createAuthSlice: Slice<AuthSlice> = (set, get) => {
               resolve({ error: true, message: parsed.data.val });
               return;
             }
-            set({
-              credentials: { username, token: parsed.data.val.payload.token },
+            const token = parsed.data.val.payload.token;
+            set((draft) => {
+              draft.credentials = { username, token };
+              const home = draft.chatPosts["home"];
+              if (!home || home.error) {
+                return;
+              }
+              // you are not able to access more home posts when logged out -
+              // this is a bit hacky but it doesn't require fetching again
+              home.stopLoadingMore = false;
             });
             if (options.keepLoggedIn) {
               localStorage.setItem(USERNAME_STORAGE, username);
-              localStorage.setItem(
-                TOKEN_STORAGE,
-                parsed.data.val.payload.token,
-              );
+              localStorage.setItem(TOKEN_STORAGE, token);
             }
             const state = get();
             state.addUser(parsed.data.val.payload.account);
