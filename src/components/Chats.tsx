@@ -66,6 +66,11 @@ export const Chats = (props: ChatsProps) => {
         onClick={props.onChatClick}
         current={props.currentChat === "home"}
       />
+            <Chat
+        chat="livechat"
+        onClick={props.onChatClick}
+        current={props.currentChat === "livechat"}
+      />
       {sortedChats.map((chat) => (
         <Chat
           key={chat}
@@ -91,16 +96,22 @@ const Chat = (props: ChatProps) => {
       state.loadChat,
     ]),
   );
-  if (props.chat !== "home") {
+  if (props.chat !== "home" && props.chat !== "livechat") {
     loadChat(props.chat);
   }
 
-  const chat = props.chat === "home" ? "home" : baseChat;
+  const chat =
+    props.chat === "home"
+      ? "home"
+      : props.chat === "livechat"
+        ? "livechat"
+        : baseChat;
+  const isSpecialChat = chat === "home" || chat === "livechat";
 
-  if (chat !== "home" && !chat) {
+  if (!isSpecialChat && !chat) {
     return <>Loading chat...</>;
   }
-  if (chat !== "home" && chat.error) {
+  if (!isSpecialChat && chat.error) {
     return (
       <div>
         <p>There was an error loading this chat.</p>
@@ -108,11 +119,11 @@ const Chat = (props: ChatProps) => {
       </div>
     );
   }
-  if (chat !== "home" && chat.deleted) {
+  if (!isSpecialChat && chat.deleted) {
     return <></>;
   }
 
-  const isDM = chat !== "home" && !chat.owner;
+  const isDM = chat !== "home" && chat !== "livechat" && !chat.owner;
 
   return (
     <button
@@ -133,10 +144,12 @@ const Chat = (props: ChatProps) => {
             ? `@${chat.members.find((member) => member !== credentials?.username)}`
             : chat === "home"
               ? "Home"
-              : chat.nickname}
+              : chat === "livechat"
+                ? "Livechat"
+                : chat.nickname}
         </div>
         <div className="line-clamp-1 text-sm text-gray-500 dark:text-gray-400">
-          {!isDM && chat !== "home" ? chat.members.join(", ") : undefined}
+          {!isDM && !isSpecialChat ? chat.members.join(", ") : undefined}
         </div>
       </div>
     </button>

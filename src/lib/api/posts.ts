@@ -135,7 +135,9 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
   const loadingChats = new Set<string>();
   return {
     posts: {},
-    chatPosts: {},
+    chatPosts: {
+      livechat: { posts: [], stopLoadingMore: true, error: false },
+    },
     addPost: (post: Post) => {
       set((draft) => {
         draft.posts[post.post_id] = { ...post, error: false };
