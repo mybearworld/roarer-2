@@ -38,6 +38,13 @@ const POST_DELETE_PACKET_SCHEMA = z.object({
     id: z.string(),
   }),
 });
+const POST_UPDATE_PACKET_SCHEMA = z.object({
+  cmd: z.literal("direct"),
+  val: z.object({
+    mode: z.literal("update_post"),
+    payload: POST_SCHEMA,
+  }),
+});
 const MORE_POSTS_SCHEMA = z.object({
   autoget: POST_SCHEMA.array(),
   pages: z.number(),
@@ -99,6 +106,16 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
           return;
         }
         chat.last_active = Date.now() / 1000;
+      });
+    });
+    cloudlink.on("direct", (packet: unknown) => {
+      const parsed = POST_UPDATE_PACKET_SCHEMA.safeParse(packet);
+      if (!parsed.success) {
+        return;
+      }
+      const post = parsed.data.val.payload;
+      set((draft) => {
+        draft.posts[post.post_id] = { ...post, error: false };
       });
     });
     cloudlink.on("direct", (packet: unknown) => {
