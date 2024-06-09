@@ -38,10 +38,7 @@ export type AuthSlice = {
   ) => Promise<{ error: true; message: string } | { error: false }>;
   signOut: () => void;
 };
-export const createAuthSlice: Slice<AuthSlice> = (
-  set,
-  get,
-) => {
+export const createAuthSlice: Slice<AuthSlice> = (set, get) => {
   return {
     credentials: null,
     logIn: (username, password, options) => {

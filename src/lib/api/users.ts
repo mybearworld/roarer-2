@@ -51,13 +51,9 @@ export const createUsersSlice: Slice<UsersSlice> = (set, get) => {
       if (user.error) {
         return;
       }
-      const newUser = { ...user, ...parsed.data.val.payload };
-      set((state) => ({
-        users: {
-          ...state.users,
-          [username]: newUser,
-        },
-      }));
+      set((draft) => {
+        draft.users[username] = { ...user, ...parsed.data.val.payload };
+      });
     });
   });
 
@@ -65,9 +61,9 @@ export const createUsersSlice: Slice<UsersSlice> = (set, get) => {
   return {
     users: {},
     addUser: (user) => {
-      set((state) => ({
-        users: { ...state.users, [user._id]: { ...user, error: false } },
-      }));
+      set((state) => {
+        state.users[user._id] = { ...user, error: false };
+      });
     },
     loadUser: async (username: string) => {
       if (username in get().users || loadingUsers.has(username)) {
@@ -78,14 +74,11 @@ export const createUsersSlice: Slice<UsersSlice> = (set, get) => {
         fetch(`https://api.meower.org/users/${encodeURIComponent(username)}`),
         USER_SCHEMA,
       );
-      set((state) => ({
-        users: {
-          ...state.users,
-          [username]: response.error
-            ? { error: true, message: response.message }
-            : { error: false, ...response.response },
-        },
-      }));
+      set((state) => {
+        state.users[username] = response.error
+          ? { error: true, message: response.message }
+          : { error: false, ...response.response };
+      });
       loadingUsers.delete(username);
     },
   };

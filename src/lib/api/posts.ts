@@ -83,38 +83,22 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         return;
       }
       state.addPost(post);
-      set((state) => {
-        const chatPosts = state.chatPosts[post.post_origin];
+      set((draft) => {
+        const chatPosts = draft.chatPosts[post.post_origin];
         if (!chatPosts || chatPosts.error) {
           return {};
         }
-        return {
-          chatPosts: {
-            ...state.chatPosts,
-            [post.post_origin]: {
-              ...chatPosts,
-              posts: [post.post_id, ...chatPosts.posts],
-            },
-          },
-        };
+        chatPosts.posts.unshift(post.post_id);
       });
-      set((state) => {
+      set((draft) => {
         if (post.post_origin === "home") {
-          return {};
+          return;
         }
-        const chat = state.chats[post.post_origin];
-        if (!chat) {
-          return {};
+        const chat = draft.chats[post.post_origin];
+        if (!chat || chat.error || chat.deleted) {
+          return;
         }
-        return {
-          chats: {
-            ...state.chats,
-            [post.post_origin]: {
-              ...chat,
-              last_active: Date.now() / 1000,
-            },
-          },
-        };
+        chat.last_active = Date.now() / 1000;
       });
     });
     cloudlink.on("direct", (packet: unknown) => {
@@ -122,12 +106,9 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       if (!parsed.success) {
         return;
       }
-      set((state) => ({
-        posts: {
-          ...state.posts,
-          [parsed.data.val.id]: { isDeleted: true, error: false },
-        },
-      }));
+      set((draft) => {
+        draft.posts[parsed.data.val.id] = { isDeleted: true, error: false };
+      });
     });
   });
 
@@ -137,12 +118,9 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
     posts: {},
     chatPosts: {},
     addPost: (post: Post) => {
-      set((state) => ({
-        posts: {
-          ...state.posts,
-          [post.post_id]: { ...post, error: false },
-        },
-      }));
+      set((draft) => {
+        draft.posts[post.post_id] = { ...post, error: false };
+      });
     },
     loadPost: async (post: string) => {
       if (post in get().posts || loadingPosts.has(post)) {
@@ -156,14 +134,11 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         }),
         POST_SCHEMA,
       );
-      set((state) => ({
-        posts: {
-          ...state.posts,
-          [post]: response.error
-            ? { error: true, message: response.message }
-            : { error: false, ...response.response },
-        },
-      }));
+      set((draft) => {
+        draft.posts[post] = response.error
+          ? { error: true, message: response.message }
+          : { error: false, ...response.response };
+      });
       loadingPosts.delete(post);
     },
     loadChatPosts: async (id: string) => {
@@ -176,18 +151,15 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       }
       loadingChats.add(id);
       const response = await state.loadPosts(id, 0);
-      set((state) => ({
-        chatPosts: {
-          ...state.chatPosts,
-          [id]: response.error
-            ? { error: true, message: response.message }
-            : {
-                posts: response.posts,
-                stopLoadingMore: response.stop,
-                error: false,
-              },
-        },
-      }));
+      set((draft) => {
+        draft.chatPosts[id] = response.error
+          ? { error: true, message: response.message }
+          : {
+              posts: response.posts,
+              stopLoadingMore: response.stop,
+              error: false,
+            };
+      });
       loadingChats.delete(id);
       return true;
     },

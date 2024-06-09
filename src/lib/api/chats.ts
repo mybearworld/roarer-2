@@ -50,12 +50,9 @@ export const createChatsSlice: Slice<ChatsSlice> = (set, get) => {
     userChats: undefined,
     chats: {},
     addChat: (chat) => {
-      set((state) => ({
-        chats: {
-          ...state.chats,
-          [chat._id]: { ...chat, error: false },
-        },
-      }));
+      set((state) => {
+        state.chats[chat._id] = { ...chat, error: false };
+      });
     },
     loadChats: async () => {
       const state = get();
@@ -74,14 +71,14 @@ export const createChatsSlice: Slice<ChatsSlice> = (set, get) => {
           state.addChat(chat);
         });
       }
-      set(() => ({
+      set({
         userChats: response.error
           ? ({ error: true, message: response.message } as const)
           : ({
               error: false,
               chats: response.response.autoget.map((chat) => chat._id),
             } as const),
-      }));
+      });
     },
     loadChat: async (chat: string) => {
       if (chat in get().chats || loadingChats.has(chat)) {
@@ -93,12 +90,9 @@ export const createChatsSlice: Slice<ChatsSlice> = (set, get) => {
         CHAT_SCHEMA,
       );
       if (response.error) {
-        set((state) => ({
-          chats: {
-            ...state.chats,
-            [chat]: { error: true, message: response.message },
-          },
-        }));
+        set((draft) => {
+          draft.chats[chat] = { error: true, message: response.message };
+        });
         return;
       }
       get().addChat(response.response);
@@ -130,15 +124,12 @@ export const createChatsSlice: Slice<ChatsSlice> = (set, get) => {
         return { error: true, message: (e as Error).message };
       }
       get().addChat(response);
-      set((state) => ({
-        userChats:
-          state.userChats === undefined || state.userChats.error
-            ? state.userChats
-            : {
-                ...state.userChats,
-                chats: [...state.userChats.chats, response._id],
-              }, // this should type error. why is it not
-      }));
+      set((draft) => {
+        if (!draft.userChats || draft.userChats.error) {
+          return;
+        }
+        draft.userChats.chats.push(response._id);
+      });
       dmsByUsername.set(username, response._id);
       return { error: false, chat: response._id };
     },

@@ -27,14 +27,11 @@ export const createTypingSlice: Slice<TypingSlice> = (set, get) => {
       const id =
         parsed.data.val.chatid === "livechat" ? "home" : parsed.data.val.chatid;
       const user = parsed.data.val.u;
-      set((state) => {
-        const current = state.typingUsers[id] ?? [];
-        return {
-          typingUsers: {
-            ...state.typingUsers,
-            [id]: current.includes(user) ? current : [...current, user],
-          },
-        };
+      set((draft) => {
+        const users = draft.typingUsers[id];
+        if (users && users.includes(user)) {
+          users.push(user);
+        }
       });
       const time = Date.now();
       userDates[id] ??= {};
@@ -43,12 +40,10 @@ export const createTypingSlice: Slice<TypingSlice> = (set, get) => {
         if (userDates[id]?.[user] !== time) {
           return;
         }
-        set((state) => ({
-          typingUsers: {
-            ...state.typingUsers,
-            [id]: (state.typingUsers[id] ?? []).filter((u) => u !== user),
-          },
-        }));
+        set((draft) => {
+          draft.typingUsers[id] =
+            draft.typingUsers[id]?.filter((u) => u !== user) ?? [];
+        });
       }, 3000);
     });
   });

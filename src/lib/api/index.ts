@@ -1,4 +1,5 @@
 import { create, StateCreator } from "zustand";
+import { immer } from "zustand/middleware/immer";
 import {
   createAuthSlice,
   AuthSlice,
@@ -12,7 +13,7 @@ import { createTypingSlice, TypingSlice } from "./typing";
 import { createUlistSlice, UlistSlice } from "./ulist";
 import { createUsersSlice, UsersSlice } from "./users";
 
-export type Slice<T> = StateCreator<Store, [], [], T>;
+export type Slice<T> = StateCreator<Store, [["zustand/immer", never]], [], T>;
 export type Store = AuthSlice &
   ChatsSlice &
   PostsSlice &
@@ -21,17 +22,19 @@ export type Store = AuthSlice &
   UlistSlice &
   UsersSlice;
 
-export const useAPI = create<Store>()((...args) => {
-  return {
-    ...createAuthSlice(...args),
-    ...createChatsSlice(...args),
-    ...createPostsSlice(...args),
-    ...createRoarerSlice(...args),
-    ...createTypingSlice(...args),
-    ...createUlistSlice(...args),
-    ...createUsersSlice(...args),
-  };
-});
+export const useAPI = create<Store>()(
+  immer((...args) => {
+    return {
+      ...createAuthSlice(...args),
+      ...createChatsSlice(...args),
+      ...createPostsSlice(...args),
+      ...createRoarerSlice(...args),
+      ...createTypingSlice(...args),
+      ...createUlistSlice(...args),
+      ...createUsersSlice(...args),
+    };
+  }),
+);
 const state = useAPI.getState();
 const storedUsername = localStorage.getItem(USERNAME_STORAGE);
 const storedToken = localStorage.getItem(TOKEN_STORAGE);
