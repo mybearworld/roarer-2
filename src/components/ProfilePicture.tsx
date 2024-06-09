@@ -2,13 +2,8 @@ import { CSSProperties } from "react";
 import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
+import { NO_PROFILE_PICTURE } from "../lib/noProfilePicture";
 import { profilePictures } from "../assets/pfp";
-
-export const NO_PROFILE_PICTURE = {
-  avatar: "",
-  avatar_color: "",
-  pfp_data: 500,
-};
 
 export type ProfilePictureProps = {
   username: string | undefined;

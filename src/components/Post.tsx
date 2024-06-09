@@ -6,15 +6,12 @@ import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { getReply } from "../lib/reply";
 import { Attachment, Post as APIPost } from "../lib/api/posts";
+import { NO_PROFILE_PICTURE } from "../lib/noProfilePicture";
 import { byteToHuman } from "../lib/byteToHuman";
 import { Button } from "./Button";
 import { Popup } from "./Popup";
 import { Markdown } from "./Markdown";
-import {
-  NO_PROFILE_PICTURE,
-  ProfilePicture,
-  ProfilePictureBase,
-} from "./ProfilePicture";
+import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
 import { twMerge } from "tailwind-merge";
 
 export type PostProps = {
