@@ -4,6 +4,7 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "./lib/api";
+import { About } from "./components/About";
 import { Account } from "./components/Account";
 import { Chats } from "./components/Chats";
 import { Button } from "./components/Button";
@@ -39,7 +40,7 @@ export const App = () => {
         defaultValue="ulist"
         className={`${
           showSideNav ? "" : "hidden"
-        } absolute right-0 top-0 z-[--z-sidebar] h-screen max-h-screen w-[--nav-bar-size] overflow-auto bg-white py-2 lg:sticky lg:top-0 lg:block lg:w-auto lg:min-w-[35%] dark:bg-gray-950`}
+        } absolute right-0 top-0 z-[--z-sidebar] h-screen max-h-screen w-[--nav-bar-size] overflow-auto bg-white py-2 dark:bg-gray-950 lg:sticky lg:top-0 lg:block lg:w-auto lg:min-w-[35%]`}
       >
         <Tabs.List className="mb-2 flex h-8 items-center justify-between px-2">
           <div className="flex items-center gap-2">
@@ -55,6 +56,12 @@ export const App = () => {
             >
               Chats
             </Tabs.Trigger>
+            <Tabs.Trigger
+              className="border-b-2 border-transparent aria-selected:border-lime-500 aria-selected:font-bold dark:aria-selected:border-lime-600"
+              value="about"
+            >
+              About
+            </Tabs.Trigger>
           </div>
           <div className="flex gap-2">
             <DarkMode />
@@ -66,6 +73,9 @@ export const App = () => {
         </Tabs.Content>
         <Tabs.Content value="chats">
           <Chats onChatClick={setOpenChat} currentChat={openChat} />
+        </Tabs.Content>
+        <Tabs.Content value="about">
+          <About />
         </Tabs.Content>
       </Tabs.Root>
     </div>
