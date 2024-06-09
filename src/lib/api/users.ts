@@ -44,11 +44,7 @@ export const createUsersSlice: Slice<UsersSlice> = (set, get) => {
       }
       const username = parsed.data.val.payload._id;
       const user = get().users[username];
-      if (!user) {
-        await get().loadUser(username);
-        return;
-      }
-      if (user.error) {
+      if (!user || user.error) {
         return;
       }
       set((draft) => {
