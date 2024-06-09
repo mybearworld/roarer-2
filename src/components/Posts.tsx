@@ -70,9 +70,11 @@ export const Posts = (props: PostsProps) => {
           }
         />
       ))}
-      <Button type="button" onClick={handleLoadMore} disabled={loadingMore}>
-        Load more
-      </Button>
+      {posts.stopLoadingMore ? undefined : (
+        <Button type="button" onClick={handleLoadMore} disabled={loadingMore}>
+          Load more
+        </Button>
+      )}
       {loadMoreError ? (
         <div className="text-red-500">{loadMoreError}</div>
       ) : null}
