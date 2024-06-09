@@ -29,7 +29,7 @@ export const createTypingSlice: Slice<TypingSlice> = (set, get) => {
       const user = parsed.data.val.u;
       set((draft) => {
         const users = draft.typingUsers[id];
-        if (users && users.includes(user)) {
+        if (users && !users.includes(user)) {
           users.push(user);
         }
       });
