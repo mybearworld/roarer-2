@@ -1,4 +1,4 @@
-import { File, Reply, X } from "lucide-react";
+import { File, PencilLine, Reply, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useSwipeable } from "react-swipeable";
 import { CSSProperties, ReactNode, useRef, useState } from "react";
@@ -10,6 +10,7 @@ import { NO_PROFILE_PICTURE } from "../lib/noProfilePicture";
 import { byteToHuman } from "../lib/byteToHuman";
 import { Button } from "./Button";
 import { Popup } from "./Popup";
+import { EnterPostBase } from "./Posts";
 import { Markdown } from "./Markdown";
 import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
 import { twMerge } from "tailwind-merge";
@@ -72,8 +73,11 @@ type PostBaseProps = {
   onReply?: (id: string, content: string, username: string) => void;
 };
 const PostBase = (props: PostBaseProps) => {
-  const reply = getReply(props.post.p);
   const [deltaX, setDeltaX] = useState(0);
+  const [editing, setEditing] = useState(false);
+  const [credentials, editPost] = useAPI(
+    useShallow((state) => [state.credentials, state.editPost]),
+  );
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
       doReply();
@@ -86,6 +90,7 @@ const PostBase = (props: PostBaseProps) => {
     },
     delta: 50,
   });
+  const reply = getReply(props.post.p);
 
   const doReply = () => {
     props.onReply?.(props.post.post_id, post, props.post.u);
@@ -95,6 +100,10 @@ const PostBase = (props: PostBaseProps) => {
       ? reply.postContent
       : reply.replyText + reply.postContent
     : props.post.p;
+
+  const handleEdit = (postContent: string) => {
+    return editPost(props.post.post_id, postContent);
+  };
 
   return (
     <div
@@ -127,14 +136,26 @@ const PostBase = (props: PostBaseProps) => {
                 {props.post.u}
               </span>
               {!props.reply ? (
-                <button
-                  type="button"
-                  className="h-5 w-5"
-                  aria-label="Reply"
-                  onClick={doReply}
-                >
-                  <Reply aria-hidden />
-                </button>
+                <div className="flex gap-2">
+                  {credentials?.username === props.post.u ? (
+                    <button
+                      type="button"
+                      className="h-5 w-5"
+                      aria-label="Edit"
+                      onClick={() => setEditing((e) => !e)}
+                    >
+                      <PencilLine aria-hidden />
+                    </button>
+                  ) : undefined}
+                  <button
+                    type="button"
+                    className="h-5 w-5"
+                    aria-label="Reply"
+                    onClick={doReply}
+                  >
+                    <Reply aria-hidden />
+                  </button>
+                </div>
               ) : undefined}
             </div>
             {!props.reply && reply?.id ? (
@@ -147,14 +168,26 @@ const PostBase = (props: PostBaseProps) => {
                 props.reply ? "line-clamp-1" : "max-h-64 overflow-y-auto"
               }
             >
-              <Markdown
-                secondaryBackground={
-                  props.reply === "topLevel" ? false : props.reply
-                }
-                inline={!!props.reply}
-              >
-                {post}
-              </Markdown>
+              {editing ? (
+                <div className="mx-1 my-2">
+                  <EnterPostBase
+                    chat={props.post.post_origin}
+                    onSubmit={handleEdit}
+                    basePostContent={props.post.p}
+                    onSuccess={() => setEditing(false)}
+                    noAttachments
+                  />
+                </div>
+              ) : (
+                <Markdown
+                  secondaryBackground={
+                    props.reply === "topLevel" ? false : props.reply
+                  }
+                  inline={!!props.reply}
+                >
+                  {post}
+                </Markdown>
+              )}
             </div>
             {!props.reply ? (
               <Attachments attachments={props.post.attachments} />

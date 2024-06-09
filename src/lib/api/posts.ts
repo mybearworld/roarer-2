@@ -78,6 +78,10 @@ export type PostsSlice = {
     chat: string,
     attachments?: string[],
   ) => Promise<{ error: true; message: string } | { error: false }>;
+  editPost: (
+    id: string,
+    newContent: string,
+  ) => Promise<{ error: true; message: string } | { error: false }>;
 };
 export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
   getCloudlink().then((cloudlink) => {
@@ -241,6 +245,20 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         return response;
       }
       return { error: false };
+    },
+    editPost: (id, newContent) => {
+      const state = get();
+      return request(
+        fetch(`https://api.meower.org/posts?id=${encodeURIComponent(id)}`, {
+          headers: {
+            ...(state.credentials ? { Token: state.credentials.token } : {}),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ content: newContent }),
+          method: "PATCH",
+        }),
+        POST_SCHEMA,
+      );
     },
   };
 };

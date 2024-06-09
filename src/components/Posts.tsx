@@ -115,10 +115,31 @@ type EnterPostProps = {
   removeReply?: () => void;
 };
 const EnterPost = (props: EnterPostProps) => {
-  const [post, credentials, sendTyping] = useAPI(
-    useShallow((state) => [state.post, state.credentials, state.sendTyping]),
+  const post = useAPI((state) => state.post);
+  const handleSubmit = (postContent: string, attachments: string[]) => {
+    return post(postContent, props.chat, attachments);
+  };
+
+  return <EnterPostBase {...props} onSubmit={handleSubmit} />;
+};
+
+export type EnterPostBaseProps = {
+  chat: string;
+  reply?: Reply | undefined;
+  removeReply?: () => void;
+  basePostContent?: string;
+  onSuccess?: () => void;
+  onSubmit: (
+    postContent: string,
+    attachments: string[],
+  ) => Promise<{ error: true; message: string } | { error: false }>;
+  noAttachments?: boolean;
+};
+export const EnterPostBase = (props: EnterPostBaseProps) => {
+  const [credentials, sendTyping] = useAPI(
+    useShallow((state) => [state.credentials, state.sendTyping]),
   );
-  const [postContent, setPostContent] = useState("");
+  const [postContent, setPostContent] = useState(props.basePostContent ?? "");
   const [error, setError] = useState("");
   const [state, setState] = useState<"posting" | "writing" | "uploading">(
     "writing",
@@ -136,15 +157,16 @@ const EnterPost = (props: EnterPostProps) => {
       return;
     }
     setState("posting");
-    const response = await post(
+    const response = await props.onSubmit(
       (props.reply
         ? `@${props.reply.username} ${trimmedPost(props.reply.content)} (${props.reply.id})\n`
         : "") + postContent,
-      props.chat,
       attachments.map((attachment) => attachment.id),
     );
     if (response.error) {
       setError(response.message);
+    } else {
+      props.onSuccess?.();
     }
     setState("writing");
     setPostContent("");
@@ -152,6 +174,8 @@ const EnterPost = (props: EnterPostProps) => {
     setError("");
     props.removeReply?.();
   };
+
+  const showAttachments = !props.noAttachments;
 
   const upload = async (files: FileList) => {
     const errors: string[] = [];
@@ -199,28 +223,30 @@ const EnterPost = (props: EnterPostProps) => {
         onEnter={handlePost}
         before={
           <>
-            <button
-              type="button"
-              aria-label="Upload attachment"
-              disabled={state !== "writing"}
-              onClick={() => fileInput.current?.click()}
-            >
-              <input
-                type="file"
-                hidden
-                multiple
-                onInput={async (e) => {
-                  const files = e.currentTarget.files;
-                  if (!files) {
-                    return;
-                  }
-                  await upload(files);
-                  e.currentTarget.value = "";
-                }}
-                ref={fileInput}
-              />
-              <CirclePlus aria-hidden />
-            </button>
+            {showAttachments ? (
+              <button
+                type="button"
+                aria-label="Upload attachment"
+                disabled={state !== "writing"}
+                onClick={() => fileInput.current?.click()}
+              >
+                <input
+                  type="file"
+                  hidden
+                  multiple
+                  onInput={async (e) => {
+                    const files = e.currentTarget.files;
+                    if (!files) {
+                      return;
+                    }
+                    await upload(files);
+                    e.currentTarget.value = "";
+                  }}
+                  ref={fileInput}
+                />
+                <CirclePlus aria-hidden />
+              </button>
+            ) : undefined}
           </>
         }
         after={
@@ -266,7 +292,7 @@ const EnterPost = (props: EnterPostProps) => {
           </div>
         }
         onPaste={(e) => {
-          if (e.clipboardData.files.length) {
+          if (showAttachments && e.clipboardData.files.length) {
             upload(e.clipboardData.files);
           }
         }}
