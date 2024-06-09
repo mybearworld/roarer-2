@@ -61,7 +61,10 @@ export type PostsSlice = {
   >;
   posts: Record<string, Errorable<Post | { isDeleted: true }>>;
   addPost: (post: Post) => void;
-  loadChatPosts: (id: string) => Promise<boolean>;
+  loadChatPosts: (id: string) => Promise<void>;
+  loadMore: (
+    id: string,
+  ) => Promise<{ error: true; message: string } | { error: false }>;
   loadPosts: (
     id: string,
     current: number,
@@ -157,27 +160,37 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       });
       loadingPosts.delete(post);
     },
+    loadMore: async (id: string) => {
+      const state = get();
+      const posts = state.chatPosts[id];
+      if (loadingChats.has(id) || posts?.error) {
+        return { error: false };
+      }
+      loadingChats.add(id);
+      const response = await state.loadPosts(id, posts?.posts?.length ?? 0);
+      if (response.error) {
+        return response;
+      }
+      set((draft) => {
+        const posts = draft.chatPosts[id];
+        if (posts?.error) {
+          return;
+        }
+        draft.chatPosts[id] = {
+          posts: [...(posts?.posts ?? []), ...response.posts],
+          stopLoadingMore: response.stop,
+          error: false,
+        };
+      });
+      loadingChats.delete(id);
+      return { error: false };
+    },
     loadChatPosts: async (id: string) => {
       const state = get();
       if (state.chatPosts[id]) {
-        return false;
+        return;
       }
-      if (loadingChats.has(id)) {
-        return false;
-      }
-      loadingChats.add(id);
-      const response = await state.loadPosts(id, 0);
-      set((draft) => {
-        draft.chatPosts[id] = response.error
-          ? response
-          : {
-              posts: response.posts,
-              stopLoadingMore: response.stop,
-              error: false,
-            };
-      });
-      loadingChats.delete(id);
-      return true;
+      state.loadMore(id);
     },
     loadPosts: async (id: string, current: number) => {
       const state = get();

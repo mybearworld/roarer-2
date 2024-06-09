@@ -5,6 +5,7 @@ import { useAPI } from "../lib/api";
 import { trimmedPost } from "../lib/reply";
 import { uploadFile } from "../lib/upload";
 import { useShallow } from "zustand/react/shallow";
+import { Button } from "./Button";
 import { Textarea } from "./Input";
 import { AttachmentView, Post } from "./Post";
 import { Attachment } from "../lib/api/posts";
@@ -20,8 +21,14 @@ export type PostsProps = {
 };
 export const Posts = (props: PostsProps) => {
   const [reply, setReply] = useState<Reply>();
-  const [posts, loadChatPosts] = useAPI(
-    useShallow((state) => [state.chatPosts[props.chat], state.loadChatPosts]),
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState<string>();
+  const [posts, loadChatPosts, loadMore] = useAPI(
+    useShallow((state) => [
+      state.chatPosts[props.chat],
+      state.loadChatPosts,
+      state.loadMore,
+    ]),
   );
   loadChatPosts(props.chat);
 
@@ -36,6 +43,15 @@ export const Posts = (props: PostsProps) => {
       </div>
     );
   }
+
+  const handleLoadMore = async () => {
+    setLoadingMore(true);
+    const response = await loadMore(props.chat);
+    if (response.error) {
+      setLoadMoreError(response.message);
+    }
+    setLoadingMore(false);
+  };
 
   return (
     <div className="flex flex-col gap-2">
@@ -54,6 +70,12 @@ export const Posts = (props: PostsProps) => {
           }
         />
       ))}
+      <Button type="button" onClick={handleLoadMore} disabled={loadingMore}>
+        Load more
+      </Button>
+      {loadMoreError ? (
+        <div className="text-red-500">{loadMoreError}</div>
+      ) : null}
     </div>
   );
 };
