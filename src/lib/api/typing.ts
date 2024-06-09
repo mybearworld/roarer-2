@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { StateCreator } from "zustand";
-import { Store } from ".";
+import { Slice } from ".";
 import { getCloudlink } from "./cloudlink";
 
 const TYPING_SCHEMA = z.object({
@@ -16,10 +15,7 @@ export type TypingSlice = {
   typingUsers: Record<string, string[]>;
   sendTyping: (chat: string) => void;
 };
-export const createTypingSlice: StateCreator<Store, [], [], TypingSlice> = (
-  set,
-  get,
-) => {
+export const createTypingSlice: Slice<TypingSlice> = (set, get) => {
   const userDates: Record<string, Record<string, number>> = {};
   let lastSentIndicator = 0;
   getCloudlink().then((cloudlink) => {

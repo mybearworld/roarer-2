@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create, StateCreator } from "zustand";
 import {
   createAuthSlice,
   AuthSlice,
@@ -12,6 +12,7 @@ import { createTypingSlice, TypingSlice } from "./typing";
 import { createUlistSlice, UlistSlice } from "./ulist";
 import { createUsersSlice, UsersSlice } from "./users";
 
+export type Slice<T> = StateCreator<Store, [], [], T>;
 export type Store = AuthSlice &
   ChatsSlice &
   PostsSlice &

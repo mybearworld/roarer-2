@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { StateCreator } from "zustand";
-import { Store } from ".";
+import { Slice } from ".";
 import { getCloudlink } from "./cloudlink";
 import { request, Errorable } from "./utils";
 
@@ -36,10 +35,7 @@ export type UsersSlice = {
   addUser: (user: User) => void;
   loadUser: (username: string) => Promise<void>;
 };
-export const createUsersSlice: StateCreator<Store, [], [], UsersSlice> = (
-  set,
-  get,
-) => {
+export const createUsersSlice: Slice<UsersSlice> = (set, get) => {
   getCloudlink().then((cloudlink) => {
     cloudlink.on("packet", async (packet: unknown) => {
       const parsed = UPDATE_USER_SCHEMA.safeParse(packet);

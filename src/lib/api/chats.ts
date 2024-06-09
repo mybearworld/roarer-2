@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { StateCreator } from "zustand";
-import { Store } from ".";
+import { Slice } from ".";
 import { request, Errorable } from "./utils";
 
 export const CHAT_SCHEMA = z
@@ -44,10 +43,7 @@ export type ChatsSlice = {
     { error: true; message: string } | { error: false; chat: string }
   >;
 };
-export const createChatsSlice: StateCreator<Store, [], [], ChatsSlice> = (
-  set,
-  get,
-) => {
+export const createChatsSlice: Slice<ChatsSlice> = (set, get) => {
   const loadingChats = new Set<string>();
   const dmsByUsername = new Map<string, string>();
   return {

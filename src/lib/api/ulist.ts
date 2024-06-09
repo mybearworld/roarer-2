@@ -1,13 +1,10 @@
-import { StateCreator } from "zustand";
-import { Store } from ".";
+import { Slice } from ".";
 import { getCloudlink } from "./cloudlink";
 
 export type UlistSlice = {
   ulist: string[];
 };
-export const createUlistSlice: StateCreator<Store, [], [], UlistSlice> = (
-  set,
-) => {
+export const createUlistSlice: Slice<UlistSlice> = (set) => {
   getCloudlink().then((cloudlink) => {
     const updateUlist = () => {
       const ulist = cloudlink.ulist as string | undefined;

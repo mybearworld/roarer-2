@@ -1,13 +1,10 @@
-import { StateCreator } from "zustand";
-import { Store } from ".";
+import { Slice } from ".";
 
 export type RoarerSlice = {
   openChat: string;
   setOpenChat: (openChat: string) => void;
 };
-export const createRoarerSlice: StateCreator<Store, [], [], RoarerSlice> = (
-  set,
-) => {
+export const createRoarerSlice: Slice<RoarerSlice> = (set) => {
   return {
     openChat: "home",
     setOpenChat: (openChat: string) => {

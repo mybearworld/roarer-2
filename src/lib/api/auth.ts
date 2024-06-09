@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { StateCreator } from "zustand";
-import { Store } from ".";
+import { Slice } from ".";
 import { getCloudlink } from "./cloudlink";
 import { USER_SCHEMA } from "./users";
 
@@ -39,7 +38,7 @@ export type AuthSlice = {
   ) => Promise<{ error: true; message: string } | { error: false }>;
   signOut: () => void;
 };
-export const createAuthSlice: StateCreator<Store, [], [], AuthSlice> = (
+export const createAuthSlice: Slice<AuthSlice> = (
   set,
   get,
 ) => {

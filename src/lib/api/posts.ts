@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { StateCreator } from "zustand";
-import { Store } from ".";
+import { Slice } from ".";
 import { getCloudlink } from "./cloudlink";
 import { Errorable, loadMore, request } from "./utils";
 
@@ -70,10 +69,7 @@ export type PostsSlice = {
     attachments?: string[],
   ) => Promise<{ error: true; message: string } | { error: false }>;
 };
-export const createPostsSlice: StateCreator<Store, [], [], PostsSlice> = (
-  set,
-  get,
-) => {
+export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
   getCloudlink().then((cloudlink) => {
     cloudlink.on("direct", async (packet: unknown) => {
       const parsed = POST_PACKET_SCHEMA.safeParse(packet);
