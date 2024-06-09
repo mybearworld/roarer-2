@@ -96,14 +96,13 @@ const PostBase = (props: PostBaseProps) => {
   const doReply = () => {
     props.onReply?.(props.post.post_id, post, props.post.u);
   };
-  const post = reply
-    ? reply.id
-      ? reply.postContent
-      : reply.replyText + reply.postContent
-    : props.post.p;
+  const post = reply ? reply.postContent : props.post.p;
 
   const handleEdit = (postContent: string) => {
-    return editPost(props.post.post_id, postContent);
+    return editPost(
+      props.post.post_id,
+      reply ? reply.replyText + postContent : postContent,
+    );
   };
 
   return (
@@ -180,7 +179,7 @@ const PostBase = (props: PostBaseProps) => {
                   <EnterPostBase
                     chat={props.post.post_origin}
                     onSubmit={handleEdit}
-                    basePostContent={props.post.p}
+                    basePostContent={post}
                     onSuccess={() => setEditing(false)}
                     noAttachments
                   />

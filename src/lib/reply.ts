@@ -1,8 +1,8 @@
 const REPLY_REGEX =
-  /^(@[a-z_0-9-]+(?: "[^\n]*" (?:\(([a-f0-9\-]+)\))?| \[([a-f0-9\-]+)\])?(?:\n| )?)(.*)$/is;
+  /^(@[a-z_0-9-]+(?: "[^\n]*" (?:\(([a-f0-9\-]+)\))| \[([a-f0-9\-]+)\])(?:\n| )?)(.*)$/is;
 
 export type Reply = {
-  id: string | null;
+  id: string;
   postContent: string;
   replyText: string;
 };
@@ -19,8 +19,12 @@ export const getReply = (post: string): Reply | null => {
   if (replyText === undefined) {
     throw new Error("Reply text is not defined");
   }
+  const id = match[2] || match[3];
+  if (id === undefined) {
+    throw new Error("ID is not defined");
+  }
   return {
-    id: match[2] || match[3] || null,
+    id,
     postContent,
     replyText,
   };
