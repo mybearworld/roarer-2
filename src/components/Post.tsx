@@ -130,7 +130,12 @@ const PostBase = (props: PostBaseProps) => {
                 <Post id={reply.id} reply />
               </div>
             ) : undefined}
-            <div className={props.reply ? "line-clamp-1" : ""}>
+            <div
+              className={twMerge(
+                "max-h-64 overflow-y-auto",
+                props.reply ? "line-clamp-1" : "",
+              )}
+            >
               <Markdown
                 secondaryBackground={
                   props.reply === "topLevel" ? false : props.reply
