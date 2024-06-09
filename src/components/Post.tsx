@@ -31,7 +31,13 @@ export const Post = (props: PostProps) => {
   if (!post) {
     return (
       <SpeechBubble
-        speaker={<ProfilePictureBase pfp={NO_PROFILE_PICTURE} />}
+        speaker={
+          <ProfilePictureBase
+            pfp={NO_PROFILE_PICTURE}
+            size={props.reply ? "h-7 min-h-7 w-7 min-w-7" : undefined}
+          />
+        }
+        reply={props.reply}
         bubble="Loading..."
       />
     );
@@ -39,7 +45,13 @@ export const Post = (props: PostProps) => {
   if (post.error) {
     return (
       <SpeechBubble
-        speaker={<ProfilePictureBase pfp={NO_PROFILE_PICTURE} />}
+        speaker={
+          <ProfilePictureBase
+            pfp={NO_PROFILE_PICTURE}
+            size={props.reply ? "h-7 min-h-7 w-7 min-w-7" : undefined}
+          />
+        }
+        reply={props.reply}
         bubble={
           <>
             There was an error loading this post.
