@@ -15,3 +15,12 @@ export const getCloudlink = () => {
     });
   });
 };
+getCloudlink().then((cloudlink) => {
+  setInterval(() => {
+    cloudlink.send({
+      cmd: "ping",
+      val: "",
+      listener: "🏓",
+    });
+  }, 20000);
+});
