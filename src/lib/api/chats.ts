@@ -73,7 +73,7 @@ export const createChatsSlice: Slice<ChatsSlice> = (set, get) => {
       }
       set({
         userChats: response.error
-          ? ({ error: true, message: response.message } as const)
+          ? response
           : ({
               error: false,
               chats: response.response.autoget.map((chat) => chat._id),

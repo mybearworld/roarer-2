@@ -136,7 +136,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       );
       set((draft) => {
         draft.posts[post] = response.error
-          ? { error: true, message: response.message }
+          ? response
           : { error: false, ...response.response };
       });
       loadingPosts.delete(post);
@@ -153,7 +153,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       const response = await state.loadPosts(id, 0);
       set((draft) => {
         draft.chatPosts[id] = response.error
-          ? { error: true, message: response.message }
+          ? response
           : {
               posts: response.posts,
               stopLoadingMore: response.stop,
@@ -178,7 +178,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         MORE_POSTS_SCHEMA,
       );
       if (response.error) {
-        return { error: true, message: response.message };
+        return response;
       }
       const posts = response.response.autoget.slice(0, remove);
       posts.forEach((post) => {
@@ -207,7 +207,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         POST_SCHEMA,
       );
       if (response.error) {
-        return { error: true, message: response.message };
+        return response;
       }
       return { error: false };
     },

@@ -76,7 +76,7 @@ export const createUsersSlice: Slice<UsersSlice> = (set, get) => {
       );
       set((state) => {
         state.users[username] = response.error
-          ? { error: true, message: response.message }
+          ? response
           : { error: false, ...response.response };
       });
       loadingUsers.delete(username);
