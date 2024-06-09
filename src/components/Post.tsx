@@ -11,6 +11,7 @@ import { byteToHuman } from "../lib/byteToHuman";
 import { Button } from "./Button";
 import { Popup } from "./Popup";
 import { EnterPostBase } from "./Posts";
+import { User } from "./User";
 import { Markdown } from "./Markdown";
 import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
 import { twMerge } from "tailwind-merge";
@@ -114,10 +115,14 @@ const PostBase = (props: PostBaseProps) => {
       <SpeechBubble
         reply={props.reply}
         speaker={
-          <ProfilePicture
-            size={props.reply ? "h-7 min-h-7 w-7 min-w-7" : undefined}
-            username={props.post.u}
-          />
+          <User username={props.post.u}>
+            <button>
+              <ProfilePicture
+                size={props.reply ? "h-7 min-h-7 w-7 min-w-7" : undefined}
+                username={props.post.u}
+              />
+            </button>
+          </User>
         }
         bubble={
           <div
@@ -127,14 +132,16 @@ const PostBase = (props: PostBaseProps) => {
             )}
           >
             <div className="flex">
-              <span
-                className={twMerge(
-                  "grow font-bold",
-                  props.reply ? "" : "text-sm",
-                )}
-              >
-                {props.post.u}
-              </span>
+              <User username={props.post.u}>
+                <button
+                  className={twMerge(
+                    "grow text-left font-bold",
+                    props.reply ? "" : "text-sm",
+                  )}
+                >
+                  {props.post.u}
+                </button>
+              </User>
               {!props.reply ? (
                 <div className="flex gap-2">
                   {credentials?.username === props.post.u ? (
