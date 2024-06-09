@@ -19,4 +19,9 @@
     src: url("./assets/fonts/InterVariable-Italic.ttf");
     font-style: italic;
   }
+
+  @font-face {
+    font-family: "Noto Color Emoji";
+    src: url("./assets/fonts/emoji/NotoColorEmoji-Regular.ttf");
+  }
 }
