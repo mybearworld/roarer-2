@@ -28,10 +28,10 @@ export const createTypingSlice: Slice<TypingSlice> = (set, get) => {
         parsed.data.val.chatid === "livechat" ? "home" : parsed.data.val.chatid;
       const user = parsed.data.val.u;
       set((draft) => {
-        const users = draft.typingUsers[id];
-        if (users && !users.includes(user)) {
-          users.push(user);
+        if (draft.typingUsers[id]?.includes(user)) {
+          return;
         }
+        draft.typingUsers[id] = [...(draft.typingUsers[id] ?? []), user];
       });
       const time = Date.now();
       userDates[id] ??= {};
