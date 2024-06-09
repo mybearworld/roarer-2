@@ -19,7 +19,7 @@ export const App = () => {
 
   return (
     <div className="flex h-screen max-h-screen divide-x divide-gray-200 overflow-auto bg-white [--nav-bar-size:min(theme(spacing.96),90vw)] dark:divide-gray-800 dark:bg-gray-950">
-      <div className="relative max-h-screen w-full min-w-[65%] overflow-auto bg-white p-2 dark:bg-gray-950">
+      <div className="max-h-screen w-full min-w-[65%] overflow-auto bg-white p-2 dark:bg-gray-950">
         <Button
           className={twMerge(
             "absolute bottom-[50%] z-[--z-sidebar] h-14 rounded-none rounded-s-lg p-0 lg:hidden",
