@@ -1,6 +1,7 @@
 import React, {
   forwardRef,
   ComponentPropsWithoutRef,
+  DragEventHandler,
   KeyboardEventHandler,
   FormEventHandler,
   useImperativeHandle,

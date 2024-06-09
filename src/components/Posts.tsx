@@ -296,6 +296,12 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
             upload(e.clipboardData.files);
           }
         }}
+        onDrop={(e) => {
+          e.preventDefault();
+          if (showAttachments && e.dataTransfer.files.length) {
+            upload(e.dataTransfer.files);
+          }
+        }}
       />
       {error ? <span className="text-red-500">{error}</span> : undefined}
     </form>
