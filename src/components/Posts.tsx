@@ -169,12 +169,11 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
       setError(response.message);
     } else {
       props.onSuccess?.();
+      setPostContent("");
+      setAttachments([]);
+      setError("");
+      props.removeReply?.();
     }
-    setState("writing");
-    setPostContent("");
-    setAttachments([]);
-    setError("");
-    props.removeReply?.();
   };
 
   const showAttachments = !props.noAttachments;
