@@ -1,7 +1,7 @@
 import { File, PencilLine, Reply, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useSwipeable } from "react-swipeable";
-import { CSSProperties, ReactNode, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useRef, useState, memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { getReply } from "../lib/reply";
@@ -73,7 +73,7 @@ type PostBaseProps = {
   reply?: boolean | "topLevel";
   onReply?: (id: string, content: string, username: string) => void;
 };
-const PostBase = (props: PostBaseProps) => {
+const PostBase = memo((props: PostBaseProps) => {
   const [deltaX, setDeltaX] = useState(0);
   const [editing, setEditing] = useState(false);
   const [credentials, editPost] = useAPI(
@@ -203,7 +203,7 @@ const PostBase = (props: PostBaseProps) => {
       />
     </div>
   );
-};
+});
 
 type SpeechBubbleProps = {
   reply?: boolean | "topLevel";

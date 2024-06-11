@@ -1,4 +1,4 @@
-import { FormEvent, useState, useRef } from "react";
+import { FormEvent, useState, useRef, useCallback } from "react";
 import { CirclePlus, Keyboard, SendHorizontal, X } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
@@ -32,6 +32,13 @@ export const Posts = (props: PostsProps) => {
   );
   loadChatPosts(props.chat);
 
+  const setReplyFromPost = useCallback(
+    (id: string, content: string, username: string) => {
+      setReply({ id, content, username });
+    },
+    [],
+  );
+
   if (!posts) {
     return <>Loading posts...</>;
   }
@@ -62,13 +69,7 @@ export const Posts = (props: PostsProps) => {
       />
       <TypingIndicator chat={props.chat} />
       {posts.posts.map((post) => (
-        <Post
-          key={post}
-          id={post}
-          onReply={(id, content, username) =>
-            setReply({ id, content, username })
-          }
-        />
+        <Post key={post} id={post} onReply={setReplyFromPost} />
       ))}
       {posts.stopLoadingMore ? undefined : (
         <Button type="button" onClick={handleLoadMore} disabled={loadingMore}>
