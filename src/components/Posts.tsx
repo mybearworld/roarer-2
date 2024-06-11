@@ -1,4 +1,4 @@
-import { FormEvent, useState, useRef } from "react";
+import { FormEvent, memo, useState, useRef } from "react";
 import { CirclePlus, Keyboard, SendHorizontal, X } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
@@ -61,15 +61,7 @@ export const Posts = (props: PostsProps) => {
         removeReply={() => setReply(undefined)}
       />
       <TypingIndicator chat={props.chat} />
-      {posts.posts.map((post) => (
-        <Post
-          key={post}
-          id={post}
-          onReply={(id, content, username) =>
-            setReply({ id, content, username })
-          }
-        />
-      ))}
+      <PostList posts={posts.posts} setReply={setReply} />
       {posts.stopLoadingMore ? undefined : (
         <Button type="button" onClick={handleLoadMore} disabled={loadingMore}>
           Load more
@@ -81,6 +73,22 @@ export const Posts = (props: PostsProps) => {
     </div>
   );
 };
+
+type PostListProps = {
+  posts: string[],
+  setReply: (reply: Reply) => void
+}
+const PostList = memo((props: PostListProps) => {
+  return <>{props.posts.map((post) => (
+    <Post
+      key={post}
+      id={post}
+      onReply={(id, content, username) =>
+        props.setReply({ id, content, username })
+      }
+    />
+  ))}</>
+})
 
 export type TypingIndicatorProps = {
   chat: string;
