@@ -12,7 +12,14 @@ export const createUlistSlice: Slice<UlistSlice> = (set) => {
         return;
       }
       set({
-        ulist: ulist.split(";").slice(0, -1).sort(),
+        ulist: ulist
+          .split(";")
+          .slice(0, -1)
+          .sort((a, b) => {
+            const aLower = a.toLowerCase();
+            const bLower = b.toLowerCase();
+            return aLower < bLower ? -1 : aLower > bLower ? 1 : 0;
+          }),
       });
     };
     updateUlist();
