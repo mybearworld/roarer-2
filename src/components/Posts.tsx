@@ -154,7 +154,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
 
   const handlePost = async (e?: FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
-    if (state !== "writing") {
+    if (state !== "writing" || !(attachments.length || postContent)) {
       return;
     }
     setState("posting");
