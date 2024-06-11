@@ -164,16 +164,17 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
         : "") + postContent,
       attachments.map((attachment) => attachment.id),
     );
+    setState("writing");
     if (response.error) {
       setError(response.message);
-      setState("writing");
     } else {
       props.onSuccess?.();
-      setPostContent("");
-      setAttachments([]);
-      setError("");
-      props.removeReply?.();
     }
+    setState("writing");
+    setPostContent("");
+    setAttachments([]);
+    setError("");
+    props.removeReply?.();
   };
 
   const showAttachments = !props.noAttachments;
