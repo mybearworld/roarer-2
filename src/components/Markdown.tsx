@@ -52,7 +52,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
       components={{
         a: (props) => {
           const match = props.href?.match(
-            /^https?:\/\/app.meower.org\/users\/([a-z0-9\-_]+)$/,
+            /^https?:\/\/app.meower.org\/users\/([a-z0-9\-_]+)$/i,
           );
           if (match) {
             const username = match[1]!;
