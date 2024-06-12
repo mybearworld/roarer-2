@@ -106,7 +106,10 @@ export const Markdown = (mdProps: MarkdownProps) => {
           </>
         ),
         ol: (props) => (
-          <ol className="table border-spacing-x-1 list-inside list-decimal">
+          <ol
+            className="table border-spacing-x-1 list-inside list-decimal"
+            start={props.start}
+          >
             {props.children}
           </ol>
         ),
