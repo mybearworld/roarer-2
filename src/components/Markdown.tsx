@@ -60,9 +60,6 @@ export const Markdown = (mdProps: MarkdownProps) => {
           const isPre = useContext(IsPreContext);
           const [code, setCode] = useState("");
           const language = props.className?.replace("language-", "");
-          const className = twMerge(
-            "bg-gray-800 text-gray-100 rounded-lg px-1 py-0.5",
-          );
           if (language) {
             codeToHtml(props.children?.toString() ?? "", {
               lang: language,
@@ -71,7 +68,11 @@ export const Markdown = (mdProps: MarkdownProps) => {
             }).then(setCode);
           }
           return isPre ? (
-            <pre className={className}>
+            <pre
+              className={
+                "overflow-auto rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100"
+              }
+            >
               {code ? (
                 <code dangerouslySetInnerHTML={{ __html: code }} />
               ) : (
@@ -79,7 +80,9 @@ export const Markdown = (mdProps: MarkdownProps) => {
               )}
             </pre>
           ) : (
-            <code className={className}>{props.children}</code>
+            <code className="rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100">
+              {props.children}
+            </code>
           );
         },
         h1: (props) => <p className="text-2xl font-bold">{props.children}</p>,
