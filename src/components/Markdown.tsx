@@ -36,10 +36,13 @@ export type MarkdownProps = {
   inline?: boolean;
 };
 export const Markdown = (mdProps: MarkdownProps) => {
-  const md = mdProps.children.replace(
-    /@([a-z0-9\-_]+)/gi,
-    "[@$1](https://app.meower.org/users/$1)",
-  );
+  const md = mdProps.children
+    .replace(/@([a-z0-9\-_]+)/gi, "[@$1](https://app.meower.org/users/$1)")
+    .replace(
+      /<(a?):([a-z0-9\-_]*?):(\d+)>/gi,
+      (_, animated, name, id) =>
+        `![${name}](https://cdn.discordapp.com/emojis/${id}.${animated ? "gif" : "webp"}?size=24&quality=lossless)`,
+    );
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkBreaks]}
@@ -117,7 +120,12 @@ export const Markdown = (mdProps: MarkdownProps) => {
         hr: () => <hr className="mx-12 my-2 border-current opacity-20" />,
         img: (props) =>
           hostWhitelist.some((host) => props.src?.startsWith(host)) ? (
-            <img src={props.src} alt={props.alt} title={props.title} />
+            <img
+              src={props.src}
+              alt={props.alt}
+              title={props.title}
+              className="inline-block"
+            />
           ) : (
             <a className="font-bold text-lime-600" href={props.src}>
               {props.alt || "Unnamed image"}
