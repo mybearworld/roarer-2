@@ -3,7 +3,6 @@ import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { codeToHtml } from "shiki";
-import { twMerge } from "tailwind-merge";
 import { hostWhitelist } from "../lib/hostWhitelist";
 
 const IsPreContext = createContext(false);
