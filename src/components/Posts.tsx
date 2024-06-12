@@ -118,10 +118,13 @@ type EnterPostProps = {
 const EnterPost = (props: EnterPostProps) => {
   const post = useAPI((state) => state.post);
   const handleSubmit = (postContent: string, attachments: string[]) => {
-    return post(postContent, props.chat, attachments);
+    post(postContent, props.chat, attachments);
+    return Promise.resolve({ error: false } as const);
   };
 
-  return <EnterPostBase {...props} onSubmit={handleSubmit} />;
+  return (
+    <EnterPostBase {...props} onSubmit={handleSubmit} dontDisableWhenPosting />
+  );
 };
 
 export type EnterPostBaseProps = {
@@ -130,6 +133,7 @@ export type EnterPostBaseProps = {
   removeReply?: () => void;
   basePostContent?: string;
   onSuccess?: () => void;
+  dontDisableWhenPosting?: boolean;
   onSubmit: (
     postContent: string,
     attachments: string[],
@@ -220,7 +224,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
         value={postContent}
         onChange={(e) => setPostContent(e.currentTarget.value)}
         onInput={() => sendTyping(props.chat)}
-        disabled={state !== "writing"}
+        disabled={!props.dontDisableWhenPosting && state !== "writing"}
         onEnter={handlePost}
         before={
           <>

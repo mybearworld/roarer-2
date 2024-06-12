@@ -113,6 +113,7 @@ const PostBase = memo((props: PostBaseProps) => {
     >
       <SpeechBubble
         reply={props.reply}
+        transparent={!!props.post.optimistic}
         speaker={
           <User username={props.post.u}>
             <button>
@@ -141,7 +142,7 @@ const PostBase = memo((props: PostBaseProps) => {
                   {props.post.u}
                 </button>
               </User>
-              {!props.reply ? (
+              {!props.reply && !props.post.optimistic ? (
                 <div className="flex gap-2">
                   {credentials?.username === props.post.u ? (
                     <button
@@ -164,6 +165,11 @@ const PostBase = memo((props: PostBaseProps) => {
                 </div>
               ) : undefined}
             </div>
+            {props.post.optimistic?.error ? (
+              <div className="text-red-500">
+                This post failed sending. Message: {props.post.optimistic.error}
+              </div>
+            ) : undefined}
             {!props.reply && reply?.id ? (
               <div className="mt-1">
                 <Post id={reply.id} reply />
@@ -209,10 +215,13 @@ type SpeechBubbleProps = {
   reply?: boolean | "topLevel";
   speaker: ReactNode;
   bubble: ReactNode;
+  transparent?: boolean;
 };
 const SpeechBubble = (props: SpeechBubbleProps) => {
   return (
-    <div className="flex gap-3">
+    <div
+      className={twMerge("flex gap-3", props.transparent ? "opacity-70" : "")}
+    >
       <div>{props.speaker}</div>
       <div
         className={twMerge(

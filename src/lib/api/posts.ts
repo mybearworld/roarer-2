@@ -16,7 +16,9 @@ const ATTACHMENT_SCHEMA = z.object({
   width: z.number(),
 });
 
-export type Post = z.infer<typeof POST_SCHEMA>;
+export type Post = z.infer<typeof POST_SCHEMA> & {
+  optimistic?: { error?: string };
+};
 export const POST_SCHEMA = z.object({
   attachments: ATTACHMENT_SCHEMA.array(),
   edited_at: z.number().optional(),
@@ -57,7 +59,11 @@ const POST_PACKET_SCHEMA = z.object({
 export type PostsSlice = {
   chatPosts: Record<
     string,
-    Errorable<{ posts: string[]; stopLoadingMore: boolean }>
+    Errorable<{
+      posts: string[];
+      stopLoadingMore: boolean;
+      currentOptimistics: Record<string, string>;
+    }>
   >;
   posts: Record<string, Errorable<Post | { isDeleted: true }>>;
   addPost: (post: Post) => void;
@@ -77,7 +83,7 @@ export type PostsSlice = {
     content: string,
     chat: string,
     attachments?: string[],
-  ) => Promise<{ error: true; message: string } | { error: false }>;
+  ) => Promise<void>;
   editPost: (
     id: string,
     newContent: string,
@@ -112,6 +118,15 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
           return;
         }
         chatPosts.posts.unshift(post.post_id);
+        if (post.u === draft.credentials?.username) {
+          const id = Object.entries(chatPosts.currentOptimistics).find(
+            ([_id, optimisticPostContent]) => optimisticPostContent === post.p,
+          )?.[0];
+          if (!id) {
+            return;
+          }
+          draft.posts[id] = { error: false, isDeleted: true };
+        }
       });
     });
     cloudlink.on("direct", (packet: unknown) => {
@@ -135,12 +150,20 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
     });
   });
 
+  let id = 0;
+  const getOptimisticId = () => `optimistic:${id++}`;
+
   const loadingPosts = new Set<string>();
   const loadingChats = new Set<string>();
   return {
     posts: {},
     chatPosts: {
-      livechat: { posts: [], stopLoadingMore: true, error: false },
+      livechat: {
+        posts: [],
+        stopLoadingMore: true,
+        currentOptimistics: {},
+        error: false,
+      },
     },
     addPost: (post: Post) => {
       set((draft) => {
@@ -185,6 +208,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         draft.chatPosts[id] = {
           posts: [...(posts?.posts ?? []), ...response.posts],
           stopLoadingMore: response.stop,
+          currentOptimistics: {},
           error: false,
         };
       });
@@ -227,6 +251,31 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
     },
     post: async (content, chat, attachments) => {
       const state = get();
+      const optimisticId = getOptimisticId();
+      const credentials = state.credentials;
+      if (!credentials) {
+        return;
+      }
+      set((draft) => {
+        const trimmedContent = content.trim();
+        draft.posts[optimisticId] = {
+          type: 1,
+          attachments: [],
+          isDeleted: false,
+          p: trimmedContent,
+          post_id: optimisticId,
+          post_origin: chat,
+          t: { e: Date.now() },
+          u: credentials.username,
+          error: false,
+          optimistic: {},
+        };
+        const chatPosts = draft.chatPosts[chat];
+        if (chatPosts && !chatPosts.error) {
+          chatPosts.posts.unshift(optimisticId);
+          chatPosts.currentOptimistics[optimisticId] = trimmedContent;
+        }
+      });
       const response = await request(
         fetch(
           `https://api.meower.org/${chat === "home" ? "home" : `posts/${encodeURIComponent(chat)}`}`,
@@ -241,10 +290,16 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         ),
         POST_SCHEMA,
       );
-      if (response.error) {
-        return response;
+      if (!response.error) {
+        return;
       }
-      return { error: false };
+      set((draft) => {
+        const post = draft.posts[optimisticId];
+        if (!post || post.error || post.isDeleted) {
+          return;
+        }
+        post.optimistic = { error: response.message };
+      });
     },
     editPost: (id, newContent) => {
       const state = get();
