@@ -140,7 +140,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
           </th>
         ),
         ul: (props) => (
-          <ol className="table list-inside list-disc">{props.children}</ol>
+          <ul className="table list-inside list-disc">{props.children}</ul>
         ),
       }}
     >
