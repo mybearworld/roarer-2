@@ -1,7 +1,14 @@
 import { FormEvent, useState, useRef, useCallback } from "react";
-import { CirclePlus, Keyboard, SendHorizontal, X } from "lucide-react";
+import * as Popover from "@radix-ui/react-popover";
+import { CirclePlus, Keyboard, SendHorizontal, Smile, X } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
+import {
+  discordEmoji,
+  syntaxForDiscordEmoji,
+  urlFromDiscordEmoji,
+  DiscordEmoji,
+} from "../lib/discordEmoji";
 import { trimmedPost } from "../lib/reply";
 import { uploadFile } from "../lib/upload";
 import { useShallow } from "zustand/react/shallow";
@@ -180,6 +187,10 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
     }
   };
 
+  const handleEmoji = (emoji: DiscordEmoji) => {
+    setPostContent((p) => p + syntaxForDiscordEmoji(emoji));
+  };
+
   const showAttachments = !props.noAttachments;
 
   const upload = async (files: FileList) => {
@@ -255,7 +266,38 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
           </>
         }
         after={
-          <>
+          <div className="flex gap-2">
+            <Popover.Root>
+              <Popover.Trigger asChild>
+                <button
+                  type="button"
+                  aria-label="Pick an emoji"
+                  disabled={state !== "writing"}
+                >
+                  <Smile aria-hidden />
+                </button>
+              </Popover.Trigger>
+              <Popover.Anchor />
+              <Popover.Portal>
+                <Popover.Content asChild align="end" sideOffset={4}>
+                  <div className="z-[--z-above-sidebar] flex w-52 flex-row flex-wrap gap-2 rounded-lg border border-gray-200 bg-white px-2 py-1 dark:border-gray-800 dark:bg-gray-950">
+                    {discordEmoji.map((emoji) => (
+                      <button
+                        key={emoji.id}
+                        className="h-6 w-6"
+                        title={emoji.name}
+                        onClick={() => handleEmoji(emoji)}
+                      >
+                        <img
+                          src={urlFromDiscordEmoji(emoji)}
+                          alt={emoji.name}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </Popover.Content>
+              </Popover.Portal>
+            </Popover.Root>
             <button
               type="submit"
               aria-label="Send"
@@ -263,7 +305,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
             >
               <SendHorizontal aria-hidden />
             </button>
-          </>
+          </div>
         }
         above={
           props.reply ? (

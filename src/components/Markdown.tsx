@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { codeToHtml } from "shiki";
+import { urlFromDiscordEmoji } from "../lib/discordEmoji";
 import { hostWhitelist } from "../lib/hostWhitelist";
 import { User } from "./User";
 
@@ -40,8 +41,8 @@ export const Markdown = (mdProps: MarkdownProps) => {
     .replace(/@([a-z0-9\-_]+)/gi, "[@$1](https://app.meower.org/users/$1)")
     .replace(
       /<(a?):([a-z0-9\-_]*?):(\d+)>/gi,
-      (_, animated, name, id) =>
-        `![${name}](https://cdn.discordapp.com/emojis/${id}.${animated ? "gif" : "webp"}?size=24&quality=lossless)`,
+      (_, isGif, name, id) =>
+        `![${name}](${urlFromDiscordEmoji({ name, id, isGif })} "${name}")`,
     );
   return (
     <ReactMarkdown
