@@ -37,13 +37,7 @@ export type MarkdownProps = {
   inline?: boolean;
 };
 export const Markdown = (mdProps: MarkdownProps) => {
-  const md = mdProps.children
-    .replace(/@([a-z0-9\-_]+)/gi, "[@$1](https://app.meower.org/users/$1)")
-    .replace(
-      /<(a?):([a-z0-9\-_]*?):(\d+)>/gi,
-      (_, isGif, name, id) =>
-        `![${name}](${urlFromDiscordEmoji({ name, id, isGif })} "${name}")`,
-    );
+  const md = mdProps.children;
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkBreaks]}
