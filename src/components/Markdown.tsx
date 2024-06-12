@@ -4,6 +4,7 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { codeToHtml } from "shiki";
 import { hostWhitelist } from "../lib/hostWhitelist";
+import { User } from "./User";
 
 const IsPreContext = createContext(false);
 const DISALLOWED_INLINE = [
@@ -35,21 +36,44 @@ export type MarkdownProps = {
   inline?: boolean;
 };
 export const Markdown = (mdProps: MarkdownProps) => {
+  const md = mdProps.children.replace(
+    /@([a-z0-9\-_]+)/gi,
+    "[@$1](https://app.meower.org/users/$1)",
+  );
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkBreaks]}
       disallowedElements={mdProps.inline ? DISALLOWED_INLINE : []}
       unwrapDisallowed
       components={{
-        a: (props) => (
-          <a
-            href={props.href}
-            title={props.title}
-            className="font-bold text-lime-600"
-          >
-            {props.children}
-          </a>
-        ),
+        a: (props) => {
+          const match = props.href?.match(
+            /^https?:\/\/app.meower.org\/users\/([a-z0-9\-_]+)$/,
+          );
+          if (match) {
+            const username = match[1]!;
+            return (
+              <User username={username}>
+                <button
+                  type="button"
+                  title={props.title}
+                  className="font-bold text-lime-600"
+                >
+                  {props.children}
+                </button>
+              </User>
+            );
+          }
+          return (
+            <a
+              href={props.href}
+              title={props.title}
+              className="font-bold text-lime-600"
+            >
+              {props.children}
+            </a>
+          );
+        },
         blockquote: (props) => (
           <blockquote className="border-l-2 border-lime-500 pl-2 dark:border-lime-600">
             {props.children}
@@ -149,7 +173,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
         ),
       }}
     >
-      {mdProps.children}
+      {md}
     </ReactMarkdown>
   );
 };
