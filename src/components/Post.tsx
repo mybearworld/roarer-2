@@ -1,4 +1,4 @@
-import { File, PencilLine, Reply, X } from "lucide-react";
+import { File, PencilLine, Reply, Trash2, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useSwipeable } from "react-swipeable";
 import { CSSProperties, ReactNode, useRef, useState, memo } from "react";
@@ -75,9 +75,14 @@ type PostBaseProps = {
 };
 const PostBase = memo((props: PostBaseProps) => {
   const [deltaX, setDeltaX] = useState(0);
+  const [deleteError, setDeleteError] = useState<string>();
   const [editing, setEditing] = useState(false);
-  const [credentials, editPost] = useAPI(
-    useShallow((state) => [state.credentials, state.editPost]),
+  const [credentials, editPost, deletePost] = useAPI(
+    useShallow((state) => [
+      state.credentials,
+      state.editPost,
+      state.deletePost,
+    ]),
   );
   const swipeHandlers = useSwipeable({
     onSwipedRight: () => {
@@ -103,6 +108,13 @@ const PostBase = memo((props: PostBaseProps) => {
       props.post.post_id,
       reply ? reply.replyText + postContent : postContent,
     );
+  };
+
+  const handleDelete = async () => {
+    const response = await deletePost(props.post.post_id);
+    if (response.error) {
+      setDeleteError(response.message);
+    }
   };
 
   return (
@@ -143,24 +155,27 @@ const PostBase = memo((props: PostBaseProps) => {
                 </button>
               </User>
               {!props.reply && !props.post.optimistic ? (
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   {credentials?.username === props.post.u ? (
-                    <button
-                      type="button"
-                      className="h-5 w-5"
-                      aria-label="Edit"
-                      onClick={() => setEditing((e) => !e)}
-                    >
-                      <PencilLine aria-hidden />
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        aria-label="Remove"
+                        onClick={handleDelete}
+                      >
+                        <Trash2 className="h-5 w-5" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Edit"
+                        onClick={() => setEditing((e) => !e)}
+                      >
+                        <PencilLine className="h-5 w-5" aria-hidden />
+                      </button>
+                    </>
                   ) : undefined}
-                  <button
-                    type="button"
-                    className="h-5 w-5"
-                    aria-label="Reply"
-                    onClick={doReply}
-                  >
-                    <Reply aria-hidden />
+                  <button type="button" aria-label="Reply" onClick={doReply}>
+                    <Reply className="h-5 w-5" aria-hidden />
                   </button>
                 </div>
               ) : undefined}
@@ -168,6 +183,11 @@ const PostBase = memo((props: PostBaseProps) => {
             {props.post.optimistic?.error ? (
               <div className="text-red-500">
                 This post failed sending. Message: {props.post.optimistic.error}
+              </div>
+            ) : undefined}
+            {deleteError ? (
+              <div className="text-red-500">
+                Couldn't delete post. Message: {deleteError}
               </div>
             ) : undefined}
             {!props.reply && reply?.id ? (

@@ -88,6 +88,9 @@ export type PostsSlice = {
     id: string,
     newContent: string,
   ) => Promise<{ error: true; message: string } | { error: false }>;
+  deletePost: (
+    id: string,
+  ) => Promise<{ error: true; message: string } | { error: false }>;
 };
 export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
   getCloudlink().then((cloudlink) => {
@@ -313,6 +316,18 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
           method: "PATCH",
         }),
         POST_SCHEMA,
+      );
+    },
+    deletePost: (id) => {
+      const state = get();
+      return request(
+        fetch(`https://api.meower.org/posts?id=${encodeURIComponent(id)}`, {
+          headers: {
+            ...(state.credentials ? { Token: state.credentials.token } : {}),
+          },
+          method: "DELETE",
+        }),
+        z.object({}),
       );
     },
   };
