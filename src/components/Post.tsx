@@ -174,9 +174,11 @@ const PostBase = memo((props: PostBaseProps) => {
                       </button>
                     </>
                   ) : undefined}
-                  <button type="button" aria-label="Reply" onClick={doReply}>
-                    <Reply className="h-5 w-5" aria-hidden />
-                  </button>
+                  {credentials ? (
+                    <button type="button" aria-label="Reply" onClick={doReply}>
+                      <Reply className="h-5 w-5" aria-hidden />
+                    </button>
+                  ) : undefined}
                 </div>
               ) : undefined}
             </div>
