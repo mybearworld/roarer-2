@@ -118,6 +118,11 @@ export const Markdown = (mdProps: MarkdownProps) => {
             </Tag>
           );
         },
+        codespan: (code) => (
+          <code className="rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100">
+            {code}
+          </code>
+        ),
         link: (href, text) => {
           const match = href.match(
             /^https?:\/\/app.meower.org\/users\/([a-z0-9\-_]+)$/i,
