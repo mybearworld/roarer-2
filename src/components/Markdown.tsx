@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Marked from "marked-react";
 import { codeToHtml } from "shiki";
@@ -22,6 +22,8 @@ export type MarkdownProps = {
 };
 export const Markdown = (mdProps: MarkdownProps) => {
   const md = mdProps.children;
+  let id = 0;
+  const getKey = () => id++;
   return (
     <Marked
       gfm
@@ -39,7 +41,10 @@ export const Markdown = (mdProps: MarkdownProps) => {
             }).then(setSyntaxHighlighted);
           }
           return (
-            <pre className="my-1 overflow-auto rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100 first:mt-0 last:mb-0">
+            <pre
+              className="my-1 overflow-auto rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100 first:mt-0 last:mb-0"
+              key={getKey()}
+            >
               {syntaxHighlighted ? (
                 <code dangerouslySetInnerHTML={{ __html: syntaxHighlighted }} />
               ) : (
@@ -49,7 +54,10 @@ export const Markdown = (mdProps: MarkdownProps) => {
           );
         },
         blockquote: (children) => (
-          <blockquote className="my-1 border-l-2 border-lime-500 pl-2 first:mt-0 last:mb-0 dark:border-lime-600">
+          <blockquote
+            className="my-1 border-l-2 border-lime-500 pl-2 first:mt-0 last:mb-0 dark:border-lime-600"
+            key={getKey()}
+          >
             {children}
           </blockquote>
         ),
@@ -59,12 +67,16 @@ export const Markdown = (mdProps: MarkdownProps) => {
               "my-1 font-bold first:mt-0 last:mb-0",
               HEADING_TO_SIZE[level],
             )}
+            key={getKey()}
           >
             {children}
           </p>
         ),
         hr: () => (
-          <hr className="mx-12 my-1 border-current opacity-20 first:mt-0 last:mb-0" />
+          <hr
+            className="mx-12 my-1 border-current opacity-20 first:mt-0 last:mb-0"
+            key={getKey()}
+          />
         ),
         list: (children, ordered) => {
           const Tag = ordered ? "ol" : "ul";
@@ -74,13 +86,14 @@ export const Markdown = (mdProps: MarkdownProps) => {
                 "my-1 table border-spacing-x-1 list-inside first:mt-0 last:mb-0",
                 ordered ? "list-decimal" : "list-disc",
               )}
+              key={getKey()}
             >
               {children}
             </Tag>
           );
         },
         listItem: (children) => (
-          <li className="table-row">
+          <li className="table-row" key={getKey()}>
             <span className="table-cell text-right">
               <span className="list-item" />
             </span>
@@ -88,7 +101,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
           </li>
         ),
         checkbox: (checked) => (
-          <>
+          <Fragment key={getKey()}>
             <input
               className="mr-2"
               type="checkbox"
@@ -97,13 +110,18 @@ export const Markdown = (mdProps: MarkdownProps) => {
               aria-hidden
             />
             <span className="sr-only">{checked ? "Done" : "Not done"}</span>
-          </>
+          </Fragment>
         ),
         paragraph: (children) => (
-          <p className="my-1 first:mt-0 last:mb-0">{children}</p>
+          <p className="my-1 first:mt-0 last:mb-0" key={getKey()}>
+            {children}
+          </p>
         ),
         table: (children) => (
-          <table className="my-1 border-collapse first:mt-0 last:mb-0">
+          <table
+            className="my-1 border-collapse first:mt-0 last:mb-0"
+            key={getKey()}
+          >
             {children}
           </table>
         ),
@@ -113,13 +131,17 @@ export const Markdown = (mdProps: MarkdownProps) => {
             <Tag
               className="border border-gray-300 px-2"
               style={{ textAlign: flags.align ?? "left" }}
+              key={getKey()}
             >
               {children}
             </Tag>
           );
         },
         codespan: (code) => (
-          <code className="rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100">
+          <code
+            className="rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100"
+            key={getKey()}
+          >
             {code}
           </code>
         ),
@@ -130,7 +152,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
           if (match) {
             const username = match[1]!;
             return (
-              <User username={username}>
+              <User username={username} key={getKey()}>
                 <button type="button" className="font-bold text-lime-600">
                   {text}
                 </button>
@@ -138,7 +160,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
             );
           }
           return (
-            <a href={href} className="font-bold text-lime-600">
+            <a href={href} className="font-bold text-lime-600" key={getKey()}>
               {text}
             </a>
           );
@@ -150,6 +172,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
               alt={alt}
               title={title ?? ""}
               className="inline-block"
+              key={getKey()}
             />
           ) : (
             <a className="font-bold text-lime-600" href={src}>
