@@ -193,7 +193,7 @@ const PostBase = memo((props: PostBaseProps) => {
               </div>
             ) : undefined}
             {!props.reply && reply?.id ? (
-              <div className="mt-1">
+              <div className="my-1">
                 <Post id={reply.id} reply />
               </div>
             ) : undefined}
