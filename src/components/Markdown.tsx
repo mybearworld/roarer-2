@@ -39,7 +39,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
             }).then(setSyntaxHighlighted);
           }
           return (
-            <pre className="overflow-auto rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100">
+            <pre className="my-1 overflow-auto rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100 first:mt-0 last:mb-0">
               {syntaxHighlighted ? (
                 <code dangerouslySetInnerHTML={{ __html: syntaxHighlighted }} />
               ) : (
@@ -49,22 +49,29 @@ export const Markdown = (mdProps: MarkdownProps) => {
           );
         },
         blockquote: (children) => (
-          <blockquote className="border-l-2 border-lime-500 pl-2 dark:border-lime-600">
+          <blockquote className="my-1 border-l-2 border-lime-500 pl-2 first:mt-0 last:mb-0 dark:border-lime-600">
             {children}
           </blockquote>
         ),
         heading: (children, level) => (
-          <p className={twMerge("font-bold", HEADING_TO_SIZE[level])}>
+          <p
+            className={twMerge(
+              "my-1 font-bold first:mt-0 last:mb-0",
+              HEADING_TO_SIZE[level],
+            )}
+          >
             {children}
           </p>
         ),
-        hr: () => <hr className="mx-12 my-2 border-current opacity-20" />,
+        hr: () => (
+          <hr className="mx-12 my-1 border-current opacity-20 first:mt-0 last:mb-0" />
+        ),
         list: (children, ordered) => {
           const Tag = ordered ? "ol" : "ul";
           return (
             <Tag
               className={twMerge(
-                "table border-spacing-x-1 list-inside",
+                "my-1 table border-spacing-x-1 list-inside first:mt-0 last:mb-0",
                 ordered ? "list-decimal" : "list-disc",
               )}
             >
@@ -96,7 +103,9 @@ export const Markdown = (mdProps: MarkdownProps) => {
           <p className="my-1 first:mt-0 last:mb-0">{children}</p>
         ),
         table: (children) => (
-          <table className="border-collapse">{children}</table>
+          <table className="my-1 border-collapse first:mt-0 last:mb-0">
+            {children}
+          </table>
         ),
         tableCell: (children, flags) => {
           const Tag = flags.header ? "th" : "td";
