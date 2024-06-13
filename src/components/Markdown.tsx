@@ -2,11 +2,12 @@ import { Fragment, ReactNode, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Marked from "marked-react";
 import { codeToHtml } from "shiki";
-// import { urlFromDiscordEmoji } from "../lib/discordEmoji";
+import { urlFromDiscordEmoji } from "../lib/discordEmoji";
 import { hostWhitelist } from "../lib/hostWhitelist";
 import { User } from "./User";
 
-const TEXT_REGEX = /(?:(?<mention>@[a-zA-Z0-9\-_]+)|.)/g;
+const TEXT_REGEX =
+  /(?:(?<mention>@[a-zA-Z0-9\-_]+)|(?<emoji>\<(?<emojiAnimated>a?):(?<emojiName>\w+):(?<emojiId>\d+)>)|.)/g;
 
 const HEADING_TO_SIZE = {
   1: "text-2xl",
@@ -175,6 +176,16 @@ export const Markdown = (mdProps: MarkdownProps) => {
                     <Link
                       text={match[0]}
                       href={`https://app.meower.org/users/${match[0].slice(1)}`}
+                    />
+                  ) : match.groups?.emoji ? (
+                    <img
+                      className="inline-block"
+                      src={urlFromDiscordEmoji({
+                        name: match.groups?.emojiName ?? "",
+                        id: match.groups?.emojiId ?? "",
+                        isGif: !!match.groups?.emojiAnimated,
+                      })}
+                      alt={match.groups?.emojiName}
                     />
                   ) : (
                     match[0]
