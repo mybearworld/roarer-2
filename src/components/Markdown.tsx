@@ -1,10 +1,12 @@
-import { Fragment, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Marked from "marked-react";
 import { codeToHtml } from "shiki";
 // import { urlFromDiscordEmoji } from "../lib/discordEmoji";
 import { hostWhitelist } from "../lib/hostWhitelist";
 import { User } from "./User";
+
+const TEXT_REGEX = /(?:(?<mention>@[a-zA-Z0-9\-_]+)|.)/g;
 
 const HEADING_TO_SIZE = {
   1: "text-2xl",
@@ -15,6 +17,9 @@ const HEADING_TO_SIZE = {
   6: "text-xs",
 } as const;
 
+let id = 0;
+const getKey = () => id++;
+
 export type MarkdownProps = {
   children: string;
   secondaryBackground?: boolean;
@@ -22,8 +27,6 @@ export type MarkdownProps = {
 };
 export const Markdown = (mdProps: MarkdownProps) => {
   const md = mdProps.children;
-  let id = 0;
-  const getKey = () => id++;
   return (
     <Marked
       gfm
@@ -146,24 +149,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
           </code>
         ),
         link: (href, text) => {
-          const match = href.match(
-            /^https?:\/\/app.meower.org\/users\/([a-z0-9\-_]+)$/i,
-          );
-          if (match) {
-            const username = match[1]!;
-            return (
-              <User username={username} key={getKey()}>
-                <button type="button" className="font-bold text-lime-600">
-                  {text}
-                </button>
-              </User>
-            );
-          }
-          return (
-            <a href={href} className="font-bold text-lime-600" key={getKey()}>
-              {text}
-            </a>
-          );
+          return <Link href={href} text={text} />;
         },
         image: (src, alt, title) =>
           hostWhitelist.some((host) => src.startsWith(host)) ? (
@@ -179,9 +165,53 @@ export const Markdown = (mdProps: MarkdownProps) => {
               {alt || "Unnamed image"}
             </a>
           ),
+        text: (text) => {
+          const matches = [...(text?.toString() ?? "").matchAll(TEXT_REGEX)];
+          return (
+            <Fragment key={getKey()}>
+              {matches.map((match) => (
+                <Fragment key={getKey()}>
+                  {match.groups?.mention ? (
+                    <Link
+                      text={match[0]}
+                      href={`https://app.meower.org/users/${match[0].slice(1)}`}
+                    />
+                  ) : (
+                    match[0]
+                  )}
+                </Fragment>
+              ))}
+            </Fragment>
+          );
+        },
       }}
     >
       {md}
     </Marked>
+  );
+};
+
+type LinkProps = {
+  href: string;
+  text?: ReactNode;
+};
+const Link = (props: LinkProps) => {
+  const match = props.href.match(
+    /^https?:\/\/app.meower.org\/users\/([a-z0-9\-_]+)$/i,
+  );
+  if (match) {
+    const username = match[1]!;
+    return (
+      <User username={username} key={getKey()}>
+        <button type="button" className="font-bold text-lime-600">
+          {props.text}
+        </button>
+      </User>
+    );
+  }
+  return (
+    <a href={props.href} className="font-bold text-lime-600" key={getKey()}>
+      {props.text}
+    </a>
   );
 };
