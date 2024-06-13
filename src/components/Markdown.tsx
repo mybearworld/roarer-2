@@ -7,7 +7,7 @@ import { hostWhitelist } from "../lib/hostWhitelist";
 import { User } from "./User";
 
 const TEXT_REGEX =
-  /(?:(?<mention>@[a-zA-Z0-9\-_]+)|(?<emoji>\<(?<emojiAnimated>a?):(?<emojiName>\w+):(?<emojiId>\d+)>)|.)/g;
+  /(?:(?<mention>@[a-zA-Z0-9\-_]+)|(?<emoji>\<(?<emojiAnimated>a?):(?<emojiName>\w+):(?<emojiId>\d+)>)|[^@\<]+|.)/g;
 
 const HEADING_TO_SIZE = {
   1: "text-2xl",
