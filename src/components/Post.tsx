@@ -243,7 +243,7 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
       <div>{props.speaker}</div>
       <div
         className={twMerge(
-          "relative min-w-0 grow translate-x-[clamp(0px,var(--delta-x),50px)] touch-pan-right break-words rounded-lg rounded-ss-none px-2 py-1",
+          "relative min-w-0 grow break-words rounded-lg rounded-ss-none px-2 py-1",
           props.reply && props.reply !== "topLevel"
             ? "bg-gray-200 dark:bg-gray-800"
             : "bg-gray-100 dark:bg-gray-900",
