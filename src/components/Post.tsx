@@ -1,6 +1,5 @@
 import { File, PencilLine, Reply, Trash2, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useSwipeable } from "react-swipeable";
 import { CSSProperties, ReactNode, useRef, useState, memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
@@ -88,7 +87,6 @@ type PostBaseProps = {
   onReply?: (id: string, content: string, username: string) => void;
 };
 const PostBase = memo((props: PostBaseProps) => {
-  const [deltaX, setDeltaX] = useState(0);
   const [deleteError, setDeleteError] = useState<string>();
   const [editing, setEditing] = useState(false);
   const [credentials, editPost, deletePost] = useAPI(
@@ -98,18 +96,6 @@ const PostBase = memo((props: PostBaseProps) => {
       state.deletePost,
     ]),
   );
-  const swipeHandlers = useSwipeable({
-    onSwipedRight: () => {
-      doReply();
-    },
-    onSwiping: (evt) => {
-      setDeltaX(evt.deltaX);
-    },
-    onSwiped: () => {
-      setDeltaX(0);
-    },
-    delta: 50,
-  });
   const reply = getReply(props.post.p);
 
   const doReply = () => {
@@ -132,11 +118,7 @@ const PostBase = memo((props: PostBaseProps) => {
   };
 
   return (
-    <div
-      className="translate-x-[min(0,var(--delta-x),50px)]"
-      style={{ "--delta-x": deltaX } as CSSProperties}
-      {...swipeHandlers}
-    >
+    <div>
       <SpeechBubble
         reply={props.reply}
         transparent={!!props.post.optimistic}
