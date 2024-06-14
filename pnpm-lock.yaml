@@ -21,8 +21,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@williamhorning/cloudlink':
-        specifier: ^4.1.2
-        version: 4.1.2
+        specifier: '==4.1.1'
+        version: 4.1.1
       immer:
         specifier: ^10.1.1
         version: 10.1.1
@@ -1430,8 +1430,8 @@ packages:
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0
 
-  '@williamhorning/cloudlink@4.1.2':
-    resolution: {integrity: sha512-onACcvIm4sckePGuooKs3kudIb82SNXbCeBapCzWXFky0yBoQjiPUCinoHGaJOlkuXWLL+uCuz7brgTlWelqcg==}
+  '@williamhorning/cloudlink@4.1.1':
+    resolution: {integrity: sha512-GQVOdtPMjeQ92V+UcKwFOC8/NhxWgPSuJ/IryK2PbEhGcZWZtHEnqqExrMfsSdzMZDyahcnmL6yiB1YvqDCY8A==}
 
   acorn@8.12.0:
     resolution: {integrity: sha512-RTvkC4w+KNXrM39/lWCUaG0IbRkWdCv7W/IOW9oU6SawyxulvkQy5HQPVTKxEjczcUvapcrw3cFx/60VN/NRNw==}
@@ -4256,7 +4256,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@williamhorning/cloudlink@4.1.2':
+  '@williamhorning/cloudlink@4.1.1':
     optionalDependencies:
       ws: 8.17.0
     transitivePeerDependencies:
