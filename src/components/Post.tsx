@@ -139,11 +139,11 @@ const PostBase = memo((props: PostBaseProps) => {
               props.reply ? "flex-row items-center gap-2" : "flex-col",
             )}
           >
-            <div className="flex">
+            <div className="flex justify-between">
               <User username={props.post.u}>
                 <button
                   className={twMerge(
-                    "grow text-nowrap text-left font-bold",
+                    "text-nowrap text-left font-bold",
                     props.reply ? "" : "text-sm",
                   )}
                 >
