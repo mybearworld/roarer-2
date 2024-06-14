@@ -221,7 +221,12 @@ const Link = (props: LinkProps) => {
     );
   }
   return (
-    <a href={props.href} className="font-bold text-lime-600" key={getKey()}>
+    <a
+      href={props.href}
+      className="font-bold text-lime-600"
+      key={getKey()}
+      target="_blank"
+    >
       {props.text}
     </a>
   );
