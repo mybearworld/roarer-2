@@ -235,7 +235,10 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
         value={postContent}
         onChange={(e) => setPostContent(e.currentTarget.value)}
         onInput={() => sendTyping(props.chat)}
-        disabled={!props.dontDisableWhenPosting && state !== "writing"}
+        disabled={
+          state === "uploading" ||
+          (!props.dontDisableWhenPosting && state !== "posting")
+        }
         onEnter={handlePost}
         before={
           <>
