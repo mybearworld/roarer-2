@@ -1,6 +1,6 @@
 import { File, PencilLine, Reply, Trash2, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { ReactNode, useRef, useState, memo } from "react";
+import { ReactNode, useRef, useState, memo, MouseEventHandler } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { getReply } from "../lib/reply";
@@ -122,6 +122,7 @@ const PostBase = memo((props: PostBaseProps) => {
       <SpeechBubble
         reply={props.reply}
         transparent={!!props.post.optimistic}
+        onDoubleClick={doReply}
         speaker={
           <User username={props.post.u}>
             <button>
@@ -234,6 +235,7 @@ type SpeechBubbleProps = {
   speaker: ReactNode;
   bubble: ReactNode;
   transparent?: boolean;
+  onDoubleClick?: MouseEventHandler<HTMLDivElement>;
 };
 const SpeechBubble = (props: SpeechBubbleProps) => {
   return (
@@ -248,6 +250,7 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
             ? "bg-gray-200 dark:bg-gray-800"
             : "bg-gray-100 dark:bg-gray-900",
         )}
+        onDoubleClick={props.onDoubleClick}
       >
         <div
           className={twMerge(
