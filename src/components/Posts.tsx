@@ -1,4 +1,4 @@
-import { FormEvent, useState, useRef, useCallback } from "react";
+import { FormEvent, useState, useEffect, useRef, useCallback } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import { CirclePlus, Keyboard, SendHorizontal, Smile, X } from "lucide-react";
 import { twMerge } from "tailwind-merge";
@@ -158,6 +158,10 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
   );
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const fileInput = useRef<HTMLInputElement | null>(null);
+  const textArea = useRef<HTMLTextAreaElement | null>(null);
+  useEffect(() => {
+    textArea.current?.focus?.();
+  }, [props.reply]);
 
   if (!credentials) {
     return <></>;
@@ -232,6 +236,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
   return (
     <form onSubmit={handlePost} className={twMerge("w-full")}>
       <Textarea
+        ref={textArea}
         value={postContent}
         onChange={(e) => setPostContent(e.currentTarget.value)}
         onInput={() => sendTyping(props.chat)}
