@@ -26,6 +26,20 @@ export const Post = (props: PostProps) => {
     useShallow((state) => [state.posts[props.id], state.loadPost]),
   );
   if (post && !post.error && post.isDeleted) {
+    if (props.reply) {
+      return (
+        <SpeechBubble
+          speaker={
+            <ProfilePictureBase
+              pfp={NO_PROFILE_PICTURE}
+              size="h-7 min-h-7 w-7 min-w-7"
+            />
+          }
+          bubble="This post was deleted."
+          reply
+        />
+      );
+    }
     return;
   }
   loadPost(props.id);
