@@ -153,7 +153,7 @@ const PostBase = memo((props: PostBaseProps) => {
         bubble={
           <div
             className={twMerge(
-              "flex",
+              "flex max-w-full",
               props.reply ? "flex-row items-center gap-2" : "flex-col",
             )}
           >
@@ -161,7 +161,7 @@ const PostBase = memo((props: PostBaseProps) => {
               <User username={props.post.u}>
                 <button
                   className={twMerge(
-                    "grow text-left font-bold",
+                    "grow text-nowrap text-left font-bold",
                     props.reply ? "" : "text-sm",
                   )}
                 >
