@@ -5,6 +5,7 @@ import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
 import { Input } from "./Input";
 import { ProfilePicture } from "./ProfilePicture";
+import { StoredAccounts } from "./StoredAccounts";
 import { useAPI } from "../lib/api";
 
 export const Account = () => {
@@ -18,6 +19,7 @@ const SignInButton = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [keepLoggedIn, setKeepLoggedIn] = useState(true);
+  const [storeAccount, setStoreAccount] = useState(true);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [tosAgreed, setTosAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -34,6 +36,7 @@ const SignInButton = () => {
     const loginResult = await logIn(username, password, {
       signUp: mode === "sign up",
       keepLoggedIn,
+      storeAccount,
     });
     if (loginResult.error) {
       setError(loginResult.message);
@@ -79,9 +82,17 @@ const SignInButton = () => {
                 onInput={(e) => setConfirmPassword(e.currentTarget.value)}
               />
             ) : undefined}
-            <label className="flex items-center gap-2 ">
+            <label className="flex items-center gap-2">
               <Checkbox checked={keepLoggedIn} onInput={setKeepLoggedIn} />
               <span>Keep me logged in</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <Checkbox
+                checked={keepLoggedIn ? storeAccount : false}
+                onInput={setStoreAccount}
+                disabled={!keepLoggedIn}
+              />
+              <span>Store account</span>
             </label>
             {mode === "sign up" ? (
               <label className="flex items-center gap-2 ">
@@ -100,24 +111,35 @@ const SignInButton = () => {
               </label>
             ) : undefined}
             {error ? <div className="text-red-500">{error}</div> : null}
-            <div className={"flex gap-2"}>
-              <Button
-                type="submit"
-                className="grow"
-                disabled={!canSubmit || loading}
-              >
-                {mode === "sign in" ? "Sign in" : "Sign up"}
-              </Button>
-              <Button
-                type="button"
-                secondary
-                onClick={() =>
-                  setMode(mode === "sign in" ? "sign up" : "sign in")
-                }
-                disabled={loading}
-              >
-                {mode === "sign in" ? "Sign up" : "Sign in"}
-              </Button>
+            <div>
+              <div className="flex gap-2">
+                <Button
+                  type="submit"
+                  className="grow"
+                  disabled={!canSubmit || loading}
+                >
+                  {mode === "sign in" ? "Sign in" : "Sign up"}
+                </Button>
+                <Button
+                  type="button"
+                  secondary
+                  onClick={() =>
+                    setMode(mode === "sign in" ? "sign up" : "sign in")
+                  }
+                  disabled={loading}
+                >
+                  {mode === "sign in" ? "Sign up" : "Sign in"}
+                </Button>
+              </div>
+              <div className="text-right">
+                ...or use a{" "}
+                <StoredAccounts>
+                  <button className="inline font-bold text-lime-600">
+                    stored account
+                  </button>
+                </StoredAccounts>
+                .
+              </div>
             </div>
           </form>
         </Popover.Content>
@@ -147,6 +169,14 @@ const AccountMenu = (props: AccountMenuProps) => {
           sideOffset={4}
         >
           <span className="px-2 pt-1 text-sm font-bold">{props.username}</span>
+          <StoredAccounts>
+            <button
+              className="rounded-e-lg px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+              type="button"
+            >
+              Switch account
+            </button>
+          </StoredAccounts>
           <button
             className="rounded-e-lg px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
             type="button"

@@ -42,5 +42,6 @@ if (storedUsername && storedToken) {
   state.logIn(storedUsername, storedToken, {
     keepLoggedIn: false,
     signUp: false,
+    storeAccount: false,
   });
 }
