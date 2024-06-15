@@ -120,7 +120,6 @@ const PostBase = memo((props: PostBaseProps) => {
   return (
     <div>
       <SpeechBubble
-        ugly={!!props.post.bridge}
         reply={props.reply}
         transparent={!!props.post.optimistic}
         speaker={
@@ -250,7 +249,6 @@ type SpeechBubbleProps = {
   bubble: ReactNode;
   transparent?: boolean;
   onDoubleClick?: MouseEventHandler<HTMLDivElement>;
-  ugly?: boolean;
 };
 const SpeechBubble = (props: SpeechBubbleProps) => {
   return (
