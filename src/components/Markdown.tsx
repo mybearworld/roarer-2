@@ -153,9 +153,9 @@ export const Markdown = (mdProps: MarkdownProps) => {
           return <Link href={href} text={text} />;
         },
         image: (src, alt, title) =>
-          mdProps.inline ? undefined : hostWhitelist.some((host) =>
-              src.startsWith(host),
-            ) ? (
+          mdProps.inline ? (
+            <></>
+          ) : hostWhitelist.some((host) => src.startsWith(host)) ? (
             <img
               src={src}
               alt={alt}
