@@ -219,7 +219,8 @@ const PostBase = memo((props: PostBaseProps) => {
                     {post}
                   </Markdown>
                   {props.post.u === "mybearworld" &&
-                  props.post.p.endsWith("\u200d") ? (
+                  props.post.p.endsWith("\u200d") &&
+                  !props.reply ? (
                     <Button type="button" onClick={() => location.reload()}>
                       Reload
                     </Button>
