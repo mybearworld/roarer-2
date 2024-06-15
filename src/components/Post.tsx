@@ -120,6 +120,7 @@ const PostBase = memo((props: PostBaseProps) => {
   return (
     <div>
       <SpeechBubble
+        ugly={!!props.post.bridge}
         reply={props.reply}
         transparent={!!props.post.optimistic}
         speaker={
@@ -140,16 +141,21 @@ const PostBase = memo((props: PostBaseProps) => {
             )}
           >
             <div className="flex justify-between">
-              <User username={props.post.u}>
-                <button
-                  className={twMerge(
-                    "text-nowrap text-left font-bold",
-                    props.reply ? "" : "text-sm",
-                  )}
-                >
-                  {props.post.u}
-                </button>
-              </User>
+              <div>
+                <User username={props.post.u}>
+                  <button
+                    className={twMerge(
+                      "text-nowrap text-left font-bold",
+                      props.reply ? "" : "text-sm",
+                    )}
+                  >
+                    {props.post.u}
+                  </button>
+                </User>
+                {props.post.bridge && !props.reply ? (
+                  <span className="ml-2 text-xs opacity-70">Bridged</span>
+                ) : undefined}
+              </div>
               {!props.reply && !props.post.optimistic ? (
                 <div className="flex gap-1">
                   {credentials?.username === props.post.u ? (
@@ -244,6 +250,7 @@ type SpeechBubbleProps = {
   bubble: ReactNode;
   transparent?: boolean;
   onDoubleClick?: MouseEventHandler<HTMLDivElement>;
+  ugly?: boolean;
 };
 const SpeechBubble = (props: SpeechBubbleProps) => {
   return (

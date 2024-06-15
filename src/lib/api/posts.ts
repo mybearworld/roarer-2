@@ -18,6 +18,7 @@ const ATTACHMENT_SCHEMA = z.object({
 
 export type Post = z.infer<typeof POST_SCHEMA> & {
   optimistic?: { error?: string };
+  bridge?: "discord";
 };
 export const POST_SCHEMA = z.object({
   attachments: ATTACHMENT_SCHEMA.array(),
@@ -169,8 +170,20 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       },
     },
     addPost: (post: Post) => {
+      const bridge = post.u === "Discord" ? "discord" : undefined;
+      const match = bridge
+        ? post.p.match(/(?<username>[a-z0-9_\-]+): (?<post>.+)/i)
+        : null;
+      const username = match?.groups?.username;
+      const postContent = match?.groups?.post;
       set((draft) => {
-        draft.posts[post.post_id] = { ...post, error: false };
+        draft.posts[post.post_id] = {
+          ...post,
+          ...(bridge && username && postContent
+            ? { bridge, u: username, p: postContent }
+            : {}),
+          error: false,
+        };
       });
     },
     loadPost: async (post: string) => {
