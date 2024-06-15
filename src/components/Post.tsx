@@ -122,7 +122,11 @@ const PostBase = memo((props: PostBaseProps) => {
       <SpeechBubble
         reply={props.reply}
         transparent={!!props.post.optimistic}
-        onDoubleClick={doReply}
+        onDoubleClick={() => {
+          if (credentials && !props.post.optimistic) {
+            doReply();
+          }
+        }}
         speaker={
           <User username={props.post.u}>
             <button aria-label={props.post.u}>
