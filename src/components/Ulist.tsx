@@ -1,7 +1,7 @@
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
-import { ProfilePicture } from "./ProfilePicture";
 import { User } from "./User";
+import { UserView } from "./UserView";
 
 export const Ulist = () => {
   const [ulist, credentials] = useAPI(
@@ -29,17 +29,10 @@ type UlistUserProps = {
 const UlistUser = (props: UlistUserProps) => {
   return (
     <User username={props.username}>
-      <button className="flex w-full items-center gap-2 bg-white px-2 py-1 hover:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-900">
-        <ProfilePicture
-          className="inline-block"
-          username={props.username}
-          size="h-8 min-h-8 w-8 min-w-8"
-        />
-        <div>
-          {props.username}{" "}
-          {props.you ? <span className="text-sm">(You)</span> : undefined}
-        </div>
-      </button>
+      <UserView
+        username={props.username}
+        text={props.you ? "You" : undefined}
+      />
     </User>
   );
 };
