@@ -77,12 +77,12 @@ export const ProfilePictureBase = (props: ProfilePictureBaseProps) => {
             ? `https://uploads.meower.org/icons/${props.pfp.avatar}`
             : profilePictures.get(props.pfp.pfp_data ?? 500)
         }
+        aria-hidden
       />
       {props.online ? (
-        <div
-          className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border border-green-600 bg-green-400 dark:border-green-500 dark:bg-green-600 "
-          aria-label="Online"
-        />
+        <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border border-green-600 bg-green-400 dark:border-green-500 dark:bg-green-600">
+          <span className="sr-only">Online</span>
+        </div>
       ) : undefined}
     </div>
   );

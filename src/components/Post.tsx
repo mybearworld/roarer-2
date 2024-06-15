@@ -125,7 +125,7 @@ const PostBase = memo((props: PostBaseProps) => {
         onDoubleClick={doReply}
         speaker={
           <User username={props.post.u}>
-            <button>
+            <button aria-label={props.post.u}>
               <ProfilePicture
                 size={props.reply ? "h-7 min-h-7 w-7 min-w-7" : undefined}
                 username={props.post.u}
@@ -294,16 +294,20 @@ export const AttachmentView = (props: AttachmentViewProps) => {
   if (props.attachment.mime.startsWith("image/")) {
     return (
       <Popup
+        triggerAsChild
         trigger={
-          <div className="relative h-36 w-36">
+          <button
+            aria-label={props.attachment.filename}
+            className="relative h-36 w-36"
+          >
             <img
               key={props.attachment.id}
               className="h-36 w-36 rounded-xl object-cover"
               src={`https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
               alt={props.attachment.filename}
               title={props.attachment.filename}
-              width={props.attachment.width}
-              height={props.attachment.height}
+              width="144"
+              height="144"
             />
             {props.onRemove ? (
               <Button
@@ -314,7 +318,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
                 <X />
               </Button>
             ) : undefined}
-          </div>
+          </button>
         }
       >
         <div className="flex flex-col gap-2">

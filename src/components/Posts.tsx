@@ -236,6 +236,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
   return (
     <form onSubmit={handlePost} className={twMerge("w-full")}>
       <Textarea
+        aria-label="Enter post"
         ref={textArea}
         value={postContent}
         onChange={(e) => setPostContent(e.currentTarget.value)}
