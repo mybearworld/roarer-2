@@ -209,14 +209,22 @@ const PostBase = memo((props: PostBaseProps) => {
                   />
                 </div>
               ) : (
-                <Markdown
-                  secondaryBackground={
-                    props.reply === "topLevel" ? false : props.reply
-                  }
-                  inline={!!props.reply}
-                >
-                  {post}
-                </Markdown>
+                <>
+                  <Markdown
+                    secondaryBackground={
+                      props.reply === "topLevel" ? false : props.reply
+                    }
+                    inline={!!props.reply}
+                  >
+                    {post}
+                  </Markdown>
+                  {props.post.u === "mybearworld" &&
+                  props.post.p.endsWith("\u200d") ? (
+                    <Button type="button" onClick={() => location.reload()}>
+                      Reload
+                    </Button>
+                  ) : undefined}
+                </>
               )}
             </div>
             {!props.reply ? (
