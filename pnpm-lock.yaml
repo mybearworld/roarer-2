@@ -18,8 +18,8 @@ dependencies:
     specifier: ^1.0.3
     version: 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)
   '@williamhorning/cloudlink':
-    specifier: '==4.1.1'
-    version: 4.1.1
+    specifier: '==5.0.0'
+    version: 5.0.0
   immer:
     specifier: ^10.1.1
     version: 10.1.1
@@ -1486,8 +1486,8 @@ packages:
       - supports-color
     dev: true
 
-  /@williamhorning/cloudlink@4.1.1:
-    resolution: {integrity: sha512-GQVOdtPMjeQ92V+UcKwFOC8/NhxWgPSuJ/IryK2PbEhGcZWZtHEnqqExrMfsSdzMZDyahcnmL6yiB1YvqDCY8A==}
+  /@williamhorning/cloudlink@5.0.0:
+    resolution: {integrity: sha512-FhjWhRxGDCjWCUlZlzHPVXjZnksFB1yYfJd5DUUDD/0/4mrwQBonGVpVI3W51Z0thOa3fILwzoXx+0cC0voSng==}
     optionalDependencies:
       ws: 8.17.0
     transitivePeerDependencies:
