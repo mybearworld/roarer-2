@@ -271,7 +271,7 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
       >
         <div
           className={twMerge(
-            "absolute left-[calc(-0.5rem-theme(spacing.2))] top-0 box-content h-0 w-0 border-[length:0.5rem] border-transparent border-r-gray-100",
+            "absolute left-[calc(-0.5rem-theme(spacing.2))] top-0 box-content h-0 w-0 border-[length:0.5rem] border-transparent border-r-gray-100 contrast-more:hidden",
             props.reply && props.reply !== "topLevel"
               ? "border-r-gray-200 dark:border-r-gray-800"
               : "border-r-gray-100 dark:border-r-gray-900",
