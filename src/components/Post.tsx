@@ -1,6 +1,6 @@
 import { File, PencilLine, Reply, Trash2, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { ReactNode, useRef, useState, memo, MouseEventHandler } from "react";
+import { ReactNode, useRef, useState, memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { getReply } from "../lib/reply";
