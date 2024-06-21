@@ -122,7 +122,6 @@ const PostBase = memo((props: PostBaseProps) => {
       <SpeechBubble
         reply={props.reply}
         transparent={!!props.post.optimistic}
-        blur={props.post.bridge}
         speaker={
           <User username={props.post.u}>
             <button aria-label={props.post.u}>
@@ -249,7 +248,6 @@ const PostBase = memo((props: PostBaseProps) => {
 
 type SpeechBubbleProps = {
   reply?: boolean | "topLevel";
-  blur?: string;
   speaker: ReactNode;
   bubble: ReactNode;
   transparent?: boolean;
@@ -266,7 +264,6 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
           props.reply && props.reply !== "topLevel"
             ? "bg-gray-200 dark:bg-gray-800"
             : "bg-gray-100 dark:bg-gray-900",
-          props.blur ? "blur-sm hover:blur-0" : "",
         )}
       >
         <div
