@@ -36,8 +36,8 @@ dependencies:
     specifier: ^18.3.1
     version: 18.3.1(react@18.3.1)
   shiki:
-    specifier: ^1.7.0
-    version: 1.7.0
+    specifier: ^1.9.0
+    version: 1.9.0
   tailwind-merge:
     specifier: ^2.3.0
     version: 2.3.0
@@ -1265,8 +1265,8 @@ packages:
     dev: true
     optional: true
 
-  /@shikijs/core@1.7.0:
-    resolution: {integrity: sha512-O6j27b7dGmJbR3mjwh/aHH8Ld+GQvA0OQsNO43wKWnqbAae3AYXrhFyScHGX8hXZD6vX2ngjzDFkZY5srtIJbQ==}
+  /@shikijs/core@1.9.0:
+    resolution: {integrity: sha512-cbSoY8P/jgGByG8UOl3jnP/CWg/Qk+1q+eAKWtcrU3pNoILF8wTsLB0jT44qUBV8Ce1SvA9uqcM9Xf+u3fJFBw==}
     dev: false
 
   /@swc/core-darwin-arm64@1.5.29:
@@ -2361,10 +2361,10 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /shiki@1.7.0:
-    resolution: {integrity: sha512-H5pMn4JA7ayx8H0qOz1k2qANq6mZVCMl1gKLK6kWIrv1s2Ial4EmD4s4jE8QB5Dw03d/oCQUxc24sotuyR5byA==}
+  /shiki@1.9.0:
+    resolution: {integrity: sha512-i6//Lqgn7+7nZA0qVjoYH0085YdNk4MC+tJV4bo+HgjgRMJ0JmkLZzFAuvVioJqLkcGDK5GAMpghZEZkCnwxpQ==}
     dependencies:
-      '@shikijs/core': 1.7.0
+      '@shikijs/core': 1.9.0
     dev: false
 
   /signal-exit@4.1.0:
