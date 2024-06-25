@@ -134,7 +134,9 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
           const [id, content] = optimisticPost;
           post.p = content.real;
           const state = get();
-          state.editPost(post.post_id, content.real);
+          if (content.mock !== content.real) {
+            state.editPost(post.post_id, content.real);
+          }
           delete chatPosts.currentOptimistics[id];
           draft.posts[id] = { error: false, isDeleted: true };
         }
@@ -286,7 +288,8 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       if (!credentials) {
         return;
       }
-      const mockPostContent = createMockPostContent();
+      const mock = chat !== "livechat";
+      const mockPostContent = mock ? createMockPostContent() : content;
       set((draft) => {
         const trimmedContent = content.trim();
         draft.posts[optimisticId] = {
