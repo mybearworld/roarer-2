@@ -93,7 +93,7 @@ export const discordEmoji = [
 ].sort((a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0));
 
 export const urlFromDiscordEmoji = (emoji: DiscordEmoji) => {
-  return `https://cdn.discordapp.com/emojis/${encodeURIComponent(emoji.id)}.${emoji.isGif ? "gif" : "webp"}?size=512&quality=lossless`;
+  return `https://cdn.discordapp.com/emojis/${encodeURIComponent(emoji.id)}.${emoji.isGif ? "gif" : "webp"}?size=96&quality=lossless`;
 };
 export const syntaxForDiscordEmoji = (emoji: DiscordEmoji) => {
   return `<${emoji.isGif ? "a" : ""}:${emoji.name}:${emoji.id}>`;
