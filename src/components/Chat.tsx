@@ -305,6 +305,8 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
                         <img
                           src={urlFromDiscordEmoji(emoji)}
                           alt={emoji.name}
+                          width="24"
+                          height="24"
                         />
                       </button>
                     ))}

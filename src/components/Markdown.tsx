@@ -188,6 +188,8 @@ export const Markdown = (mdProps: MarkdownProps) => {
                         isGif: !!match.groups?.emojiAnimated,
                       })}
                       alt={match.groups?.emojiName}
+                      width="24"
+                      height="24"
                     />
                   ) : (
                     match[0]
