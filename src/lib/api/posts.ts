@@ -173,15 +173,15 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
     addPost: (post: Post) => {
       const bridge = post.u === "Discord" ? "discord" : undefined;
       const match = bridge
-        ? post.p.match(/(?<username>[a-z0-9_\-]+): (?<post>[\s\S]+)/i)
+        ? post.p.match(/^(?<username>[a-z0-9_\-]+)(?:\: (?<post>[\s\S]+))?/i)
         : null;
       const username = match?.groups?.username;
       const postContent = match?.groups?.post;
       set((draft) => {
         draft.posts[post.post_id] = {
           ...post,
-          ...(bridge && username && postContent
-            ? { bridge, u: username, p: postContent }
+          ...(bridge && username
+            ? { bridge, u: username, p: postContent ?? "" }
             : {}),
           error: false,
         };
