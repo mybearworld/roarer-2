@@ -149,7 +149,7 @@ const PostBase = memo((props: PostBaseProps) => {
                     )}
                   >
                     {props.post.u}
-                    {props.post.u === "Supernoodles99" && !props.reply
+                    {props.post.u === "noodles" && !props.reply
                       ? " 🧀"
                       : undefined}
                   </button>
