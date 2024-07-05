@@ -196,9 +196,11 @@ const PostBase = memo((props: PostBaseProps) => {
                 Couldn't delete post. Message: {deleteError}
               </div>
             ) : undefined}
-            {!props.reply && reply?.id ? (
-              <div className="my-1">
-                <Post id={reply.id} reply />
+            {!props.reply && reply?.ids ? (
+              <div className="my-1 flex flex-col gap-2">
+                {reply.ids.map((id) => (
+                  <Post id={id} reply key={id} />
+                ))}
               </div>
             ) : undefined}
             <div

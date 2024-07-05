@@ -27,7 +27,7 @@ export type ChatProps = {
   chat: string;
 };
 export const Chat = (props: ChatProps) => {
-  const [reply, setReply] = useState<Reply>();
+  const [replies, setReplies] = useState<Reply[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState<string>();
   const [posts, loadChatPosts, loadMore] = useAPI(
@@ -41,7 +41,7 @@ export const Chat = (props: ChatProps) => {
 
   const setReplyFromPost = useCallback(
     (id: string, content: string, username: string) => {
-      setReply({ id, content, username });
+      setReplies((replies) => [...replies, { id, content, username }]);
     },
     [],
   );
@@ -69,11 +69,7 @@ export const Chat = (props: ChatProps) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <EnterPost
-        chat={props.chat}
-        reply={reply}
-        removeReply={() => setReply(undefined)}
-      />
+      <EnterPost chat={props.chat} replies={replies} setReplies={setReplies} />
       <TypingIndicator chat={props.chat} />
       {posts.posts.map((post) => (
         <Post key={post} id={post} onReply={setReplyFromPost} />
@@ -119,8 +115,8 @@ const TypingIndicator = (props: TypingIndicatorProps) => {
 
 type EnterPostProps = {
   chat: string;
-  reply?: Reply | undefined;
-  removeReply?: () => void;
+  replies?: Reply[];
+  setReplies?: (replies: Reply[]) => void;
 };
 const EnterPost = (props: EnterPostProps) => {
   const post = useAPI((state) => state.post);
@@ -136,8 +132,8 @@ const EnterPost = (props: EnterPostProps) => {
 
 export type EnterPostBaseProps = {
   chat: string;
-  reply?: Reply | undefined;
-  removeReply?: () => void;
+  replies?: Reply[];
+  setReplies?: (replies: Reply[]) => void;
   basePostContent?: string;
   onSuccess?: () => void;
   dontDisableWhenPosting?: boolean;
@@ -148,6 +144,8 @@ export type EnterPostBaseProps = {
   noAttachments?: boolean;
 };
 export const EnterPostBase = (props: EnterPostBaseProps) => {
+  const replies = props.replies ?? [];
+
   const [credentials, sendTyping] = useAPI(
     useShallow((state) => [state.credentials, state.sendTyping]),
   );
@@ -161,7 +159,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
   const textArea = useRef<HTMLTextAreaElement | null>(null);
   useEffect(() => {
     textArea.current?.focus?.();
-  }, [props.reply]);
+  }, [props.replies]);
 
   if (!credentials) {
     return <></>;
@@ -174,9 +172,12 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
     }
     setState("posting");
     const response = await props.onSubmit(
-      (props.reply
-        ? `@${props.reply.username} ${trimmedPost(props.reply.content)} (${props.reply.id})\n`
-        : "") + postContent,
+      replies
+        .map(
+          (reply) =>
+            `@${reply.username} ${trimmedPost(reply.content)} (${reply.id})\n`,
+        )
+        .join("") + postContent,
       attachments.map((attachment) => attachment.id),
     );
     setState("writing");
@@ -187,7 +188,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
       setPostContent("");
       setAttachments([]);
       setError("");
-      props.removeReply?.();
+      props.setReplies?.([]);
     }
   };
 
@@ -243,7 +244,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
         onInput={() => sendTyping(props.chat)}
         onKeyDown={(e) => {
           if (e.key === "Escape") {
-            props.removeReply?.();
+            props.setReplies?.([]);
           }
         }}
         disabled={
@@ -322,20 +323,26 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
           </div>
         }
         above={
-          props.reply ? (
-            <div className="flex gap-2">
-              <div className="grow">
-                <Post id={props.reply.id} reply="topLevel" />
+          <div className="flex flex-col gap-2">
+            {replies.map((reply, index) => (
+              <div className="flex gap-2" key={index}>
+                <div className="grow">
+                  <Post id={reply.id} reply="topLevel" />
+                </div>
+                <button
+                  type="button"
+                  aria-label="Remove reply"
+                  onClick={() =>
+                    props.setReplies?.(
+                      replies.slice(0, index).concat(replies.slice(index + 1)),
+                    )
+                  }
+                >
+                  <X aria-hidden />
+                </button>
               </div>
-              <button
-                type="button"
-                aria-label="Remove reply"
-                onClick={() => props.removeReply?.()}
-              >
-                <X aria-hidden />
-              </button>
-            </div>
-          ) : undefined
+            ))}
+          </div>
         }
         below={
           <div className="flex flex-wrap gap-2">
