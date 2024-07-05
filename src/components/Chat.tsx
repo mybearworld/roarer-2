@@ -201,33 +201,22 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
   const upload = async (files: FileList) => {
     const errors: string[] = [];
     setState("uploading");
-    (
-      await Promise.all(
-        [...files].map(async (file) => {
-          const uploadedFile = await uploadFile(file, "attachments");
-          console.log(uploadedFile);
-          if (uploadedFile.error) {
-            return { type: "error", message: uploadedFile.message } as const;
-          } else {
-            return {
-              type: "file",
-              file: {
-                filename: file.name,
-                id: uploadedFile.response.id,
-                mime: file.type,
-                size: file.size,
-              } satisfies Attachment,
-            } as const;
-          }
-        }),
-      )
-    ).forEach((result) => {
-      if (result.type === "error") {
-        errors.push(result.message);
-        return;
+    for (const file of files) {
+      const uploadedFile = await uploadFile(file, "attachments");
+      if (uploadedFile.error) {
+        errors.push(uploadedFile.message);
+        break;
       }
-      setAttachments((attachments) => [...attachments, result.file]);
-    });
+      setAttachments((attachments) => [
+        ...attachments,
+        {
+          filename: file.name,
+          id: uploadedFile.response.id,
+          mime: file.type,
+          size: file.size,
+        } satisfies Attachment,
+      ]);
+    }
     if (errors.length) {
       setError(`Some files couldn't be uploaded. Errors: ${errors.join(",")}`);
     }
