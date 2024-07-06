@@ -306,14 +306,16 @@ export type AttachmentViewProps = {
 };
 export const AttachmentView = (props: AttachmentViewProps) => {
   const download = useRef<HTMLAnchorElement>(null);
-  const closeButton = props.onRemove ? (
-    <Button
-      className="absolute right-2 top-2 opacity-50 hover:opacity-100"
+  const closeRow = props.onRemove ? (
+    <button
+      type="button"
       aria-label="Remove"
+      className="flex items-center gap-2 text-wrap font-bold"
       onClick={() => props.onRemove?.(props.attachment.id)}
     >
-      <X />
-    </Button>
+      <span>{props.attachment.filename}</span>
+      <X className="h-6 w-6" strokeWidth={2.2} aria-hidden />
+    </button>
   ) : undefined;
 
   if (props.attachment.mime.startsWith("image/")) {
@@ -321,21 +323,19 @@ export const AttachmentView = (props: AttachmentViewProps) => {
       <Popup
         triggerAsChild
         trigger={
-          <button
-            aria-label={props.attachment.filename}
-            className="relative h-36 w-36"
-          >
-            <img
-              key={props.attachment.id}
-              className="h-36 w-36 rounded-xl object-cover"
-              src={`https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
-              alt={props.attachment.filename}
-              title={props.attachment.filename}
-              width="144"
-              height="144"
-            />
-            {closeButton}
-          </button>
+          <div className="flex flex-col items-center">
+            {closeRow}
+            <button type="button" aria-label={props.attachment.filename}>
+              <img
+                key={props.attachment.id}
+                className="ounded-xl max-h-40"
+                src={`https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
+                alt={props.attachment.filename}
+                title={props.attachment.filename}
+                height={Math.min(160, props.attachment.height)} // max-h-40
+              />
+            </button>
+          </div>
         }
       >
         <div className="flex flex-col gap-2">
@@ -357,8 +357,9 @@ export const AttachmentView = (props: AttachmentViewProps) => {
   }
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-flex flex-col items-center">
       <a ref={download} download={props.attachment.filename} hidden />
+      {closeRow}
       <button
         onClick={async () => {
           const url = URL.createObjectURL(
@@ -386,7 +387,6 @@ export const AttachmentView = (props: AttachmentViewProps) => {
           <div className="text-sm">({byteToHuman(props.attachment.size)})</div>
         </div>
       </button>
-      {closeButton}
     </div>
   );
 };
