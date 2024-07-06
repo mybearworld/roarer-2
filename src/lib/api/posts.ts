@@ -3,6 +3,7 @@ import { Slice } from ".";
 import { getCloudlink } from "./cloudlink";
 import { Errorable, loadMore, request } from "./utils";
 import { api } from "../servers";
+import { getReply } from "../reply";
 
 export type Attachment = z.infer<typeof ATTACHMENT_SCHEMA>;
 const ATTACHMENT_SCHEMA = z.object({
@@ -65,7 +66,7 @@ export type PostsSlice = {
     }>
   >;
   posts: Record<string, Errorable<Post | { isDeleted: true }>>;
-  addPost: (post: Post) => void;
+  addPost: (post: Post) => Post;
   loadChatPosts: (id: string) => Promise<void>;
   loadMore: (
     id: string,
@@ -110,10 +111,21 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         }
         chat.last_active = Date.now() / 1000;
       });
-      if (!state.chatPosts[post.post_origin]) {
-        return;
+      const newPost = state.addPost(post);
+      const replylessPost = getReply(newPost.p)?.postContent ?? newPost.p;
+      if (
+        state.notificationState === "enabled" &&
+        newPost.u !== state.credentials?.username &&
+        replylessPost.includes("@" + state.credentials?.username) &&
+        (document.hidden || state.openChat !== newPost.post_origin)
+      ) {
+        new Notification(`${newPost.u} mentioned you:`, {
+          body: replylessPost,
+        }).addEventListener("click", () => {
+          state.setOpenChat(post.post_origin);
+          focus();
+        });
       }
-      state.addPost(post);
       set((draft) => {
         const chatPosts = draft.chatPosts[post.post_origin];
         if (!chatPosts || chatPosts.error) {
@@ -175,15 +187,17 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         : null;
       const username = match?.groups?.username;
       const postContent = match?.groups?.post;
+      const newPost = {
+        ...post,
+        ...(bridge && username
+          ? ({ bridge, u: username, p: postContent ?? "" } as const)
+          : {}),
+        error: false,
+      } as const;
       set((draft) => {
-        draft.posts[post.post_id] = {
-          ...post,
-          ...(bridge && username
-            ? { bridge, u: username, p: postContent ?? "" }
-            : {}),
-          error: false,
-        };
+        draft.posts[post.post_id] = newPost;
       });
+      return newPost;
     },
     loadPost: async (post: string) => {
       if (post in get().posts || loadingPosts.has(post)) {
