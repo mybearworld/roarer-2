@@ -9,8 +9,9 @@ import {
   urlFromDiscordEmoji,
   DiscordEmoji,
 } from "../lib/discordEmoji";
+import { getImageSize } from "../lib/imageSize";
 import { trimmedPost } from "../lib/reply";
-import { uploadFile, getImageSize } from "../lib/upload";
+import { uploadFile } from "../lib/upload";
 import { useShallow } from "zustand/react/shallow";
 import { Button } from "./Button";
 import { Textarea } from "./Input";
@@ -207,7 +208,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
         errors.push(uploadedFile.message);
         break;
       }
-      const imageSize = await getImageSize(uploadedFile.response);
+      const imageSize = await getImageSize(URL.createObjectURL(file));
       setAttachments((attachments) => [
         ...attachments,
         {
