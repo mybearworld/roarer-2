@@ -47,6 +47,21 @@ export const uploadFile = async (
   return { error: false, response: response };
 };
 
+export const getImageSize = (file: UploadedFile) => {
+  return new Promise<ImageSize>((resolve) => {
+    const image = new Image();
+    image.addEventListener("load", () => {
+      resolve({ width: image.width, height: image.height });
+    });
+    image.src = `https://uploads.meower.org/attachments/${file.id}/${file.filename}`;
+  });
+};
+
+export type ImageSize = {
+  width: number;
+  height: number;
+};
+
 const IMAGE_SCHEMA = z.object({
   bucket: z.string(),
   claimed: z.boolean(),

@@ -10,7 +10,7 @@ import {
   DiscordEmoji,
 } from "../lib/discordEmoji";
 import { trimmedPost } from "../lib/reply";
-import { uploadFile } from "../lib/upload";
+import { uploadFile, getImageSize } from "../lib/upload";
 import { useShallow } from "zustand/react/shallow";
 import { Button } from "./Button";
 import { Textarea } from "./Input";
@@ -207,6 +207,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
         errors.push(uploadedFile.message);
         break;
       }
+      const imageSize = await getImageSize(uploadedFile.response);
       setAttachments((attachments) => [
         ...attachments,
         {
@@ -214,6 +215,8 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
           id: uploadedFile.response.id,
           mime: file.type,
           size: file.size,
+          width: imageSize.width,
+          height: imageSize.height,
         } satisfies Attachment,
       ]);
     }

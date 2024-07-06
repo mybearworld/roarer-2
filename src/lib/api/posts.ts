@@ -3,10 +3,7 @@ import { Slice } from ".";
 import { getCloudlink } from "./cloudlink";
 import { Errorable, loadMore, request } from "./utils";
 
-export type Attachment = Omit<
-  z.infer<typeof ATTACHMENT_SCHEMA>,
-  "height" | "width"
-> & { width?: number; height?: number };
+export type Attachment = z.infer<typeof ATTACHMENT_SCHEMA>;
 const ATTACHMENT_SCHEMA = z.object({
   filename: z.string(),
   height: z.number(),
