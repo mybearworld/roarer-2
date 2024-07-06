@@ -1,5 +1,6 @@
-import { File, PencilLine, Reply, Trash2, X } from "lucide-react";
+import { File, PencilLine, Menu, Reply, Trash2, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
+import * as Popover from "@radix-ui/react-popover";
 import { ReactNode, useRef, useState, memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
@@ -161,28 +162,58 @@ const PostBase = memo((props: PostBaseProps) => {
               </div>
               {!props.reply && !props.post.optimistic ? (
                 <div className="flex gap-1">
-                  {credentials?.username === props.post.u ? (
+                  {credentials ? (
                     <>
                       <button
                         type="button"
-                        aria-label="Remove"
-                        onClick={handleDelete}
+                        aria-label="Reply"
+                        onClick={doReply}
                       >
-                        <Trash2 className="h-5 w-5" aria-hidden />
+                        <Reply className="h-6 w-6" aria-hidden />
                       </button>
-                      <button
-                        type="button"
-                        aria-label="Edit"
-                        onClick={() => setEditing((e) => !e)}
-                      >
-                        <PencilLine className="h-5 w-5" aria-hidden />
-                      </button>
+                      <Popover.Root>
+                        <Popover.Trigger
+                          aria-label="Actions"
+                          className="flex items-center"
+                        >
+                          <Menu className="h-6 w-6" aria-hidden />
+                        </Popover.Trigger>
+                        <Popover.Anchor />
+                        <Popover.Portal>
+                          <Popover.Content
+                            className="z-[--z-above-sidebar] flex flex-col rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
+                            align="end"
+                            sideOffset={4}
+                          >
+                            <button
+                              className="rounded-e-lg px-2 py-1 text-left opacity-70"
+                              type="button"
+                              disabled
+                            >
+                              Report
+                            </button>
+                            {credentials.username === props.post.u ? (
+                              <>
+                                <Popover.Close
+                                  className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+                                  type="button"
+                                  onClick={handleDelete}
+                                >
+                                  Delete
+                                </Popover.Close>
+                                <Popover.Close
+                                  className="rounded-b-lg px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+                                  type="button"
+                                  onClick={() => setEditing((e) => !e)}
+                                >
+                                  Edit
+                                </Popover.Close>
+                              </>
+                            ) : undefined}
+                          </Popover.Content>
+                        </Popover.Portal>
+                      </Popover.Root>
                     </>
-                  ) : undefined}
-                  {credentials ? (
-                    <button type="button" aria-label="Reply" onClick={doReply}>
-                      <Reply className="h-5 w-5" aria-hidden />
-                    </button>
                   ) : undefined}
                 </div>
               ) : undefined}
