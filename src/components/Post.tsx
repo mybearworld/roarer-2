@@ -195,18 +195,18 @@ const PostBase = memo((props: PostBaseProps) => {
                             {credentials.username === props.post.u ? (
                               <>
                                 <Popover.Close
-                                  className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
-                                  type="button"
-                                  onClick={handleDelete}
-                                >
-                                  Delete
-                                </Popover.Close>
-                                <Popover.Close
                                   className="rounded-b-lg px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
                                   type="button"
                                   onClick={() => setEditing((e) => !e)}
                                 >
                                   Edit
+                                </Popover.Close>
+                                <Popover.Close
+                                  className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+                                  type="button"
+                                  onClick={handleDelete}
+                                >
+                                  Delete
                                 </Popover.Close>
                               </>
                             ) : undefined}
