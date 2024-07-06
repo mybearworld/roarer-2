@@ -1,4 +1,4 @@
-import { File, PencilLine, Menu, Reply, Trash2, X } from "lucide-react";
+import { File, Menu, Reply, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Popover from "@radix-ui/react-popover";
 import { ReactNode, useRef, useState, memo } from "react";
