@@ -1,20 +1,15 @@
 {
-    "name": "Roarer 2",
-    "icons": [
-      {
-        "src": "bear.svg",
-        "type": "image/svg",
-        "sizes": "512x512 192x192"
-      }
-    ],
-    "display": "standalone",
-    "categories": [
-        "communication",
-        "chat",
-        "messaging"
-    ],
-    "orientation": "any",
-    "id": "roarer2",
-    "theme_color": "#030712"
+  "name": "Roarer 2",
+  "icons": [
+    {
+      "src": "bear.svg",
+      "sizes": "any"
+    }
+  ],
+  "display": "standalone",
+  "categories": ["communication", "chat", "messaging"],
+  "orientation": "any",
+  "id": "roarer2",
+  "theme_color": "#030712",
+  "start_url": "/roarer-2"
 }
-  
