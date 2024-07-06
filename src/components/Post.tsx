@@ -6,6 +6,7 @@ import { useAPI } from "../lib/api";
 import { getReply } from "../lib/reply";
 import { Attachment, Post as APIPost } from "../lib/api/posts";
 import { NO_PROFILE_PICTURE } from "../lib/noProfilePicture";
+import { uploads } from "../lib/servers";
 import { byteToHuman } from "../lib/byteToHuman";
 import { Button } from "./Button";
 import { EnterPostBase } from "./Chat";
@@ -329,7 +330,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
               <img
                 key={props.attachment.id}
                 className="ounded-xl max-h-40"
-                src={`https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
+                src={`${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
                 alt={props.attachment.filename}
                 title={props.attachment.filename}
                 height={Math.min(160, props.attachment.height)} // max-h-40
@@ -345,7 +346,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
             </Dialog.Title>
           </div>
           <img
-            src={`https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}`}
+            src={`${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}`}
             alt={props.attachment.filename}
             title={props.attachment.filename}
             width={props.attachment.width}
@@ -365,7 +366,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
           const url = URL.createObjectURL(
             await (
               await fetch(
-                `https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}`,
+                `${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}`,
               )
             ).blob(),
           );

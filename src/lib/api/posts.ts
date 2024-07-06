@@ -2,6 +2,7 @@ import { z } from "zod";
 import { Slice } from ".";
 import { getCloudlink } from "./cloudlink";
 import { Errorable, loadMore, request } from "./utils";
+import { api } from "../servers";
 
 export type Attachment = z.infer<typeof ATTACHMENT_SCHEMA>;
 const ATTACHMENT_SCHEMA = z.object({
@@ -191,7 +192,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       loadingPosts.add(post);
       const state = get();
       const response = await request(
-        fetch(`https://api.meower.org/posts?id=${encodeURIComponent(post)}`, {
+        fetch(`${api}/posts?id=${encodeURIComponent(post)}`, {
           headers: state.credentials ? { Token: state.credentials.token } : {},
         }),
         POST_SCHEMA,
@@ -241,7 +242,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       const { page, remove } = loadMore(current);
       const response = await request(
         fetch(
-          `https://api.meower.org/${id === "home" ? "home" : `posts/${encodeURIComponent(id)}`}?page=${page}`,
+          `${api}/${id === "home" ? "home" : `posts/${encodeURIComponent(id)}`}?page=${page}`,
           {
             headers: state.credentials
               ? { Token: state.credentials.token }
@@ -298,7 +299,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       });
       const response = await request(
         fetch(
-          `https://api.meower.org/${chat === "home" ? "home" : `posts/${encodeURIComponent(chat)}`}`,
+          `${api}/${chat === "home" ? "home" : `posts/${encodeURIComponent(chat)}`}`,
           {
             headers: {
               ...(state.credentials ? { Token: state.credentials.token } : {}),
@@ -324,7 +325,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
     editPost: (id, newContent) => {
       const state = get();
       return request(
-        fetch(`https://api.meower.org/posts?id=${encodeURIComponent(id)}`, {
+        fetch(`${api}/posts?id=${encodeURIComponent(id)}`, {
           headers: {
             ...(state.credentials ? { Token: state.credentials.token } : {}),
             "Content-Type": "application/json",
@@ -338,7 +339,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
     deletePost: (id) => {
       const state = get();
       return request(
-        fetch(`https://api.meower.org/posts?id=${encodeURIComponent(id)}`, {
+        fetch(`${api}/posts?id=${encodeURIComponent(id)}`, {
           headers: {
             ...(state.credentials ? { Token: state.credentials.token } : {}),
           },
