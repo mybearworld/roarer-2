@@ -31,13 +31,17 @@ export const Chat = (props: ChatProps) => {
   const [replies, setReplies] = useState<Reply[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState<string>();
-  const [posts, loadChatPosts, loadMore] = useAPI(
+  const [credentials, chat, loadChat, posts, loadChatPosts, loadMore] = useAPI(
     useShallow((state) => [
+      state.credentials,
+      state.chats[props.chat],
+      state.loadChat,
       state.chatPosts[props.chat],
       state.loadChatPosts,
       state.loadMore,
     ]),
   );
+  loadChat(props.chat);
   loadChatPosts(props.chat);
 
   const setReplyFromPost = useCallback(
@@ -70,6 +74,21 @@ export const Chat = (props: ChatProps) => {
 
   return (
     <div className="flex flex-col gap-2">
+      {props.chat === "home" ? undefined : (
+        <p className="font-bold">
+          {chat
+            ? chat.error
+              ? `Failed getting chat. Message: ${chat.message}`
+              : chat.deleted
+                ? ""
+                : chat.nickname ??
+                  "@" +
+                    chat.members.find(
+                      (member) => member !== credentials?.username,
+                    )
+            : "Loading chat name..."}
+        </p>
+      )}
       <EnterPost chat={props.chat} replies={replies} setReplies={setReplies} />
       <TypingIndicator chat={props.chat} />
       {posts.posts.map((post) => (
