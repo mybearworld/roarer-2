@@ -8,6 +8,7 @@ export type UserViewProps = {
   onClick?: MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   secondary?: boolean;
+  className?: string;
 };
 export const UserView = forwardRef<HTMLButtonElement, UserViewProps>(
   (props: UserViewProps, ref) => {
@@ -24,6 +25,7 @@ export const UserView = forwardRef<HTMLButtonElement, UserViewProps>(
             : props.secondary
               ? "hover:bg-gray-100 dark:hover:bg-gray-800"
               : "hover:bg-gray-100 dark:hover:bg-gray-900",
+          props.className,
         )}
         onClick={props.onClick}
         disabled={props.disabled}
