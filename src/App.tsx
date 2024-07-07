@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { ChevronLeft, Moon, Settings, Sun, X } from "lucide-react";
+import { ChevronLeft, Bell, BellOff, Moon, Sun, X } from "lucide-react";
+import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
 import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
@@ -11,6 +13,7 @@ import { Chats } from "./components/Chats";
 import { Button } from "./components/Button";
 import { Ulist } from "./components/Ulist";
 import { InitPlugins } from "./plugin/init";
+import { Popup } from "./components/Popup";
 
 export const App = () => {
   const [showSideNav, setShowSideNav] = useState(false);
@@ -61,7 +64,8 @@ export const App = () => {
               About
             </Tabs.Trigger>
           </div>
-          <div className="flex gap-2"> 
+          <div className="flex gap-2">
+            <NotificationToggle />
             <DarkMode />
             <Account />
 
@@ -104,5 +108,56 @@ const DarkMode = () => {
     <button type="button" onClick={() => setDarkMode((d) => !d)}>
       {darkMode ? <Sun /> : <Moon />}
     </button>
+  );
+};
+
+const NotificationToggle = () => {
+  const [notificationState, enableNotifications, disableNotifications] = useAPI(
+    useShallow((state) => [
+      state.notificationState,
+      state.enableNotifications,
+      state.disableNotifications,
+    ]),
+  );
+
+  return notificationState === "disabled" ? (
+    <button
+      type="button"
+      aria-label="Enable notifications"
+      onClick={enableNotifications}
+    >
+      <BellOff aria-hidden />
+    </button>
+  ) : notificationState === "enabled" ? (
+    <button
+      type="button"
+      aria-label="Disable notifications"
+      onClick={disableNotifications}
+    >
+      <Bell aria-hidden />
+    </button>
+  ) : (
+    <Popup
+      triggerAsChild
+      trigger={
+        <button
+          className="opacity-70"
+          type="button"
+          aria-label="Enable notifications"
+        >
+          <BellOff aria-hidden />
+        </button>
+      }
+    >
+      <div className="flex flex-col items-start gap-2">
+        <p>
+          You have denied Roarer the permission to send notifications. Reenable
+          them in your browser, then try again.
+        </p>
+        <Dialog.Close>
+          <Button>Ok</Button>
+        </Dialog.Close>
+      </div>
+    </Popup>
   );
 };

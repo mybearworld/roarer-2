@@ -1,4 +1,4 @@
-import { File, PencilLine, Reply, Trash2, X } from "lucide-react";
+import { File, Menu as MenuIcon, Reply, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { ReactNode, useRef, useState, memo } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -6,12 +6,14 @@ import { useAPI } from "../lib/api";
 import { getReply } from "../lib/reply";
 import { Attachment, Post as APIPost } from "../lib/api/posts";
 import { NO_PROFILE_PICTURE } from "../lib/noProfilePicture";
+import { uploads } from "../lib/servers";
 import { byteToHuman } from "../lib/byteToHuman";
 import { Button } from "./Button";
-import { EnterPostBase } from "./Chat";
 import { Popup } from "./Popup";
 import { User } from "./User";
+import { Menu, MenuItem } from "./Menu";
 import { Markdown } from "./Markdown";
+import { MarkdownInput } from "./MarkdownInput";
 import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
 import { twMerge } from "tailwind-merge";
 
@@ -88,7 +90,9 @@ type PostBaseProps = {
 };
 const PostBase = memo((props: PostBaseProps) => {
   const [deleteError, setDeleteError] = useState<string>();
-  const [editing, setEditing] = useState(false);
+  const [viewState, setViewState] = useState<"view" | "edit" | "source">(
+    "view",
+  );
   const [credentials, editPost, deletePost] = useAPI(
     useShallow((state) => [
       state.credentials,
@@ -160,28 +164,55 @@ const PostBase = memo((props: PostBaseProps) => {
               </div>
               {!props.reply && !props.post.optimistic ? (
                 <div className="flex gap-1">
-                  {credentials?.username === props.post.u ? (
+                  {credentials ? (
                     <>
                       <button
                         type="button"
-                        aria-label="Remove"
-                        onClick={handleDelete}
+                        aria-label="Reply"
+                        onClick={doReply}
                       >
-                        <Trash2 className="h-5 w-5" aria-hidden />
+                        <Reply className="h-6 w-6" aria-hidden />
                       </button>
-                      <button
-                        type="button"
-                        aria-label="Edit"
-                        onClick={() => setEditing((e) => !e)}
+                      <Menu
+                        trigger={
+                          <button
+                            aria-label="Actions"
+                            className="flex items-center"
+                          >
+                            <MenuIcon className="h-6 w-6" aria-hidden />
+                          </button>
+                        }
                       >
-                        <PencilLine className="h-5 w-5" aria-hidden />
-                      </button>
+                        <MenuItem disabled>Report</MenuItem>
+                        {credentials.username !== props.post.u ? (
+                          <MenuItem
+                            onClick={() =>
+                              setViewState((e) =>
+                                e === "source" ? "view" : "source",
+                              )
+                            }
+                          >
+                            {viewState === "source"
+                              ? "View post"
+                              : "View source"}
+                          </MenuItem>
+                        ) : undefined}
+                        {credentials.username === props.post.u ? (
+                          <>
+                            <MenuItem
+                              onClick={() =>
+                                setViewState((e) =>
+                                  e === "edit" ? "view" : "edit",
+                                )
+                              }
+                            >
+                              {viewState === "edit" ? "Cancel editing" : "Edit"}
+                            </MenuItem>
+                            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                          </>
+                        ) : undefined}
+                      </Menu>
                     </>
-                  ) : undefined}
-                  {credentials ? (
-                    <button type="button" aria-label="Reply" onClick={doReply}>
-                      <Reply className="h-5 w-5" aria-hidden />
-                    </button>
                   ) : undefined}
                 </div>
               ) : undefined}
@@ -208,17 +239,17 @@ const PostBase = memo((props: PostBaseProps) => {
                 props.reply ? "line-clamp-1" : "max-h-64 overflow-y-auto"
               }
             >
-              {editing ? (
+              {viewState === "edit" ? (
                 <div className="mx-1 my-2">
-                  <EnterPostBase
+                  <MarkdownInput
                     chat={props.post.post_origin}
                     onSubmit={handleEdit}
                     basePostContent={post}
-                    onSuccess={() => setEditing(false)}
+                    onSuccess={() => setViewState("view")}
                     noAttachments
                   />
                 </div>
-              ) : (
+              ) : viewState === "view" ? (
                 <>
                   <Markdown
                     secondaryBackground={
@@ -236,6 +267,8 @@ const PostBase = memo((props: PostBaseProps) => {
                     </Button>
                   ) : undefined}
                 </>
+              ) : (
+                <div className="whitespace-pre-wrap">{props.post.p}</div>
               )}
             </div>
             {!props.reply ? (
@@ -306,14 +339,16 @@ export type AttachmentViewProps = {
 };
 export const AttachmentView = (props: AttachmentViewProps) => {
   const download = useRef<HTMLAnchorElement>(null);
-  const closeButton = props.onRemove ? (
-    <Button
-      className="absolute right-2 top-2 opacity-50 hover:opacity-100"
+  const closeRow = props.onRemove ? (
+    <button
+      type="button"
       aria-label="Remove"
+      className="flex items-center gap-2 text-wrap font-bold"
       onClick={() => props.onRemove?.(props.attachment.id)}
     >
-      <X />
-    </Button>
+      <span>{props.attachment.filename}</span>
+      <X className="h-6 w-6" strokeWidth={2.2} aria-hidden />
+    </button>
   ) : undefined;
 
   if (props.attachment.mime.startsWith("image/")) {
@@ -321,21 +356,19 @@ export const AttachmentView = (props: AttachmentViewProps) => {
       <Popup
         triggerAsChild
         trigger={
-          <button
-            aria-label={props.attachment.filename}
-            className="relative h-36 w-36"
-          >
-            <img
-              key={props.attachment.id}
-              className="h-36 w-36 rounded-xl object-cover"
-              src={`https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
-              alt={props.attachment.filename}
-              title={props.attachment.filename}
-              width="144"
-              height="144"
-            />
-            {closeButton}
-          </button>
+          <div className="flex flex-col items-center">
+            {closeRow}
+            <button type="button" aria-label={props.attachment.filename}>
+              <img
+                key={props.attachment.id}
+                className="ounded-xl max-h-40"
+                src={`${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
+                alt={props.attachment.filename}
+                title={props.attachment.filename}
+                height={Math.min(160, props.attachment.height)} // max-h-40
+              />
+            </button>
+          </div>
         }
       >
         <div className="flex flex-col gap-2">
@@ -345,7 +378,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
             </Dialog.Title>
           </div>
           <img
-            src={`https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}`}
+            src={`${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}`}
             alt={props.attachment.filename}
             title={props.attachment.filename}
             width={props.attachment.width}
@@ -357,14 +390,15 @@ export const AttachmentView = (props: AttachmentViewProps) => {
   }
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-flex flex-col items-center">
       <a ref={download} download={props.attachment.filename} hidden />
+      {closeRow}
       <button
         onClick={async () => {
           const url = URL.createObjectURL(
             await (
               await fetch(
-                `https://uploads.meower.org/attachments/${props.attachment.id}/${props.attachment.filename}`,
+                `${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}`,
               )
             ).blob(),
           );
@@ -386,7 +420,6 @@ export const AttachmentView = (props: AttachmentViewProps) => {
           <div className="text-sm">({byteToHuman(props.attachment.size)})</div>
         </div>
       </button>
-      {closeButton}
     </div>
   );
 };

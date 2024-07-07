@@ -36,24 +36,12 @@ export const Markdown = (mdProps: MarkdownProps) => {
       langPrefix=""
       renderer={{
         code: (code, lang) => {
-          const [syntaxHighlighted, setSyntaxHighlighted] = useState("");
-          if (lang) {
-            codeToHtml(code?.toString() ?? "", {
-              lang,
-              theme: "github-dark-default",
-              structure: "inline",
-            }).then(setSyntaxHighlighted);
-          }
           return (
             <pre
               className="my-1 overflow-auto rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100 first:mt-0 last:mb-0"
               key={getKey()}
             >
-              {syntaxHighlighted ? (
-                <code dangerouslySetInnerHTML={{ __html: syntaxHighlighted }} />
-              ) : (
-                <code>{code}</code>
-              )}
+              <SyntaxHighlight code={code?.toString()} lang={lang} />
             </pre>
           );
         },
@@ -141,14 +129,21 @@ export const Markdown = (mdProps: MarkdownProps) => {
             </Tag>
           );
         },
-        codespan: (code) => (
-          <code
-            className="rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100"
-            key={getKey()}
-          >
-            {code}
-          </code>
-        ),
+        codespan: (code) => {
+          const match = code?.toString()?.match(/^\((\w+)\) (.*)$/);
+          return (
+            <code
+              className="rounded-lg bg-gray-800 px-1 py-0.5 text-gray-100"
+              key={getKey()}
+            >
+              {match ? (
+                <SyntaxHighlight lang={match[1]} code={match[2]} inline />
+              ) : (
+                code
+              )}
+            </code>
+          );
+        },
         link: (href, text) => {
           return <Link href={href} text={text} key={getKey()} />;
         },
@@ -231,5 +226,26 @@ const Link = (props: LinkProps) => {
     >
       {props.text}
     </a>
+  );
+};
+
+type SyntaxHighlightProps = {
+  lang?: string;
+  code?: string;
+  inline?: boolean;
+};
+const SyntaxHighlight = (props: SyntaxHighlightProps) => {
+  const [syntaxHighlighted, setSyntaxHighlighted] = useState("");
+  if (props.lang) {
+    codeToHtml(props.code ?? "", {
+      lang: props.lang,
+      theme: "github-dark-default",
+      structure: "inline",
+    }).then(setSyntaxHighlighted);
+  }
+  return syntaxHighlighted ? (
+    <span dangerouslySetInnerHTML={{ __html: syntaxHighlighted }} />
+  ) : (
+    props.code
   );
 };
