@@ -27,44 +27,46 @@ export abstract class RoarerPlugin {
 }
 
 export class Plugins {
-    private plugins: Map<string, {
-        cls: RoarerPlugin,
-        enabled: boolean
-    }> = new Map()
-
-    public data!: RoarerData;
-
-    constructor() {
-        (async () => {
-            this.data = {
-                cloudlink: await getCloudlink(),
-                api: useAPI
-            }
-        
-        })()
+  private plugins: Map<
+    string,
+    {
+      cls: RoarerPlugin;
+      enabled: boolean;
     }
+  > = new Map();
 
-    async flip(identifier: string) {
-        const plugin = this.plugins.get(identifier)
-        if (!plugin) {
-            console.error("[PluginManager] Plugin not found: ", identifier)
-            return
-        }
+  public data!: RoarerData;
+
+  constructor() {
+    (async () => {
+      this.data = {
+        cloudlink: await getCloudlink(),
+        api: useAPI,
+      };
+    })();
+  }
+
+  async flip(identifier: string) {
+    const plugin = this.plugins.get(identifier);
+    if (!plugin) {
+      console.error("[PluginManager] Plugin not found: ", identifier);
+      return;
+    }
 
     (await plugin.enabled) ? plugin.cls.stop() : plugin.cls.start();
     plugin.enabled = !plugin.enabled;
   }
 
-    register(plugin: RoarerPlugin) {
-        const info = plugin.info()
-        this.plugins.set(info.identifier, {
-            cls: plugin,
-            enabled: false
-        })
-    }
+  register(plugin: RoarerPlugin) {
+    const info = plugin.info();
+    this.plugins.set(info.identifier, {
+      cls: plugin,
+      enabled: false,
+    });
+  }
 
-    async create(obj: Code | URL) {
-        let URL: string;
+  async create(obj: Code | URL) {
+    let URL: string;
 
     if (typeof obj === "string") {
       console.log("[PluginManager] Loading plugin from: text");

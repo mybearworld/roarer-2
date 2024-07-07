@@ -111,14 +111,11 @@ export const createChatsSlice: Slice<ChatsSlice> = (set, get) => {
       try {
         response = CHAT_SCHEMA.parse(
           await (
-            await fetch(
-              `${api}/users/${encodeURIComponent(username)}/dm`,
-              {
-                headers: state.credentials
-                  ? { Token: state.credentials.token }
-                  : {},
-              },
-            )
+            await fetch(`${api}/users/${encodeURIComponent(username)}/dm`, {
+              headers: state.credentials
+                ? { Token: state.credentials.token }
+                : {},
+            })
           ).json(),
         );
       } catch (e) {
