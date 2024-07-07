@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import { ChevronLeft, Moon, Settings, Sun, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, Bell, BellOff, Moon, Sun, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
