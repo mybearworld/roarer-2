@@ -334,6 +334,10 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
           return;
         }
         post.optimistic = { error: response.message };
+        const chatPosts = draft.chatPosts[chat];
+        if (chatPosts && !chatPosts.error) {
+          delete chatPosts.currentOptimistics[optimisticId];
+        }
       });
     },
     editPost: (id, newContent) => {
