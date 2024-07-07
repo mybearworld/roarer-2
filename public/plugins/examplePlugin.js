@@ -1,13 +1,11 @@
 /// <reference path="roarer.d.ts" />
 
-
-
 (async (Roarer) => {
   /// <reference path="roarer.d.ts" />
 
   /**
-    * @type {import("./roarer.d.ts").waindow}
-  */
+   * @type {import("./roarer.d.ts").waindow}
+   */
   // @ts-ignore
   let nwindow = window;
 
@@ -19,19 +17,19 @@
         version: "1.0.0",
         description: "This is an example plugin.",
         author: "Your Name",
-      }
+      };
     }
     start() {
-      console.log("Example Plugin started!")
+      console.log("Example Plugin started!");
     }
     stop() {
-      console.log("Example Plugin stopped!")
+      console.log("Example Plugin stopped!");
     }
     settings() {
-      return React.createElement("div", null, "Settings")
+      return React.createElement("div", null, "Settings");
     }
   }
-  Roarer.addPlugin(new ExamplePlugin())
+  Roarer.addPlugin(new ExamplePlugin());
 })(nwindow.Roarer);
 
-console.log("")
+console.log("");

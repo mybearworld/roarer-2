@@ -1,10 +1,9 @@
 /// <reference path="roarer.d.ts" />
 
-
 /**
  * @type {import("./roarer.d.ts").waindow}
-  */
- // @ts-ignore
+ */
+// @ts-ignore
 let nwindow = window;
 
 (async (Roarer) => {
@@ -12,9 +11,9 @@ let nwindow = window;
 
   class WhatAreYouUsing extends nwindow.RoarerPlugin {
     constructor() {
-        super();
-        this.originalPost = nwindow.RoarerData.api.getState().post;
-        this.userAgent = navigator.userAgent;
+      super();
+      this.originalPost = nwindow.RoarerData.api.getState().post;
+      this.userAgent = navigator.userAgent;
     }
 
     info() {
@@ -24,11 +23,11 @@ let nwindow = window;
         version: "1.0.0",
         description: "Shows your User Agent.",
         author: "ShowierData9978",
-      }
+      };
     }
     start() {
       console.log("wdiu Plugin started!");
-    
+
       nwindow.RoarerData.api.setState((state) => {
         const _post = state.post;
         state.post = (content, ...args) => {
@@ -41,16 +40,16 @@ let nwindow = window;
     }
 
     stop() {
-      console.log("wdiu Plugin stopped!")
+      console.log("wdiu Plugin stopped!");
       nwindow.RoarerData.api.setState((state) => {
         state.post = this.originalPost;
-      })
+      });
     }
 
     settings() {
       // @ts-ignore
-      return React.createElement("div", null, "Settings")
+      return React.createElement("div", null, "Settings");
     }
   }
-  Roarer.addPlugin(new WhatAreYouUsing())
+  Roarer.addPlugin(new WhatAreYouUsing());
 })(nwindow.Roarer);
