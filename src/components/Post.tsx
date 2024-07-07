@@ -90,7 +90,9 @@ type PostBaseProps = {
 };
 const PostBase = memo((props: PostBaseProps) => {
   const [deleteError, setDeleteError] = useState<string>();
-  const [editing, setEditing] = useState(false);
+  const [viewState, setViewState] = useState<"view" | "edit" | "source">(
+    "view",
+  );
   const [credentials, editPost, deletePost] = useAPI(
     useShallow((state) => [
       state.credentials,
@@ -192,14 +194,35 @@ const PostBase = memo((props: PostBaseProps) => {
                             >
                               Report
                             </button>
+                            {credentials.username !== props.post.u ? (
+                              <Popover.Close
+                                className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+                                type="button"
+                                onClick={() =>
+                                  setViewState((e) =>
+                                    e === "source" ? "view" : "source",
+                                  )
+                                }
+                              >
+                                {viewState === "source"
+                                  ? "View post"
+                                  : "View source"}
+                              </Popover.Close>
+                            ) : undefined}
                             {credentials.username === props.post.u ? (
                               <>
                                 <Popover.Close
                                   className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
                                   type="button"
-                                  onClick={() => setEditing((e) => !e)}
+                                  onClick={() =>
+                                    setViewState((e) =>
+                                      e === "edit" ? "view" : "edit",
+                                    )
+                                  }
                                 >
-                                  {editing ? "Cancel editing" : "Edit"}
+                                  {viewState === "edit"
+                                    ? "Cancel editing"
+                                    : "Edit"}
                                 </Popover.Close>
                                 <Popover.Close
                                   className="rounded-b-lg px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -240,17 +263,17 @@ const PostBase = memo((props: PostBaseProps) => {
                 props.reply ? "line-clamp-1" : "max-h-64 overflow-y-auto"
               }
             >
-              {editing ? (
+              {viewState === "edit" ? (
                 <div className="mx-1 my-2">
                   <MarkdownInput
                     chat={props.post.post_origin}
                     onSubmit={handleEdit}
                     basePostContent={post}
-                    onSuccess={() => setEditing(false)}
+                    onSuccess={() => setViewState("view")}
                     noAttachments
                   />
                 </div>
-              ) : (
+              ) : viewState === "view" ? (
                 <>
                   <Markdown
                     secondaryBackground={
@@ -268,6 +291,8 @@ const PostBase = memo((props: PostBaseProps) => {
                     </Button>
                   ) : undefined}
                 </>
+              ) : (
+                <div className="whitespace-pre-wrap">{props.post.p}</div>
               )}
             </div>
             {!props.reply ? (
