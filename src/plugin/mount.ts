@@ -1,6 +1,7 @@
 import CloudlinkClient from "@williamhorning/cloudlink";
 import { useAPI } from "../lib/api";
 import { ReactElement } from "react";
+import { getCloudlink } from "../lib/api/cloudlink";
 
 export interface RoarerData {
     cloudlink: CloudlinkClient | null,
@@ -27,15 +28,25 @@ export abstract class RoarerPlugin {
     abstract settings(): ReactElement | Promise<ReactElement>
 }
 
-export class Roarer {
+export class Plugins {
     private plugins: Map<string, {
         cls: RoarerPlugin,
         enabled: boolean
     }> = new Map()
 
-    constructor() {}
+    public data!: RoarerData;
 
-    async flipPlugin(identifier: string) {
+    constructor() {
+        (async () => {
+            this.data = {
+                cloudlink: await getCloudlink(),
+                api: useAPI
+            }
+        
+        })()
+    }
+
+    async flip(identifier: string) {
         const plugin = this.plugins.get(identifier)
         if (!plugin) {
             console.error("[PluginManager] Plugin not found: ", identifier)
@@ -48,7 +59,7 @@ export class Roarer {
         
 
 
-    addPlugin(plugin: RoarerPlugin) {
+    register(plugin: RoarerPlugin) {
         const info = plugin.info()
         this.plugins.set(info.identifier, {
             cls: plugin,
@@ -56,7 +67,7 @@ export class Roarer {
         })
     }
 
-    async createPlugin(obj: Code | URL) {
+    async create(obj: Code | URL) {
         let URL: string;
 
         if (typeof obj === "string") {
@@ -81,5 +92,5 @@ export class Roarer {
     }
 }
 
-let roarer = new Roarer();
-export default roarer;
+let plugins = new Plugins();
+export default plugins;

@@ -1,13 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./App.tsx";
-import Roarer from "./plugin/mount.ts";
 
 import "./style.css";
-
-Roarer.createPlugin(new URL("/examplePlugin.js", import.meta.url));
-
-Roarer.flipPlugin("example-plugin");
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

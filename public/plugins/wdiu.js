@@ -1,56 +1,56 @@
-/// <reference path="roarer.d.ts" />
+// <reference path="../../src/plugin/init.tsx" />
 
 
-/**
- * @type {import("./roarer.d.ts").waindow}
+
+(
+  /**
+  * @param {import("../../src/plugin/init.tsx").Roarer} Roarer
   */
- // @ts-ignore
-let nwindow = window;
-
-(async (Roarer) => {
+  async (Roarer) => {
   /// <reference path="roarer.d.ts" />
+    class WhatAreYouDoing extends Roarer.RoarerPlugin {
+      constructor() {
+          super();
+          this.originalPost = Roarer.plugins.data.api.getState().post;
+          this.userAgent = navigator.userAgent;
+      }
 
-  class WhatAreYouUsing extends nwindow.RoarerPlugin {
-    constructor() {
-        super();
-        this.originalPost = nwindow.RoarerData.api.getState().post;
-        this.userAgent = navigator.userAgent;
-    }
+      info() {
+        return {
+          name: "What Are You Doing?",
+          identifier: "wdiu",
+          version: "1.0.0",
+          description: "Appens Your user agent in a quote like way.",
+          author: "ShowierData9978",
+        }
+      }
+      start() {
+        console.log("wdiu Plugin started!");
+    
+        Roarer.plugins.data.api.setState((state) => {
+          const _post = state.post;
+          state.post = (content, ...args) => {
+            return _post(
+              content + `\n\n --- \n\n ###### Sent from my ${this.userAgent}`,
+              ...args,
+            );
+          };
+        });
+      }
 
-    info() {
-      return {
-        name: "What Are You Using?",
-        identifier: "wdiu",
-        version: "1.0.0",
-        description: "Shows your User Agent.",
-        author: "ShowierData9978",
+      stop() {
+        console.log("wdiu Plugin stopped!")
+        Roarer.plugins.data.api.setState((state) => {
+          state.post = this.originalPost;
+        })
+      }
+
+      settings() {
+        // @ts-ignore
+        return React.createElement("div", null, "Settings")
       }
     }
-    start() {
-      console.log("wdiu Plugin started!");
-    
-      nwindow.RoarerData.api.setState((state) => {
-        const _post = state.post;
-        state.post = (content, ...args) => {
-          return _post(
-            content + `\n\n---\n###### Sent from my ${navigator.userAgent}`,
-            ...args,
-          );
-        };
-      });
-    }
-
-    stop() {
-      console.log("wdiu Plugin stopped!")
-      nwindow.RoarerData.api.setState((state) => {
-        state.post = this.originalPost;
-      })
-    }
-
-    settings() {
-      // @ts-ignore
-      return React.createElement("div", null, "Settings")
-    }
+    Roarer.plugins.register(new WhatAreYouDoing())
   }
-  Roarer.addPlugin(new WhatAreYouUsing())
-})(nwindow.Roarer);
+  // @ts-ignore
+)(window.Roarer);
