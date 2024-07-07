@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import { ChevronLeft, Moon, Settings, Sun, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, Bell, BellOff, Moon, Sun, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
@@ -23,7 +22,6 @@ export const App = () => {
   );
 
   return (
-    
     <div className="flex h-screen max-h-screen divide-x divide-gray-200 overflow-auto bg-white dark:divide-gray-800 dark:bg-gray-950">
       <InitPlugins />
       <div className="max-h-screen w-full min-w-[65%] overflow-auto bg-white p-2 dark:bg-gray-950">
