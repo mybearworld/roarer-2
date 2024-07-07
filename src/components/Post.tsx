@@ -199,7 +199,7 @@ const PostBase = memo((props: PostBaseProps) => {
                                   type="button"
                                   onClick={() => setEditing((e) => !e)}
                                 >
-                                  Edit
+                                  {editing ? "Cancel editing" : "Edit"}
                                 </Popover.Close>
                                 <Popover.Close
                                   className="rounded-b-lg px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
