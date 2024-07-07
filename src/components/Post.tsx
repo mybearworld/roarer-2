@@ -1,6 +1,5 @@
-import { File, Menu, Reply, X } from "lucide-react";
+import { File, Menu as MenuIcon, Reply, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
-import * as Popover from "@radix-ui/react-popover";
 import { ReactNode, useRef, useState, memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
@@ -12,6 +11,7 @@ import { byteToHuman } from "../lib/byteToHuman";
 import { Button } from "./Button";
 import { Popup } from "./Popup";
 import { User } from "./User";
+import { Menu, MenuItem } from "./Menu";
 import { Markdown } from "./Markdown";
 import { MarkdownInput } from "./MarkdownInput";
 import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
@@ -173,69 +173,45 @@ const PostBase = memo((props: PostBaseProps) => {
                       >
                         <Reply className="h-6 w-6" aria-hidden />
                       </button>
-                      <Popover.Root>
-                        <Popover.Trigger
-                          aria-label="Actions"
-                          className="flex items-center"
-                        >
-                          <Menu className="h-6 w-6" aria-hidden />
-                        </Popover.Trigger>
-                        <Popover.Anchor />
-                        <Popover.Portal>
-                          <Popover.Content
-                            className="z-[--z-above-sidebar] flex flex-col rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
-                            align="end"
-                            sideOffset={4}
+                      <Menu
+                        trigger={
+                          <button
+                            aria-label="Actions"
+                            className="flex items-center"
                           >
-                            <button
-                              className="rounded-e-lg px-2 py-1 text-left opacity-70"
-                              type="button"
-                              disabled
+                            <MenuIcon className="h-6 w-6" aria-hidden />
+                          </button>
+                        }
+                      >
+                        <MenuItem disabled>Report</MenuItem>
+                        {credentials.username !== props.post.u ? (
+                          <MenuItem
+                            onClick={() =>
+                              setViewState((e) =>
+                                e === "source" ? "view" : "source",
+                              )
+                            }
+                          >
+                            {viewState === "source"
+                              ? "View post"
+                              : "View source"}
+                          </MenuItem>
+                        ) : undefined}
+                        {credentials.username === props.post.u ? (
+                          <>
+                            <MenuItem
+                              onClick={() =>
+                                setViewState((e) =>
+                                  e === "edit" ? "view" : "edit",
+                                )
+                              }
                             >
-                              Report
-                            </button>
-                            {credentials.username !== props.post.u ? (
-                              <Popover.Close
-                                className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
-                                type="button"
-                                onClick={() =>
-                                  setViewState((e) =>
-                                    e === "source" ? "view" : "source",
-                                  )
-                                }
-                              >
-                                {viewState === "source"
-                                  ? "View post"
-                                  : "View source"}
-                              </Popover.Close>
-                            ) : undefined}
-                            {credentials.username === props.post.u ? (
-                              <>
-                                <Popover.Close
-                                  className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
-                                  type="button"
-                                  onClick={() =>
-                                    setViewState((e) =>
-                                      e === "edit" ? "view" : "edit",
-                                    )
-                                  }
-                                >
-                                  {viewState === "edit"
-                                    ? "Cancel editing"
-                                    : "Edit"}
-                                </Popover.Close>
-                                <Popover.Close
-                                  className="rounded-b-lg px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
-                                  type="button"
-                                  onClick={handleDelete}
-                                >
-                                  Delete
-                                </Popover.Close>
-                              </>
-                            ) : undefined}
-                          </Popover.Content>
-                        </Popover.Portal>
-                      </Popover.Root>
+                              {viewState === "edit" ? "Cancel editing" : "Edit"}
+                            </MenuItem>
+                            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                          </>
+                        ) : undefined}
+                      </Menu>
                     </>
                   ) : undefined}
                 </div>
