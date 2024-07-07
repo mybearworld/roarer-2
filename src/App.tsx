@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ChevronLeft, Moon, Sun, X } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import { ChevronLeft, Moon, Settings, Sun, X } from "lucide-react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
@@ -10,15 +10,19 @@ import { Chat } from "./components/Chat";
 import { Chats } from "./components/Chats";
 import { Button } from "./components/Button";
 import { Ulist } from "./components/Ulist";
+import { InitPlugins } from "./plugin/init";
 
 export const App = () => {
   const [showSideNav, setShowSideNav] = useState(false);
+
   const [openChat, setOpenChat] = useAPI(
     useShallow((state) => [state.openChat, state.setOpenChat]),
   );
 
   return (
+    
     <div className="flex h-screen max-h-screen divide-x divide-gray-200 overflow-auto bg-white dark:divide-gray-800 dark:bg-gray-950">
+      <InitPlugins />
       <div className="max-h-screen w-full min-w-[65%] overflow-auto bg-white p-2 dark:bg-gray-950">
         <Button
           className="absolute bottom-[50%] right-0 z-[--z-sidebar] h-14 rounded-none rounded-s-lg px-1 py-2 lg:hidden"
@@ -57,9 +61,10 @@ export const App = () => {
               About
             </Tabs.Trigger>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2"> 
             <DarkMode />
             <Account />
+
             <button
               type="button"
               className="lg:hidden"
