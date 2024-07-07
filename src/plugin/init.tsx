@@ -11,7 +11,7 @@ export interface Window {
     Roarer: Roarer;
 }
 
-export declare let window: Window
+export declare let window: Window;
 
 export function InitPlugins() { 
     window.Roarer = {

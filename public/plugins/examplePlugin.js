@@ -36,4 +36,4 @@
   // @ts-ignore
 )(window.Roarer);
 
-console.log("")
+console.log("");

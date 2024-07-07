@@ -1,4 +1,4 @@
-import type React from 'react';
+import type React from "react";
 import type CloudlinkClient from "@williamhorning/cloudlink";
 import type{ Store } from "../lib/api";
 import type { RoarerPlugin } from '../../src/plugin/mount';
