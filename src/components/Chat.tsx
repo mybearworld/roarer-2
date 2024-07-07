@@ -17,6 +17,8 @@ import { Button } from "./Button";
 import { Textarea } from "./Input";
 import { AttachmentView, Post } from "./Post";
 import { Attachment } from "../lib/api/posts";
+import { Checkbox } from "./Checkbox";
+import { Markdown } from "./Markdown";
 
 type Reply = {
   id: string;
@@ -175,6 +177,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
     "writing",
   );
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [preview, setPreview] = useState(false);
   const fileInput = useRef<HTMLInputElement | null>(null);
   const textArea = useRef<HTMLTextAreaElement | null>(null);
   useEffect(() => {
@@ -208,6 +211,7 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
       setPostContent("");
       setAttachments([]);
       setError("");
+      setPreview(false);
       props.setReplies?.([]);
     }
   };
@@ -357,19 +361,35 @@ export const EnterPostBase = (props: EnterPostBaseProps) => {
           </div>
         }
         below={
-          <div className="flex flex-wrap gap-2">
-            {attachments.map((attachment) => (
-              <AttachmentView
-                attachment={attachment}
-                key={attachment.id}
-                onRemove={(id) =>
-                  setAttachments((attachments) =>
-                    attachments.filter((attachment) => attachment.id !== id),
-                  )
-                }
-              />
-            ))}
+          <div>
+            <div className="float-right">
+              <label className="flex gap-2">
+                <Checkbox checked={preview} onInput={setPreview} />
+                <span>Preview</span>
+              </label>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {attachments.map((attachment) => (
+                <AttachmentView
+                  attachment={attachment}
+                  key={attachment.id}
+                  onRemove={
+                    preview
+                      ? undefined
+                      : (id) =>
+                          setAttachments((attachments) =>
+                            attachments.filter(
+                              (attachment) => attachment.id !== id,
+                            ),
+                          )
+                  }
+                />
+              ))}
+            </div>
           </div>
+        }
+        replaceTextarea={
+          preview ? <Markdown>{postContent}</Markdown> : undefined
         }
         onPaste={(e) => {
           if (showAttachments && e.clipboardData.files.length) {

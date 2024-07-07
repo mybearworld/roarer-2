@@ -37,6 +37,7 @@ export type TextareaProps = ComponentPropsWithoutRef<"textarea"> & {
   after?: React.ReactNode;
   above?: React.ReactNode;
   below?: React.ReactNode;
+  replaceTextarea?: React.ReactNode;
   onEnter?: () => void;
 };
 export const Textarea = forwardRef<HTMLTextAreaElement | null, TextareaProps>(
@@ -84,14 +85,20 @@ export const Textarea = forwardRef<HTMLTextAreaElement | null, TextareaProps>(
         {props.above}
         <div className="flex">
           {props.before}
-          <textarea
-            {...{ ...textareaProps, className: undefined }}
-            onInput={handleInput}
-            onKeyDown={handleKeyDown}
-            className="mx-2 h-full max-h-64 grow resize-none overflow-y-auto bg-transparent py-1 outline-none"
-            rows={1}
-            ref={elementRef}
-          />
+          {props.replaceTextarea ? (
+            <div className="mx-2 max-h-64 min-h-8 grow overflow-y-auto py-1">
+              {props.replaceTextarea}
+            </div>
+          ) : (
+            <textarea
+              {...{ ...textareaProps, className: undefined }}
+              onInput={handleInput}
+              onKeyDown={handleKeyDown}
+              className="mx-2 h-full max-h-64 grow resize-none overflow-y-auto bg-transparent py-1 outline-none"
+              rows={1}
+              ref={elementRef}
+            />
+          )}
           {props.after}
         </div>
         {props.below}
