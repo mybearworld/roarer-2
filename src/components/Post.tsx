@@ -10,10 +10,10 @@ import { NO_PROFILE_PICTURE } from "../lib/noProfilePicture";
 import { uploads } from "../lib/servers";
 import { byteToHuman } from "../lib/byteToHuman";
 import { Button } from "./Button";
-import { EnterPostBase } from "./Chat";
 import { Popup } from "./Popup";
 import { User } from "./User";
 import { Markdown } from "./Markdown";
+import { MarkdownInput } from "./MarkdownInput";
 import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
 import { twMerge } from "tailwind-merge";
 
@@ -242,7 +242,7 @@ const PostBase = memo((props: PostBaseProps) => {
             >
               {editing ? (
                 <div className="mx-1 my-2">
-                  <EnterPostBase
+                  <MarkdownInput
                     chat={props.post.post_origin}
                     onSubmit={handleEdit}
                     basePostContent={post}
