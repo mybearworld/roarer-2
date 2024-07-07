@@ -116,7 +116,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       if (
         state.notificationState === "enabled" &&
         newPost.u !== state.credentials?.username &&
-        replylessPost.includes("@" + state.credentials?.username) &&
+        newPost.p.includes("@" + state.credentials?.username) &&
         (document.hidden || state.openChat !== newPost.post_origin)
       ) {
         new Notification(`${newPost.u} mentioned you:`, {
