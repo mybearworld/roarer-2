@@ -1,10 +1,10 @@
-// <reference path="../../src/plugin/init.tsx" />
 
-/**
- * @param {import("../../src/plugin/init.tsx").Roarer} Roarer
- */
-(async (Roarer) => {
-  /// <reference path="roarer.d.ts" />
+(
+  /**
+    * @param {import("../../src/plugin/init.tsx").Roarer} Roarer
+  */
+
+  async (Roarer) => {
   class WhatAreYouDoing extends Roarer.RoarerPlugin {
     constructor() {
       super();

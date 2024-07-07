@@ -1,9 +1,11 @@
 // <reference path="../../src/plugin/init.tsx" />
 
-/**
- * @param {import("../../src/plugin/init.tsx").Roarer} Roarer
- */
-(async (Roarer) => {
+
+(
+  /**
+  * @param {import("../../src/plugin/init.tsx").Roarer} Roarer
+  */
+  async (Roarer) => {
   /// <reference path="roarer.d.ts" />
   class ArchUser extends Roarer.RoarerPlugin {
     constructor() {
@@ -24,19 +26,25 @@
     start() {
       console.log("Arch Plugin started!");
 
-      Roarer.plugins.data.api.setState((state) => {
-        const _post = state.post;
-        state.post = (content, ...args) => {
-          return _post(content + ` - I use Arch btw`, ...args);
-        };
-      });
+      Roarer.plugins.data.api.setState(
+        (
+          /** @type {{ post: (content: any, ...args: any[]) => any; }} */ state,
+        ) => {
+          const _post = state.post;
+          state.post = (content, ...args) => {
+            return _post(content + ` - I use Arch btw`, ...args);
+          };
+        },
+      );
     }
 
     stop() {
       console.log("Arch Plugin stopped!");
-      Roarer.plugins.data.api.setState((state) => {
-        state.post = this.originalPost;
-      });
+      Roarer.plugins.data.api.setState(
+        (/** @type {{ post: any; }} */ state) => {
+          state.post = this.originalPost;
+        },
+      );
     }
 
     settings() {
