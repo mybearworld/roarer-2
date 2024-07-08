@@ -56,13 +56,10 @@ export const createTypingSlice: Slice<TypingSlice> = (set, get) => {
         return;
       }
       lastSentIndicator = Date.now();
-      fetch(
-        `${api}/${chat === "home" ? "home" : `chats/${chat}`}/typing`,
-        {
-          method: "POST",
-          headers: state.credentials ? { Token: state.credentials.token } : {},
-        },
-      );
+      fetch(`${api}/${chat === "home" ? "home" : `chats/${chat}`}/typing`, {
+        method: "POST",
+        headers: state.credentials ? { Token: state.credentials.token } : {},
+      });
       lastSentIndicator = Date.now();
     },
   };

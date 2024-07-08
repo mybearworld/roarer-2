@@ -66,7 +66,7 @@ export const Chats = (props: ChatsProps) => {
         onClick={props.onChatClick}
         current={props.currentChat === "home"}
       />
-            <Chat
+      <Chat
         chat="livechat"
         onClick={props.onChatClick}
         current={props.currentChat === "livechat"}
