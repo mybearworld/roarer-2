@@ -82,7 +82,12 @@ export const createChatsSlice: Slice<ChatsSlice> = (set, get) => {
       });
     },
     loadChat: async (chat: string) => {
-      if (chat in get().chats || loadingChats.has(chat)) {
+      if (
+        chat in get().chats ||
+        loadingChats.has(chat) ||
+        chat === "home" ||
+        chat === "livechat"
+      ) {
         return;
       }
       loadingChats.add(chat);
