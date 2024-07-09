@@ -159,9 +159,6 @@ const PostBase = memo((props: PostBaseProps) => {
                     {props.post.u === "Gamerlogan819" && !props.reply
                       ? " 🤡"
                       : undefined}
-                    {props.post.u === "ij" && !props.reply
-                      ? " 🐱"
-                      : undefined}
                   </button>
                 </User>
                 {props.post.bridge && !props.reply ? (
