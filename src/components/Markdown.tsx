@@ -2,6 +2,7 @@ import { Fragment, ReactNode, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Marked from "marked-react";
 import { codeToHtml } from "shiki";
+import { useAPI } from "../lib/api";
 import { urlFromDiscordEmoji } from "../lib/discordEmoji";
 import { hostWhitelist } from "../lib/hostWhitelist";
 import { User } from "./User";
@@ -164,6 +165,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
             </a>
           ),
         text: (text) => {
+          const credentials = useAPI((state) => state.credentials);
           const matches = [...(text?.toString() ?? "").matchAll(TEXT_REGEX)];
           return (
             <Fragment key={getKey()}>
@@ -173,6 +175,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
                     <Link
                       text={match[0]}
                       href={`https://app.meower.org/users/${match[0].slice(1)}`}
+                      orange={match[0].slice(1) === credentials?.username}
                     />
                   ) : match.groups?.emoji ? (
                     <img
@@ -201,6 +204,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
 
 type LinkProps = {
   href: string;
+  orange?: boolean;
   text?: ReactNode;
 };
 const Link = (props: LinkProps) => {
@@ -211,7 +215,13 @@ const Link = (props: LinkProps) => {
     const username = match[1]!;
     return (
       <User username={username} key={getKey()}>
-        <button type="button" className="font-bold text-lime-600">
+        <button
+          type="button"
+          className={twMerge(
+            "font-bold",
+            props.orange ? "text-yellow-600" : "text-lime-600",
+          )}
+        >
           {props.text}
         </button>
       </User>
