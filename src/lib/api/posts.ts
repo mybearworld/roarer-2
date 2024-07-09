@@ -226,7 +226,12 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         return { error: false };
       }
       loadingChats.add(id);
-      const response = await state.loadPosts(id, posts?.posts?.length ?? 0);
+      const response = await state.loadPosts(
+        id,
+        posts?.posts?.filter(
+          (post) => !state.posts[post]?.error && !state.posts[post]?.isDeleted,
+        )?.length ?? 0,
+      );
       if (response.error) {
         return response;
       }
@@ -269,7 +274,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       if (response.error) {
         return response;
       }
-      const posts = response.response.autoget.slice(0, remove);
+      const posts = response.response.autoget.slice(remove);
       posts.forEach((post) => {
         state.addPost(post);
       });
