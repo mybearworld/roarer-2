@@ -210,11 +210,13 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         }),
         POST_SCHEMA,
       );
-      set((draft) => {
-        draft.posts[post] = response.error
-          ? response
-          : { error: false, ...response.response };
-      });
+      if (response.error) {
+        set((draft) => {
+          draft.posts[post] = response;
+        });
+      } else {
+        state.addPost(response.response);
+      }
       loadingPosts.delete(post);
     },
     loadMore: async (id: string) => {
