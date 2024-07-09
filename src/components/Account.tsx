@@ -16,10 +16,9 @@ export const Account = () => {
 };
 
 const SignInButton = () => {
-  const [mode, setMode] = useState<"sign in" | "sign up">("sign in");
+  const [mode, _setMode] = useState<"sign in" | "sign up">("sign in");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [keepLoggedIn, setKeepLoggedIn] = useState(true);
   const [storeAccount, setStoreAccount] = useState(true);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [tosAgreed, setTosAgreed] = useState(false);
@@ -36,7 +35,6 @@ const SignInButton = () => {
     setLoading(true);
     const loginResult = await logIn(username, password, {
       signUp: mode === "sign up",
-      keepLoggedIn,
       storeAccount,
     });
     if (loginResult.error) {
@@ -84,15 +82,7 @@ const SignInButton = () => {
               />
             ) : undefined}
             <label className="flex items-center gap-2">
-              <Checkbox checked={keepLoggedIn} onInput={setKeepLoggedIn} />
-              <span>Keep me logged in</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <Checkbox
-                checked={keepLoggedIn ? storeAccount : false}
-                onInput={setStoreAccount}
-                disabled={!keepLoggedIn}
-              />
+              <Checkbox checked={storeAccount} onInput={setStoreAccount} />
               <span>Store account</span>
             </label>
             {mode === "sign up" ? (
@@ -121,7 +111,7 @@ const SignInButton = () => {
                 >
                   {mode === "sign in" ? "Sign in" : "Sign up"}
                 </Button>
-                <Button
+                {/* <Button
                   type="button"
                   secondary
                   onClick={() =>
@@ -130,7 +120,7 @@ const SignInButton = () => {
                   disabled={loading}
                 >
                   {mode === "sign in" ? "Sign up" : "Sign in"}
-                </Button>
+                </Button> */}
               </div>
               <div className="text-right">
                 ...or use a{" "}
