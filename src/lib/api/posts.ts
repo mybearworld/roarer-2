@@ -273,10 +273,14 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       posts.forEach((post) => {
         state.addPost(post);
       });
+      const newState = get();
       return {
         error: false,
         posts: posts.map((post) => post.post_id),
-        stop: page === response.response.pages,
+        stop:
+          newState.credentials && id === "home"
+            ? false
+            : page === response.response.pages,
       };
     },
     post: async (content, chat, attachments) => {

@@ -64,6 +64,11 @@ export const createAuthSlice: Slice<AuthSlice> = (set, get) => {
           username: parsed.data.val.account._id,
           token: parsed.data.val.token,
         };
+        const home = draft.chatPosts.home;
+        if (!home || home.error) {
+          return;
+        }
+        home.stopLoadingMore = false;
       });
     });
   });
