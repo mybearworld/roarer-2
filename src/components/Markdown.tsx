@@ -6,6 +6,7 @@ import { useAPI } from "../lib/api";
 import { urlFromDiscordEmoji } from "../lib/discordEmoji";
 import { hostWhitelist } from "../lib/hostWhitelist";
 import { User } from "./User";
+import { ProfilePicture } from "./ProfilePicture";
 
 const TEXT_REGEX =
   /(?:(?<mention>@[a-zA-Z0-9\-_]+)|(?<emoji>\<(?<emojiAnimated>a?):(?<emojiName>\w+):(?<emojiId>\d+)>)|[^@\<]+|.)/g;
@@ -146,7 +147,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
           );
         },
         link: (href, text) => {
-          return <Link href={href} text={text} key={getKey()} />;
+          return <Link href={href} children={text} key={getKey()} />;
         },
         image: (src, alt, title) =>
           mdProps.inline ? (
@@ -173,10 +174,21 @@ export const Markdown = (mdProps: MarkdownProps) => {
                 <Fragment key={getKey()}>
                   {match.groups?.mention ? (
                     <Link
-                      text={match[0]}
                       href={`https://app.meower.org/users/${match[0].slice(1)}`}
                       orange={match[0].slice(1) === credentials?.username}
-                    />
+                    >
+                      <div>
+                        <div className="inline-block align-text-top">
+                          <ProfilePicture
+                            username={match[0].slice(1)}
+                            dontShowOnline
+                            size="w-5 h-5 min-w-5 min-h-5"
+                          />
+                        </div>
+                        &nbsp;
+                        <span>{match[0].slice(1)}</span>
+                      </div>
+                    </Link>
                   ) : match.groups?.emoji ? (
                     <img
                       className="inline-block"
@@ -205,7 +217,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
 type LinkProps = {
   href: string;
   orange?: boolean;
-  text?: ReactNode;
+  children?: ReactNode;
 };
 const Link = (props: LinkProps) => {
   const match = props.href.match(
@@ -222,7 +234,7 @@ const Link = (props: LinkProps) => {
             props.orange ? "text-yellow-600" : "text-lime-600",
           )}
         >
-          {props.text}
+          {props.children}
         </button>
       </User>
     );
@@ -234,7 +246,7 @@ const Link = (props: LinkProps) => {
       key={getKey()}
       target="_blank"
     >
-      {props.text}
+      {props.children}
     </a>
   );
 };
