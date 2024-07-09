@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@hcaptcha/vanilla-hcaptcha':
+        specifier: 1.1.0-alpha2
+        version: 1.1.0-alpha2
       '@radix-ui/react-dialog':
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -350,6 +353,9 @@ packages:
 
   '@floating-ui/utils@0.2.4':
     resolution: {integrity: sha512-dWO2pw8hhi+WrXq1YJy2yCuWoL20PddgGaqTgVe4cOS9Q6qklXCiA1tJEqX6BEwRNSCP84/afac9hd4MS+zEUA==}
+
+  '@hcaptcha/vanilla-hcaptcha@1.1.0-alpha2':
+    resolution: {integrity: sha512-8yU9jWPNa4RlSolPIGHgeRAlmMPDe1G37kGh199NeStQzj6xydFvd9RpNsQH0ATCfUWTP8smwPO9L/auohtCLw==}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -1870,6 +1876,8 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   '@floating-ui/utils@0.2.4': {}
+
+  '@hcaptcha/vanilla-hcaptcha@1.1.0-alpha2': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:

@@ -40,7 +40,10 @@ export type AuthSlice = {
   logIn: (
     username: string,
     password: string,
-    options: { signUp: boolean; storeAccount: boolean },
+    options: { storeAccount: boolean } & (
+      | { signUp: false }
+      | { signUp: true; captcha: string }
+    ),
   ) => Promise<{ error: true; message: string } | { error: false }>;
   signOut: () => void;
 };
@@ -86,7 +89,11 @@ export const createAuthSlice: Slice<AuthSlice> = (set, get) => {
         fetch(`${api}/auth/${options.signUp ? "register" : "login"}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({
+            username,
+            password,
+            ...(options.signUp ? { captcha: options.captcha } : {}),
+          }),
         }),
         AUTH_RESPONSE,
       );
