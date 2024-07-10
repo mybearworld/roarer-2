@@ -13,6 +13,7 @@ import { Popup } from "./Popup";
 import { User } from "./User";
 import { Menu, MenuItem } from "./Menu";
 import { Markdown } from "./Markdown";
+import { Mention } from "./Mention";
 import { MarkdownInput } from "./MarkdownInput";
 import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
 import { twMerge } from "tailwind-merge";
@@ -145,19 +146,21 @@ const PostBase = memo((props: PostBaseProps) => {
           >
             <div className="flex justify-between">
               <div>
-                <User username={props.post.u}>
-                  <button
-                    className={twMerge(
-                      "text-nowrap text-left font-bold",
-                      props.reply ? "" : "text-sm",
-                    )}
-                  >
-                    {props.post.u}
-                    {props.post.u === "noodles" && !props.reply
-                      ? " 🧀"
-                      : undefined}
-                  </button>
-                </User>
+                {props.reply ? (
+                    <Mention username={props.post.u} pfp={false} />
+                ) : (
+                  <User username={props.post.u}>
+                    <button
+                      className={twMerge(
+                        "text-nowrap text-left font-bold",
+                        props.reply ? "" : "text-sm",
+                      )}
+                    >
+                      {props.post.u}
+                      {props.post.u === "noodles" ? " 🧀" : undefined}
+                    </button>
+                  </User>
+                )}
                 {props.post.bridge && !props.reply ? (
                   <span className="ml-2 text-xs opacity-70">Bridged</span>
                 ) : undefined}

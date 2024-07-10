@@ -5,6 +5,7 @@ import { User } from "./User";
 
 export type MentionProps = {
   username: string;
+  pfp?: boolean;
 };
 export const Mention = (props: MentionProps) => {
   const credentials = useAPI((state) => state.credentials);
@@ -13,21 +14,23 @@ export const Mention = (props: MentionProps) => {
     <User username={props.username}>
       <button
         className={twMerge(
-          "font-bold",
+          "text-nowrap font-bold",
           props.username === credentials?.username
             ? "text-yellow-600"
             : "text-lime-600",
         )}
       >
         <span className="inline-block align-text-top">
-          <ProfilePicture
-            username={props.username}
-            dontShowOnline
-            size="w-5 h-5 min-w-5 min-h-5"
-          />
+          {props.pfp ?? true ? (
+            <ProfilePicture
+              username={props.username}
+              dontShowOnline
+              size="w-5 h-5 min-w-5 min-h-5"
+            />
+          ) : undefined}
         </span>
         &nbsp;
-        <span>@{props.username}</span>
+        <span className="inline-block">{props.username}</span>
       </button>
     </User>
   );
