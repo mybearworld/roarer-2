@@ -30,7 +30,10 @@ export const Mention = (props: MentionProps) => {
           ) : undefined}
         </span>
         &nbsp;
-        <span className="inline-block">{props.username}</span>
+        <span className="inline-block">
+          <span className="sr-only">@</span>
+          {props.username}
+        </span>
       </button>
     </User>
   );
