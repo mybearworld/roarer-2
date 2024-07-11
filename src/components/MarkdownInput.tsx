@@ -89,7 +89,13 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
   };
 
   const handleEmoji = (emoji: DiscordEmoji) => {
-    setPostContent((p) => p + syntaxForDiscordEmoji(emoji));
+    setPostContent((p) =>
+      textArea.current
+        ? p.slice(0, textArea.current.selectionStart) +
+          syntaxForDiscordEmoji(emoji) +
+          p.slice(textArea.current.selectionEnd)
+        : p + syntaxForDiscordEmoji(emoji),
+    );
   };
 
   const showAttachments = !props.noAttachments;
