@@ -5,8 +5,9 @@ import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
 import {
   discordEmoji,
-  syntaxForDiscordEmoji,
   urlFromDiscordEmoji,
+  userSyntaxForDiscordEmoji,
+  userToRegularDiscordEmojiSyntax,
   DiscordEmoji,
 } from "../lib/discordEmoji";
 import { getImageSize } from "../lib/imageSize";
@@ -72,7 +73,7 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
           (reply) =>
             `@${reply.username} ${trimmedPost(reply.content)} (${reply.id})\n`,
         )
-        .join("") + postContent,
+        .join("") + userToRegularDiscordEmojiSyntax(postContent),
       attachments.map((attachment) => attachment.id),
     );
     setState("writing");
@@ -92,9 +93,9 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
     setPostContent((p) =>
       textArea.current
         ? p.slice(0, textArea.current.selectionStart) +
-          syntaxForDiscordEmoji(emoji) +
+          userSyntaxForDiscordEmoji(emoji) +
           p.slice(textArea.current.selectionEnd)
-        : p + syntaxForDiscordEmoji(emoji),
+        : p + userSyntaxForDiscordEmoji(emoji),
     );
   };
 
@@ -267,7 +268,9 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
           </div>
         }
         replaceTextarea={
-          preview ? <Markdown>{postContent}</Markdown> : undefined
+          preview ? (
+            <Markdown>{userToRegularDiscordEmojiSyntax(postContent)}</Markdown>
+          ) : undefined
         }
         onPaste={(e) => {
           if (showAttachments && e.clipboardData.files.length) {
