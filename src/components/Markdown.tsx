@@ -6,6 +6,7 @@ import { urlFromDiscordEmoji } from "../lib/discordEmoji";
 import { hostWhitelist } from "../lib/hostWhitelist";
 import { Mention } from "./Mention";
 import { User } from "./User";
+import { Scratchblocks } from "./Scratchblocks";
 
 const TEXT_REGEX =
   /(?:@(?<mention>[a-zA-Z0-9\-_]+)|(?<emoji>\<(?<emojiAnimated>a?):(?<emojiName>\w+):(?<emojiId>\d+)>)|[^@\<]+|.)/g;
@@ -234,6 +235,9 @@ type SyntaxHighlightProps = {
 };
 const SyntaxHighlight = (props: SyntaxHighlightProps) => {
   const [syntaxHighlighted, setSyntaxHighlighted] = useState("");
+  if (props.lang === "scratch") {
+    return <Scratchblocks code={props.code ?? ""} inline={props.inline} />;
+  }
   if (props.lang) {
     codeToHtml(props.code ?? "", {
       lang: props.lang,
