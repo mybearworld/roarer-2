@@ -58,7 +58,7 @@ export const Chat = (props: ChatProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex max-h-screen flex-col-reverse gap-2 overflow-auto p-2 [&_*]:[overflow-anchor:none]">
       {props.chat === "home" ? undefined : (
         <p className="font-bold">
           {props.chat === "livechat"
