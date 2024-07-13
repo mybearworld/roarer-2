@@ -23,5 +23,6 @@
     "checkJs": true
   },
   "include": ["src", "public/plugins"],
+  "exclude": ["src/lib/emoji/generate"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
