@@ -11,7 +11,6 @@ export const Menu = (props: MenuProps) => {
       <Popover.Trigger asChild className="focus:outline-0">
         {props.trigger}
       </Popover.Trigger>
-      <Popover.Anchor />
       <Popover.Portal>
         <Popover.Content
           className="z-[--z-above-sidebar] flex flex-col rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
