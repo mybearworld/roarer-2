@@ -156,7 +156,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
               src={src}
               alt={alt}
               title={title ?? ""}
-              className="inline-block"
+              className="inline-block max-h-40"
               key={getKey()}
             />
           ) : (
