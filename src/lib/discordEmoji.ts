@@ -108,7 +108,7 @@ export const userSyntaxForDiscordEmoji = (emoji: DiscordEmoji) => {
   return `:${emoji.name}:`;
 };
 export const userToRegularDiscordEmojiSyntax = (string: string) => {
-  return string.replace(/:(\w+):/g, (s, name) => {
+  return string.replace(/(?<!\<a?):(\w+):/g, (s, name) => {
     const emoji = discordEmoji.find((emoji) => emoji.name === name);
     return emoji ? syntaxForDiscordEmoji(emoji) : s;
   });
