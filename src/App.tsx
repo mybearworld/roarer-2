@@ -21,7 +21,7 @@ export const App = () => {
 
   return (
     <div className="flex h-screen max-h-screen divide-x divide-gray-200 overflow-auto bg-white dark:divide-gray-800 dark:bg-gray-950">
-      <div className="w-full min-w-[65%] bg-white dark:bg-gray-950">
+      <div className="max-h-screen w-full min-w-[65%] overflow-auto bg-white p-2 dark:bg-gray-950">
         <Button
           className="absolute bottom-[50%] right-0 z-[--z-sidebar] h-14 rounded-none rounded-s-lg px-1 py-2 lg:hidden"
           onClick={() => setShowSideNav((n) => !n)}
