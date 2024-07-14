@@ -1,9 +1,12 @@
 import { ReactNode } from "react";
+import { twMerge } from "tailwind-merge";
 import * as Popover from "@radix-ui/react-popover";
 
 export type MenuProps = {
   trigger: ReactNode;
   children: ReactNode;
+  contextMenu?: boolean;
+  contentProps?: Popover.PopoverContentProps;
 };
 export const Menu = (props: MenuProps) => {
   return (
@@ -13,7 +16,11 @@ export const Menu = (props: MenuProps) => {
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="z-[--z-above-sidebar] flex flex-col rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
+          {...props.contentProps}
+          className={twMerge(
+            "z-[--z-above-sidebar] flex flex-col rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950",
+            props.contextMenu ?? true ? "" : "px-2 py-1",
+          )}
           align="end"
           sideOffset={4}
         >
