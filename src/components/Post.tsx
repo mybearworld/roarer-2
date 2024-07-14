@@ -164,16 +164,6 @@ const PostBase = memo((props: PostBaseProps) => {
                     </button>
                   </User>
                 )}
-                {props.post.bridge && !props.reply ? (
-                  <User username="Discord">
-                    <button className="ml-2 text-xs opacity-70">
-                      Bridged{" "}
-                      <span className="text-[0.6rem]">
-                        (Harmful. Click to learn more)
-                      </span>
-                    </button>
-                  </User>
-                ) : undefined}
               </div>
               {!props.reply && !props.post.optimistic ? (
                 <div className="flex gap-1">

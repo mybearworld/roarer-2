@@ -45,9 +45,6 @@ export const UserView = forwardRef<HTMLButtonElement, UserViewProps>(
           {props.username}{" "}
           {props.text ? (
             <span className="text-sm">({props.text})</span>
-          ) : undefined}{" "}
-          {props.username === "Discord" ? (
-            <span className="text-sm">(Harmful. Click to learn more)</span>
           ) : undefined}
         </div>
       </button>
