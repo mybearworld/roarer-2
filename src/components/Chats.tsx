@@ -151,9 +151,12 @@ const Chat = (props: ChatProps) => {
       }}
     >
       {isDM ? (
-        <ProfilePicture username={dmRecipient(chat)} />
+        <ProfilePicture
+          username={dmRecipient(chat)}
+          size="h-8 min-h-8 w-8 min-w-8"
+        />
       ) : chat !== "home" && chat !== "livechat" ? (
-        <ChatProfilePicture chat={props.chat} />
+        <ChatProfilePicture chat={props.chat} size="h-8 min-h-8 w-8 min-w-8" />
       ) : undefined}
       <div className="grow">
         <div className="font-bold">
