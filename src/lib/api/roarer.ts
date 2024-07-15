@@ -17,7 +17,7 @@ export const createRoarerSlice: Slice<RoarerSlice> = (set) => {
       set({ openChat });
     },
     notificationState:
-      Notification.permission === "denied"
+      !("Notification" in window) || Notification.permission === "denied"
         ? "denied"
         : Notification.permission === "granted" &&
             notificationPreference &&

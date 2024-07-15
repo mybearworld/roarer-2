@@ -146,8 +146,10 @@ const NotificationToggle = () => {
     >
       <div className="flex flex-col items-start gap-2">
         <p>
-          You have denied Roarer the permission to send notifications. Reenable
-          them in your browser, then try again.
+          You have denied Roarer the permission to send notifications, or your
+          browser doesn't support them.
+          <br />
+          Reenable them in your browser, then try again.
         </p>
         <Dialog.Close>
           <Button>Ok</Button>
