@@ -11,7 +11,8 @@ export const CHAT_SCHEMA = z
     members: z.string().array(),
     type: z.number(),
     _id: z.string(),
-    icon: z.string().optional(), icon_color: z.string().optional()
+    icon: z.string().optional(),
+    icon_color: z.string().optional(),
   })
   .and(
     z
@@ -25,7 +26,7 @@ export const CHAT_SCHEMA = z
           owner: z.null(),
         }),
       ),
-  )
+  );
 export type Chat = z.infer<typeof CHAT_SCHEMA>;
 
 const CHATS_RESPONSE_SCHEMA = z.object({
