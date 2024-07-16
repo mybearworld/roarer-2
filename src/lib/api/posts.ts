@@ -16,7 +16,7 @@ const ATTACHMENT_SCHEMA = z.object({
 });
 
 type SchemaPost = z.infer<typeof BASE_POST_SCHEMA> & {
-  reply_to: SchemaPost[];
+  reply_to: (SchemaPost | null)[];
 };
 export type Post = Omit<SchemaPost, "reply_to"> & {
   optimistic?: { error?: string };
@@ -36,7 +36,7 @@ const BASE_POST_SCHEMA = z.object({
   u: z.string(),
 });
 const POST_SCHEMA: z.ZodType<SchemaPost> = BASE_POST_SCHEMA.extend({
-  reply_to: z.lazy(() => POST_SCHEMA.array()),
+  reply_to: z.lazy(() => POST_SCHEMA.nullable().array()),
 });
 
 const POST_DELETE_PACKET_SCHEMA = z.object({
@@ -188,11 +188,12 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
     },
     addPost: (post) => {
       const state = get();
-      post.reply_to.forEach((reply) => state.addPost(reply));
+      const replies = post.reply_to.filter((reply) => reply !== null);
+      replies.forEach((reply) => state.addPost(reply));
       set((draft) => {
         draft.posts[post.post_id] = {
           ...post,
-          reply_to: post.reply_to.map((post) => post.post_id),
+          reply_to: replies.map((post) => post.post_id),
           error: false,
         };
       });
