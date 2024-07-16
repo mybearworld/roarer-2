@@ -189,7 +189,11 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
     addPost: (post) => {
       const state = get();
       const replies = post.reply_to.filter((reply) => reply !== null);
-      replies.forEach((reply) => state.addPost(reply));
+      replies.forEach((reply) => {
+        if (!reply.reply_to.some((reply) => reply === null)) {
+          state.addPost(reply);
+        }
+      });
       set((draft) => {
         draft.posts[post.post_id] = {
           ...post,
