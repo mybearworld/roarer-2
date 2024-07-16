@@ -103,14 +103,12 @@ const PostBase = memo((props: PostBaseProps) => {
     ]),
   );
   const reply =
-    props.post.reply_to ?
-      props.post.reply_to.length === 0 ?
-        null
-      : ({
-          ids: props.post.reply_to,
-          postContent: props.post.p,
-          replyText: "",
-        } satisfies PostWithReplies)
+    props.post.reply_to && props.post.reply_to.length !== 0 ?
+      ({
+        ids: props.post.reply_to,
+        postContent: props.post.p,
+        replyText: "",
+      } satisfies PostWithReplies)
     : getReply(props.post.p);
 
   const doReply = () => {
