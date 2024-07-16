@@ -16,6 +16,7 @@ import { Markdown } from "./Markdown";
 import { Mention } from "./Mention";
 import { MarkdownInput } from "./MarkdownInput";
 import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
+import { RelativeTime } from "./RelativeTime";
 import { twMerge } from "tailwind-merge";
 
 export type PostProps = {
@@ -151,17 +152,22 @@ const PostBase = memo((props: PostBaseProps) => {
               <div>
                 {props.reply ?
                   <Mention username={props.post.u} />
-                : <User username={props.post.u}>
-                    <button
-                      className={twMerge(
-                        "text-nowrap text-left font-bold",
-                        props.reply ? "" : "text-sm",
-                      )}
-                    >
-                      {props.post.u}
-                      {props.post.u === "noodles" ? " 🧀" : undefined}
-                    </button>
-                  </User>
+                : <div className="space-x-2">
+                    <User username={props.post.u}>
+                      <button
+                        className={twMerge(
+                          "text-nowrap text-left font-bold",
+                          props.reply ? "" : "text-sm",
+                        )}
+                      >
+                        {props.post.u}
+                        {props.post.u === "noodles" ? " 🧀" : undefined}
+                      </button>
+                    </User>
+                    <span className="text-sm opacity-70">
+                      <RelativeTime time={props.post.t.e} />
+                    </span>
+                  </div>
                 }
               </div>
               {!props.reply && !props.post.optimistic ?

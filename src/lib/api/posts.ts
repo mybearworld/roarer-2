@@ -293,7 +293,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
           p: trimmedContent,
           post_id: optimisticId,
           post_origin: chat,
-          t: { e: Date.now() },
+          t: { e: Date.now() / 1000 },
           u: credentials.username,
           error: false,
           optimistic: {},
