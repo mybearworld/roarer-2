@@ -254,9 +254,8 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         fetch(
           `${api}/${id === "home" ? "home" : `posts/${encodeURIComponent(id)}`}?page=${page}`,
           {
-            headers: state.credentials
-              ? { Token: state.credentials.token }
-              : {},
+            headers:
+              state.credentials ? { Token: state.credentials.token } : {},
           },
         ),
         MORE_POSTS_SCHEMA,
@@ -273,9 +272,9 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         error: false,
         posts: posts.map((post) => post.post_id),
         stop:
-          newState.credentials && id === "home"
-            ? false
-            : page === response.response.pages,
+          newState.credentials && id === "home" ?
+            false
+          : page === response.response.pages,
       };
     },
     post: async (content, chat, attachments) => {

@@ -149,10 +149,9 @@ const PostBase = memo((props: PostBaseProps) => {
           >
             <div className="flex justify-between">
               <div>
-                {props.reply ? (
+                {props.reply ?
                   <Mention username={props.post.u} />
-                ) : (
-                  <User username={props.post.u}>
+                : <User username={props.post.u}>
                     <button
                       className={twMerge(
                         "text-nowrap text-left font-bold",
@@ -163,11 +162,11 @@ const PostBase = memo((props: PostBaseProps) => {
                       {props.post.u === "noodles" ? " 🧀" : undefined}
                     </button>
                   </User>
-                )}
+                }
               </div>
-              {!props.reply && !props.post.optimistic ? (
+              {!props.reply && !props.post.optimistic ?
                 <div className="flex gap-1">
-                  {credentials ? (
+                  {credentials ?
                     <>
                       <button
                         type="button"
@@ -187,7 +186,7 @@ const PostBase = memo((props: PostBaseProps) => {
                         }
                       >
                         <MenuItem disabled>Report</MenuItem>
-                        {credentials.username !== props.post.u ? (
+                        {credentials.username !== props.post.u ?
                           <MenuItem
                             onClick={() =>
                               setViewState((e) =>
@@ -195,12 +194,12 @@ const PostBase = memo((props: PostBaseProps) => {
                               )
                             }
                           >
-                            {viewState === "source"
-                              ? "View post"
-                              : "View source"}
+                            {viewState === "source" ?
+                              "View post"
+                            : "View source"}
                           </MenuItem>
-                        ) : undefined}
-                        {credentials.username === props.post.u ? (
+                        : undefined}
+                        {credentials.username === props.post.u ?
                           <>
                             <MenuItem
                               onClick={() =>
@@ -213,36 +212,36 @@ const PostBase = memo((props: PostBaseProps) => {
                             </MenuItem>
                             <MenuItem onClick={handleDelete}>Delete</MenuItem>
                           </>
-                        ) : undefined}
+                        : undefined}
                       </Menu>
                     </>
-                  ) : undefined}
+                  : undefined}
                 </div>
-              ) : undefined}
+              : undefined}
             </div>
-            {props.post.optimistic?.error ? (
+            {props.post.optimistic?.error ?
               <div className="text-red-500">
                 This post failed sending. Message: {props.post.optimistic.error}
               </div>
-            ) : undefined}
-            {deleteError ? (
+            : undefined}
+            {deleteError ?
               <div className="text-red-500">
                 Couldn't delete post. Message: {deleteError}
               </div>
-            ) : undefined}
-            {!props.reply && reply?.ids ? (
+            : undefined}
+            {!props.reply && reply?.ids ?
               <div className="my-1 flex flex-col gap-2">
                 {reply.ids.map((id) => (
                   <Post id={id} reply key={id} />
                 ))}
               </div>
-            ) : undefined}
+            : undefined}
             <div
               className={
                 props.reply ? "line-clamp-1" : "max-h-64 overflow-y-auto"
               }
             >
-              {viewState === "edit" ? (
+              {viewState === "edit" ?
                 <div className="mx-1 my-2">
                   <MarkdownInput
                     chat={props.post.post_origin}
@@ -252,7 +251,7 @@ const PostBase = memo((props: PostBaseProps) => {
                     noAttachments
                   />
                 </div>
-              ) : viewState === "view" ? (
+              : viewState === "view" ?
                 <>
                   <Markdown
                     secondaryBackground={
@@ -262,21 +261,21 @@ const PostBase = memo((props: PostBaseProps) => {
                   >
                     {post}
                   </Markdown>
-                  {props.post.u === "mybearworld" &&
-                  props.post.p.endsWith("\u200d") &&
-                  !props.reply ? (
+                  {(
+                    props.post.u === "mybearworld" &&
+                    props.post.p.endsWith("\u200d") &&
+                    !props.reply
+                  ) ?
                     <Button type="button" onClick={() => location.reload()}>
                       Reload
                     </Button>
-                  ) : undefined}
+                  : undefined}
                 </>
-              ) : (
-                <div className="whitespace-pre-wrap">{props.post.p}</div>
-              )}
+              : <div className="whitespace-pre-wrap">{props.post.p}</div>}
             </div>
-            {!props.reply ? (
+            {!props.reply ?
               <Attachments attachments={props.post.attachments} />
-            ) : undefined}
+            : undefined}
           </div>
         }
       />
@@ -305,23 +304,23 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
       <div
         className={twMerge(
           "relative min-w-0 grow break-words rounded-lg px-2 py-1",
-          props.reply && props.reply !== "topLevel"
-            ? "bg-gray-200 dark:bg-gray-800"
-            : "bg-gray-100 dark:bg-gray-900",
+          props.reply && props.reply !== "topLevel" ?
+            "bg-gray-200 dark:bg-gray-800"
+          : "bg-gray-100 dark:bg-gray-900",
           props.arrow ?? true ? "rounded-ss-none" : "",
         )}
       >
-        {props.arrow ?? true ? (
+        {props.arrow ?? true ?
           <div
             className={twMerge(
               "absolute left-[calc(-0.5rem-theme(spacing.2))] top-0 box-content h-0 w-0 border-[length:0.5rem] border-transparent border-r-gray-100 contrast-more:hidden",
-              props.reply && props.reply !== "topLevel"
-                ? "border-r-gray-200 dark:border-r-gray-800"
-                : "border-r-gray-100 dark:border-r-gray-900",
+              props.reply && props.reply !== "topLevel" ?
+                "border-r-gray-200 dark:border-r-gray-800"
+              : "border-r-gray-100 dark:border-r-gray-900",
             )}
             aria-hidden
           />
-        ) : undefined}
+        : undefined}
         {props.bubble}
       </div>
     </div>
@@ -351,17 +350,18 @@ export type AttachmentViewProps = {
 };
 export const AttachmentView = (props: AttachmentViewProps) => {
   const download = useRef<HTMLAnchorElement>(null);
-  const closeRow = props.onRemove ? (
-    <button
-      type="button"
-      aria-label="Remove"
-      className="flex items-center gap-2 text-wrap font-bold"
-      onClick={() => props.onRemove?.(props.attachment.id)}
-    >
-      <span>{props.attachment.filename}</span>
-      <X className="h-6 w-6" strokeWidth={2.2} aria-hidden />
-    </button>
-  ) : undefined;
+  const closeRow =
+    props.onRemove ?
+      <button
+        type="button"
+        aria-label="Remove"
+        className="flex items-center gap-2 text-wrap font-bold"
+        onClick={() => props.onRemove?.(props.attachment.id)}
+      >
+        <span>{props.attachment.filename}</span>
+        <X className="h-6 w-6" strokeWidth={2.2} aria-hidden />
+      </button>
+    : undefined;
 
   if (props.attachment.mime.startsWith("image/")) {
     return (
