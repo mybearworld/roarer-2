@@ -3,7 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { ReactNode, useRef, useState, memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
-import { getReply } from "../lib/reply";
+import { getReply, PostWithReplies } from "../lib/reply";
 import { Attachment, Post as APIPost } from "../lib/api/posts";
 import { NO_PROFILE_PICTURE } from "../lib/noProfilePicture";
 import { uploads } from "../lib/servers";
@@ -102,7 +102,14 @@ const PostBase = memo((props: PostBaseProps) => {
       state.deletePost,
     ]),
   );
-  const reply = getReply(props.post.p);
+  const reply =
+    props.post.reply_to && props.post.reply_to.length !== 0 ?
+      ({
+        ids: props.post.reply_to,
+        postContent: props.post.p,
+        replyText: "",
+      } satisfies PostWithReplies)
+    : getReply(props.post.p);
 
   const doReply = () => {
     props.onReply?.(props.post.post_id, post, props.post.u);

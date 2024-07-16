@@ -15,10 +15,14 @@ const ATTACHMENT_SCHEMA = z.object({
   width: z.number(),
 });
 
-export type Post = z.infer<typeof POST_SCHEMA> & {
-  optimistic?: { error?: string };
+type SchemaPost = z.infer<typeof BASE_POST_SCHEMA> & {
+  reply_to: (SchemaPost | null)[];
 };
-export const POST_SCHEMA = z.object({
+export type Post = Omit<SchemaPost, "reply_to"> & {
+  optimistic?: { error?: string };
+  reply_to: string[];
+};
+const BASE_POST_SCHEMA = z.object({
   attachments: ATTACHMENT_SCHEMA.array(),
   edited_at: z.number().optional(),
   isDeleted: z.literal(false),
@@ -30,6 +34,9 @@ export const POST_SCHEMA = z.object({
   }),
   type: z.number(),
   u: z.string(),
+});
+const POST_SCHEMA: z.ZodType<SchemaPost> = BASE_POST_SCHEMA.extend({
+  reply_to: z.lazy(() => POST_SCHEMA.nullable().array()),
 });
 
 const POST_DELETE_PACKET_SCHEMA = z.object({
@@ -61,7 +68,7 @@ export type PostsSlice = {
     }>
   >;
   posts: Record<string, Errorable<Post | { isDeleted: true }>>;
-  addPost: (post: Post) => Post;
+  addPost: (post: SchemaPost) => SchemaPost;
   loadChatPosts: (id: string) => Promise<void>;
   loadMore: (
     id: string,
@@ -77,6 +84,7 @@ export type PostsSlice = {
   post: (
     content: string,
     chat: string,
+    replies: string[],
     attachments?: string[],
   ) => Promise<void>;
   editPost: (
@@ -146,9 +154,8 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         return;
       }
       const post = parsed.data.val;
-      set((draft) => {
-        draft.posts[post.post_id] = { ...post, error: false };
-      });
+      const state = get();
+      state.addPost(post);
     });
     cloudlink.on("packet", (packet: unknown) => {
       const parsed = POST_DELETE_PACKET_SCHEMA.safeParse(packet);
@@ -179,10 +186,18 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         error: false,
       },
     },
-    addPost: (post: Post) => {
+    addPost: (post) => {
+      const state = get();
+      const replies = post.reply_to.filter((reply) => reply !== null);
+      replies.forEach((reply) => {
+        if (!reply.reply_to.some((reply) => reply === null)) {
+          state.addPost(reply);
+        }
+      });
       set((draft) => {
         draft.posts[post.post_id] = {
           ...post,
+          reply_to: replies.map((post) => post.post_id),
           error: false,
         };
       });
@@ -277,7 +292,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
           : page === response.response.pages,
       };
     },
-    post: async (content, chat, attachments) => {
+    post: async (content, chat, replies, attachments) => {
       const state = get();
       const optimisticId = getOptimisticId();
       const credentials = state.credentials;
@@ -297,6 +312,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
           u: credentials.username,
           error: false,
           optimistic: {},
+          reply_to: replies,
         };
         const chatPosts = draft.chatPosts[chat];
         if (chatPosts && !chatPosts.error) {
@@ -312,7 +328,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
               ...(state.credentials ? { Token: state.credentials.token } : {}),
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ content, attachments }),
+            body: JSON.stringify({ content, attachments, reply_to: replies }),
             method: "POST",
           },
         ),
