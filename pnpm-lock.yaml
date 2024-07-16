@@ -26,8 +26,8 @@ importers:
         specifier: ^10.1.1
         version: 10.1.1
       lucide-react:
-        specifier: ^0.403.0
-        version: 0.403.0(react@18.3.1)
+        specifier: ^0.408.0
+        version: 0.408.0(react@18.3.1)
       marked-react:
         specifier: ^2.0.0
         version: 2.0.0(react@18.3.1)
@@ -37,6 +37,9 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      scratchblocks:
+        specifier: ^3.6.4
+        version: 3.6.4
       shiki:
         specifier: ^1.10.3
         version: 1.10.3
@@ -66,14 +69,14 @@ importers:
         specifier: ^8.4.39
         version: 8.4.39
       prettier:
-        specifier: ^3.3.2
-        version: 3.3.2
+        specifier: ^3.3.3
+        version: 3.3.3
       prettier-plugin-tailwindcss:
         specifier: ^0.6.5
-        version: 0.6.5(prettier@3.3.2)
+        version: 0.6.5(prettier@3.3.3)
       tailwindcss:
-        specifier: ^3.4.4
-        version: 3.4.4
+        specifier: ^3.4.5
+        version: 3.4.5
       typescript:
         specifier: ^5.5.3
         version: 5.5.3
@@ -2181,6 +2184,9 @@ packages:
         integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==,
       }
 
+  scratchblocks@3.6.4:
+    resolution: {integrity: sha512-2qesRNViXrceNG7OvMim3D2rBQ2qDjH24VwRVijef1XQlLmEKNiMItx/3dQpdybnUDXTnfZyRU41vc/if+Au7w==}
+
   semver@6.3.1:
     resolution:
       {
@@ -3473,7 +3479,7 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  lucide-react@0.403.0(react@18.3.1):
+  lucide-react@0.408.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
@@ -3573,11 +3579,11 @@ snapshots:
       picocolors: 1.0.1
       source-map-js: 1.2.0
 
-  prettier-plugin-tailwindcss@0.6.5(prettier@3.3.2):
+  prettier-plugin-tailwindcss@0.6.5(prettier@3.3.3):
     dependencies:
-      prettier: 3.3.2
+      prettier: 3.3.3
 
-  prettier@3.3.2: {}
+  prettier@3.3.3: {}
 
   queue-microtask@1.2.3: {}
 
@@ -3667,6 +3673,8 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
 
+  scratchblocks@3.6.4: {}
+
   semver@6.3.1: {}
 
   shebang-command@2.0.0:
@@ -3723,7 +3731,7 @@ snapshots:
     dependencies:
       "@babel/runtime": 7.24.7
 
-  tailwindcss@3.4.4:
+  tailwindcss@3.4.5:
     dependencies:
       "@alloc/quick-lru": 5.2.0
       arg: 5.0.2

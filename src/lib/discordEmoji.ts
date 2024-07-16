@@ -96,7 +96,11 @@ export const discordEmoji = (
     { name: "spin", id: "1227279798015889498", isGif: true },
     { name: "squish", id: "1227279787072946189", isGif: true },
   ] satisfies DiscordEmoji[]
-).sort((a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0));
+).sort((a, b) =>
+  a.name > b.name ? 1
+  : a.name < b.name ? -1
+  : 0,
+);
 
 export const urlFromDiscordEmoji = (emoji: DiscordEmoji) => {
   return `https://cdn.discordapp.com/emojis/${encodeURIComponent(emoji.id)}.${emoji.isGif ? "gif" : "webp"}?size=24&quality=lossless`;

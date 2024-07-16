@@ -17,7 +17,6 @@ const ATTACHMENT_SCHEMA = z.object({
 
 export type Post = z.infer<typeof POST_SCHEMA> & {
   optimistic?: { error?: string };
-  bridge?: "discord";
 };
 export const POST_SCHEMA = z.object({
   attachments: ATTACHMENT_SCHEMA.array(),
@@ -113,7 +112,8 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         state.notificationState === "enabled" &&
         newPost.u !== state.credentials?.username &&
         newPost.p.includes("@" + state.credentials?.username) &&
-        (document.hidden || state.openChat !== newPost.post_origin)
+        (document.hidden || state.openChat !== newPost.post_origin) &&
+        "Notification" in window
       ) {
         new Notification(`${newPost.u} mentioned you:`, {
           body: replylessPost,
@@ -180,23 +180,13 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       },
     },
     addPost: (post: Post) => {
-      const bridge = post.u === "Discord" ? "discord" : undefined;
-      const match = bridge
-        ? post.p.match(/^(?<username>[a-z0-9_\-]+)(?:\: (?<post>[\s\S]+))?/i)
-        : null;
-      const username = match?.groups?.username;
-      const postContent = match?.groups?.post;
-      const newPost = {
-        ...post,
-        ...(bridge && username
-          ? ({ bridge, u: username, p: postContent ?? "" } as const)
-          : {}),
-        error: false,
-      } as const;
       set((draft) => {
-        draft.posts[post.post_id] = newPost;
+        draft.posts[post.post_id] = {
+          ...post,
+          error: false,
+        };
       });
-      return newPost;
+      return post;
     },
     loadPost: async (post: string) => {
       if (post in get().posts || loadingPosts.has(post)) {
@@ -264,9 +254,8 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         fetch(
           `${api}/${id === "home" ? "home" : `posts/${encodeURIComponent(id)}`}?page=${page}`,
           {
-            headers: state.credentials
-              ? { Token: state.credentials.token }
-              : {},
+            headers:
+              state.credentials ? { Token: state.credentials.token } : {},
           },
         ),
         MORE_POSTS_SCHEMA,
@@ -283,9 +272,9 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         error: false,
         posts: posts.map((post) => post.post_id),
         stop:
-          newState.credentials && id === "home"
-            ? false
-            : page === response.response.pages,
+          newState.credentials && id === "home" ?
+            false
+          : page === response.response.pages,
       };
     },
     post: async (content, chat, attachments) => {
@@ -304,7 +293,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
           p: trimmedContent,
           post_id: optimisticId,
           post_origin: chat,
-          t: { e: Date.now() },
+          t: { e: Date.now() / 1000 },
           u: credentials.username,
           error: false,
           optimistic: {},

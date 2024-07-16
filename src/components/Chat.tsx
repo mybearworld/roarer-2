@@ -59,36 +59,38 @@ export const Chat = (props: ChatProps) => {
 
   return (
     <div className="flex flex-col gap-2">
-      {props.chat === "home" ? undefined : (
-        <p className="font-bold">
-          {props.chat === "livechat"
-            ? "Livechat"
-            : chat
-              ? chat.error
-                ? `Failed getting chat. Message: ${chat.message}`
-                : chat.deleted
-                  ? ""
-                  : chat.nickname ??
-                    "@" +
-                      chat.members.find(
-                        (member) => member !== credentials?.username,
-                      )
-              : "Loading chat name..."}
+      {props.chat === "home" ?
+        undefined
+      : <p className="font-bold">
+          {props.chat === "livechat" ?
+            "Livechat"
+          : chat ?
+            chat.error ?
+              `Failed getting chat. Message: ${chat.message}`
+            : chat.deleted ?
+              ""
+            : chat.nickname ??
+              "@" +
+                chat.members.find((member) => member !== credentials?.username)
+
+          : "Loading chat name..."}
+          <span className="ml-2 text-xs font-medium">({props.chat})</span>
         </p>
-      )}
+      }
       <EnterPost chat={props.chat} replies={replies} setReplies={setReplies} />
       <TypingIndicator chat={props.chat} />
       {posts.posts.map((post) => (
         <Post key={post} id={post} onReply={setReplyFromPost} />
       ))}
-      {posts.stopLoadingMore ? undefined : (
-        <Button type="button" onClick={handleLoadMore} disabled={loadingMore}>
+      {posts.stopLoadingMore ?
+        undefined
+      : <Button type="button" onClick={handleLoadMore} disabled={loadingMore}>
           Load more
         </Button>
-      )}
-      {loadMoreError ? (
+      }
+      {loadMoreError ?
         <div className="text-red-500">{loadMoreError}</div>
-      ) : null}
+      : null}
     </div>
   );
 };

@@ -1,6 +1,8 @@
 import { twMerge } from "tailwind-merge";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
+import { ProfilePicture, ChatProfilePicture } from "./ProfilePicture";
+import { Chat as APIChat } from "../lib/api/chats";
 
 export type ChatsProps = {
   onChatClick: (chat: string) => void;
@@ -109,11 +111,9 @@ const Chat = (props: ChatProps) => {
   }
 
   const chat =
-    props.chat === "home"
-      ? "home"
-      : props.chat === "livechat"
-        ? "livechat"
-        : baseChat;
+    props.chat === "home" ? "home"
+    : props.chat === "livechat" ? "livechat"
+    : baseChat;
   const isSpecialChat = chat === "home" || chat === "livechat";
 
   if (!isSpecialChat && !chat) {
@@ -132,29 +132,39 @@ const Chat = (props: ChatProps) => {
   }
 
   const isDM = chat !== "home" && chat !== "livechat" && !chat.owner;
+  const dmRecipient = (chat: APIChat) =>
+    chat.members.find((member) => member !== credentials?.username);
 
   return (
     <button
       className={twMerge(
-        "flex w-full max-w-full items-center px-2 py-1 text-left",
-        props.current
-          ? "bg-gray-100 dark:bg-gray-900"
-          : "bg-white hover:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-900",
+        "flex w-full max-w-full items-center gap-2 px-2 py-1 text-left",
+        props.current ?
+          "bg-gray-100 dark:bg-gray-900"
+        : "bg-white hover:bg-gray-100 dark:bg-gray-950 dark:hover:bg-gray-900",
       )}
       type="button"
       onClick={() => {
         props.onClick(props.chat);
       }}
     >
+      {isDM ?
+        <ProfilePicture
+          username={dmRecipient(chat)}
+          size="h-8 min-h-8 w-8 min-w-8"
+        />
+      : chat !== "home" && chat !== "livechat" ?
+        <ChatProfilePicture chat={props.chat} size="h-8 min-h-8 w-8 min-w-8" />
+      : undefined}
       <div className="grow">
         <div className="font-bold">
-          {isDM
-            ? `@${chat.members.find((member) => member !== credentials?.username)}`
-            : chat === "home"
-              ? "Home"
-              : chat === "livechat"
-                ? "Livechat"
-                : chat.nickname}
+          {isDM ?
+            `@${dmRecipient(chat)}`
+          : chat === "home" ?
+            "Home"
+          : chat === "livechat" ?
+            "Livechat"
+          : chat.nickname}
         </div>
         <div className="line-clamp-1 text-sm text-gray-500 dark:text-gray-400">
           {!isDM && !isSpecialChat ? chat.members.join(", ") : undefined}

@@ -10,3 +10,4 @@ node_modules
 .prettierrc
 public/plugins/*
 src/lib/emoji/data/data.json
+src/lib/emoji/generate/deno.lock
