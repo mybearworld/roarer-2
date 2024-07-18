@@ -113,7 +113,7 @@ export const EmojiPicker = (props: EmojiPickerProps) => {
                   title={`:${emoji.name}:`}
                   onClick={() => props.onEmoji(emoji)}
                 >
-                  <img src={urlFromDiscordEmoji(emoji)} alt={emoji.name} />
+                  <img src={urlFromDiscordEmoji(emoji)} alt={`:${emoji.name}:`} />
                 </button>
               ))}
             </div>
