@@ -1,6 +1,5 @@
 import { File, Menu as MenuIcon, SmilePlus, Reply, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
-import * as Popover from "@radix-ui/react-popover";
 import { ReactNode, useRef, useState, memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
@@ -212,22 +211,15 @@ const PostBase = memo((props: PostBaseProps) => {
                 <div className="flex gap-1">
                   {credentials ?
                     <>
-                      <Popover.Root>
-                        <Popover.Trigger asChild>
+                      <EmojiPicker
+                        onEmoji={handleReaction}
+                        discordEmoji={false}
+                        trigger={
                           <button type="button" aria-label="React">
                             <SmilePlus className="h-5 w-5" aria-hidden />
                           </button>
-                        </Popover.Trigger>
-                        <Popover.Anchor />
-                        <Popover.Portal>
-                          <Popover.Content align="end" sideOffset={4}>
-                            <EmojiPicker
-                              onEmoji={handleReaction}
-                              discordEmoji={false}
-                            />
-                          </Popover.Content>
-                        </Popover.Portal>
-                      </Popover.Root>
+                        }
+                      />
                       <button
                         type="button"
                         aria-label="Reply"
@@ -341,7 +333,7 @@ const PostBase = memo((props: PostBaseProps) => {
                 {props.post.reactions.map((reaction) => (
                   <button
                     className={twMerge(
-                      "flex items-center gap-2 rounded-xl bg-gray-300 px-1 py-1 dark:bg-gray-700",
+                      "flex items-center gap-2 rounded-xl bg-gray-300 px-2 py-1 dark:bg-gray-700",
                       reaction.user_reacted ?
                         "outline outline-2 outline-lime-500"
                       : "",
@@ -384,7 +376,7 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
     <div
       className={twMerge(
         "flex",
-        props.arrow ?? true ? "gap-3" : "gap-1",
+        (props.arrow ?? true) ? "gap-3" : "gap-1",
         props.reply ? "items-center" : "",
         props.transparent ? "opacity-70" : "",
       )}
@@ -396,10 +388,10 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
           props.reply && props.reply !== "topLevel" ?
             "bg-gray-200 dark:bg-gray-800"
           : "bg-gray-100 dark:bg-gray-900",
-          props.arrow ?? true ? "rounded-ss-none" : "",
+          (props.arrow ?? true) ? "rounded-ss-none" : "",
         )}
       >
-        {props.arrow ?? true ?
+        {(props.arrow ?? true) ?
           <div
             className={twMerge(
               "absolute left-[calc(-0.5rem-theme(spacing.2))] top-0 box-content h-0 w-0 border-[length:0.5rem] border-transparent border-r-gray-100 contrast-more:hidden",
