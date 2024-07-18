@@ -153,9 +153,11 @@ const PostBase = memo((props: PostBaseProps) => {
     );
     if (response.error) {
       setReactionError(response.message);
-      setTimeout(() => {
-        setReactionError(undefined)
-      }, 5000);
+      if (response.message === "tooManyRequests") {
+        setTimeout(() => {
+          setReactionError(undefined)
+        }, 5000);
+      }
     } else {
       setReactionError(undefined);
     }
@@ -358,7 +360,7 @@ const PostBase = memo((props: PostBaseProps) => {
               <div className="text-red-500">
                 {reactionError === "tooManyRequests"
                   ? `You're sending too many reactions. Slow down a little.`
-                  : `Couldn't add/change post reaction. Message: ${reactionError}`}
+                  : `Couldn't change post reaction. Message: ${reactionError}`}
               </div>
             ) : undefined}
           </div>
