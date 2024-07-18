@@ -126,7 +126,7 @@ export const EmojiPicker = (props: EmojiPickerProps) => {
                       >
                         <img
                           src={urlFromDiscordEmoji(emoji)}
-                          alt={`:${emoji.name}:`}
+                          alt={emoji.name}
                         />
                       </button>
                     ))}
