@@ -1,5 +1,6 @@
-import { File, Menu as MenuIcon, Reply, X } from "lucide-react";
+import { File, Menu as MenuIcon, SmilePlus, Reply, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
+import * as Popover from "@radix-ui/react-popover";
 import { ReactNode, useRef, useState, memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
@@ -18,6 +19,8 @@ import { MarkdownInput } from "./MarkdownInput";
 import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
 import { RelativeTime } from "./RelativeTime";
 import { twMerge } from "tailwind-merge";
+import { EmojiPicker } from "./EmojiPicker";
+import { DiscordEmoji } from "../lib/discordEmoji";
 
 export type PostProps = {
   id: string;
@@ -92,14 +95,16 @@ type PostBaseProps = {
 };
 const PostBase = memo((props: PostBaseProps) => {
   const [deleteError, setDeleteError] = useState<string>();
+  const [reactionError, setReactionError] = useState<string>();
   const [viewState, setViewState] = useState<"view" | "edit" | "source">(
     "view",
   );
-  const [credentials, editPost, deletePost] = useAPI(
+  const [credentials, editPost, deletePost, reactToPost] = useAPI(
     useShallow((state) => [
       state.credentials,
       state.editPost,
       state.deletePost,
+      state.reactToPost,
     ]),
   );
   const reply =
@@ -127,6 +132,32 @@ const PostBase = memo((props: PostBaseProps) => {
     const response = await deletePost(props.post.post_id);
     if (response.error) {
       setDeleteError(response.message);
+    }
+  };
+
+  const handleReaction = async (
+    emoji: string | DiscordEmoji,
+    type?: "add" | "delete",
+  ) => {
+    if (typeof emoji !== "string") {
+      return;
+    }
+    const response = await reactToPost(
+      props.post.post_id,
+      emoji,
+      type ??
+        ((
+          props.post.reactions.some(
+            (reaction) => reaction.emoji === emoji && reaction.user_reacted,
+          )
+        ) ?
+          "delete"
+        : "add"),
+    );
+    if (response.error) {
+      setReactionError(response.message);
+    } else {
+      setReactionError(undefined);
     }
   };
 
@@ -181,6 +212,22 @@ const PostBase = memo((props: PostBaseProps) => {
                 <div className="flex gap-1">
                   {credentials ?
                     <>
+                      <Popover.Root>
+                        <Popover.Trigger asChild>
+                          <button type="button" aria-label="React">
+                            <SmilePlus className="h-5 w-5" aria-hidden />
+                          </button>
+                        </Popover.Trigger>
+                        <Popover.Anchor />
+                        <Popover.Portal>
+                          <Popover.Content align="end" sideOffset={4}>
+                            <EmojiPicker
+                              onEmoji={handleReaction}
+                              discordEmoji={false}
+                            />
+                          </Popover.Content>
+                        </Popover.Portal>
+                      </Popover.Root>
                       <button
                         type="button"
                         aria-label="Reply"
@@ -288,6 +335,35 @@ const PostBase = memo((props: PostBaseProps) => {
             </div>
             {!props.reply ?
               <Attachments attachments={props.post.attachments} />
+            : undefined}
+            {props.post.reactions.length && !props.reply ?
+              <div className="mt-1 flex flex-wrap gap-2">
+                {props.post.reactions.map((reaction) => (
+                  <button
+                    className={twMerge(
+                      "flex items-center gap-2 rounded-xl bg-gray-300 px-1 py-1 dark:bg-gray-700",
+                      reaction.user_reacted ?
+                        "outline outline-2 outline-lime-500"
+                      : "",
+                    )}
+                    key={reaction.emoji}
+                    onClick={() =>
+                      handleReaction(
+                        reaction.emoji,
+                        reaction.user_reacted ? "delete" : "add",
+                      )
+                    }
+                    type="button"
+                  >
+                    {reaction.emoji} {reaction.count}
+                  </button>
+                ))}
+              </div>
+            : undefined}
+            {reactionError ?
+              <div className="text-red-500">
+                Couldn't change post reaction. Message: {reactionError}
+              </div>
             : undefined}
           </div>
         }
