@@ -341,7 +341,7 @@ const PostBase = memo((props: PostBaseProps) => {
                 {props.post.reactions.map((reaction) => (
                   <button
                     className={twMerge(
-                      "flex items-center gap-2 rounded-xl bg-gray-300 px-1 py-1 dark:bg-gray-700",
+                      "flex items-center gap-2 rounded-xl bg-gray-300 px-2 py-1 dark:bg-gray-700",
                       reaction.user_reacted ?
                         "outline outline-2 outline-lime-500"
                       : "",
