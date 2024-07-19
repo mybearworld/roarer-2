@@ -4,6 +4,10 @@ import { cl } from "../servers";
 const toResolveOnInit: ((cloudlink: CloudlinkClient) => void)[] = [];
 
 let cloudlinkClient: CloudlinkClient | null = null;
+//  = new CloudlinkClient({
+//   url: cl,
+//   log: import.meta.env.DEV,
+// });
 export const initCloudlink = (newToken: string | null) => {
   if (cloudlinkClient) {
     throw new Error("Cloudlink is already initialized");
@@ -44,7 +48,4 @@ getCloudlink().then((cloudlink) => {
       listener: "🏓",
     });
   }, 20000);
-  cloudlink.on("close", () => {
-    cloudlink.connect();
-  });
 });
