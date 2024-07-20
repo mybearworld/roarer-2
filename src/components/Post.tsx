@@ -331,13 +331,8 @@ const PostBase = memo((props: PostBaseProps) => {
             {props.post.reactions.length && !props.reply ?
               <div className="mt-1 flex flex-wrap gap-2">
                 {props.post.reactions.map((reaction) => (
-                  <button
-                    className={twMerge(
-                      "flex items-center gap-2 rounded-xl bg-gray-300 px-2 py-1 dark:bg-gray-700",
-                      reaction.user_reacted ?
-                        "outline outline-2 outline-lime-500"
-                      : "",
-                    )}
+                  <Button
+                    secondary={!reaction.user_reacted}
                     key={reaction.emoji}
                     onClick={() =>
                       handleReaction(
@@ -347,8 +342,10 @@ const PostBase = memo((props: PostBaseProps) => {
                     }
                     type="button"
                   >
-                    {reaction.emoji} {reaction.count}
-                  </button>
+                    <div className="flex items-center gap-2">
+                      {reaction.emoji} {reaction.count}
+                    </div>
+                  </Button>
                 ))}
               </div>
             : undefined}
