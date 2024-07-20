@@ -35,7 +35,7 @@ export const Chat = (props: ChatProps) => {
       state.updateChat,
     ]),
   );
-  if (props.chat !== "home" && props.chat !== "lievchat") {
+  if (props.chat !== "home" && props.chat !== "livechat") {
     loadChat(props.chat);
   }
   loadChatPosts(props.chat);
