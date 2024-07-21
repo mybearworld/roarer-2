@@ -115,6 +115,8 @@ const PostBase = memo((props: PostBaseProps) => {
       } satisfies PostWithReplies)
     : getReply(props.post.p);
 
+  const isInbox = props.post.type === 2;
+
   const doReply = () => {
     props.onReply?.(props.post.post_id, post, props.post.u);
   };
@@ -220,13 +222,16 @@ const PostBase = memo((props: PostBaseProps) => {
                           </button>
                         }
                       />
-                      <button
-                        type="button"
-                        aria-label="Reply"
-                        onClick={doReply}
-                      >
-                        <Reply className="h-6 w-6" aria-hidden />
-                      </button>
+                      {isInbox ?
+                        undefined
+                      : <button
+                          type="button"
+                          aria-label="Reply"
+                          onClick={doReply}
+                        >
+                          <Reply className="h-6 w-6" aria-hidden />
+                        </button>
+                      }
                       <Menu
                         trigger={
                           <button

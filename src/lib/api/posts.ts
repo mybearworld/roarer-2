@@ -329,7 +329,11 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       const { page, remove } = loadMore(current);
       const response = await request(
         fetch(
-          `${api}/${id === "home" ? "home" : `posts/${encodeURIComponent(id)}`}?page=${page}`,
+          `${api}/${
+            id === "home" ? "home"
+            : id === "inbox" ? "inbox"
+            : `posts/${encodeURIComponent(id)}`
+          }?page=${page}`,
           {
             headers:
               newState.credentials ? { Token: newState.credentials.token } : {},
