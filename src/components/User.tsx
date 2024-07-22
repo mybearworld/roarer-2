@@ -63,7 +63,7 @@ export const User = (props: UserProps) => {
                 : undefined}
               </div>
               {credentials && credentials.username !== props.username ?
-                <div>
+                <div className="flex grow justify-end">
                   <Button type="button" onClick={dm}>
                     DM
                   </Button>
