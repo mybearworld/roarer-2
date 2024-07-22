@@ -5,6 +5,7 @@ import { Button } from "./Button";
 import { Popup } from "./Popup";
 import { Markdown } from "./Markdown";
 import { ProfilePicture } from "./ProfilePicture";
+import { RelativeTime } from "./RelativeTime";
 
 export type UserProps = {
   username: string;
@@ -42,7 +43,7 @@ export const User = (props: UserProps) => {
     >
       <div className="flex gap-2">
         <ProfilePicture username={props.username} />
-        <div className="flex flex-col gap-1">
+        <div className="">
           <span className="text-xl font-bold"> {props.username}</span>
           {!user ?
             <div>Loading...</div>
@@ -53,17 +54,24 @@ export const User = (props: UserProps) => {
               Message: {user.message}
             </div>
           : <>
-              {user.quote ?
-                <Markdown children={user.quote} />
+              {user.created ?
+                <p className="text-sm italic opacity-60">
+                  Joined <RelativeTime time={user.created} />
+                </p>
               : undefined}
-              {credentials && credentials.username !== props.username ?
-                <Button type="button" onClick={dm}>
-                  DM
-                </Button>
-              : undefined}
-              {error ?
-                <div className="text-red-500">{error}</div>
-              : undefined}
+              <div className="mt-2 flex flex-col gap-2">
+                {user.quote ?
+                  <Markdown children={user.quote} />
+                : undefined}
+                {credentials && credentials.username !== props.username ?
+                  <Button type="button" onClick={dm}>
+                    DM
+                  </Button>
+                : undefined}
+                {error ?
+                  <div className="text-red-500">{error}</div>
+                : undefined}
+              </div>
             </>
           }
         </div>
