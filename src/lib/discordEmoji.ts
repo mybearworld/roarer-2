@@ -102,8 +102,10 @@ export const discordEmoji = (
   : 0,
 );
 
-export const urlFromDiscordEmoji = (emoji: DiscordEmoji) => {
-  return `https://cdn.discordapp.com/emojis/${encodeURIComponent(emoji.id)}.${emoji.isGif ? "gif" : "webp"}?size=24&quality=lossless`;
+export const urlFromDiscordEmoji = (
+  emoji: DiscordEmoji & { big?: boolean },
+) => {
+  return `https://cdn.discordapp.com/emojis/${encodeURIComponent(emoji.id)}.${emoji.isGif ? "gif" : "webp"}?size=${emoji.big ? "32" : "24"}&quality=lossless`;
 };
 export const syntaxForDiscordEmoji = (emoji: DiscordEmoji) => {
   return `<${emoji.isGif ? "a" : ""}:${emoji.name}:${emoji.id}>`;
