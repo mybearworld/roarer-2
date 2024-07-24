@@ -63,6 +63,8 @@ export const discordEmoji = (
     { name: "yuhhuh", id: "1227268820213698611", isGif: false },
     { name: "nuhhuh", id: "1233290735999258664", isGif: false },
     { name: "freya", id: "1244778372953935922", isGif: false },
+    // goobert
+    { name: "goobert", id: "1265711321727500340", isGif: false },
     // Meo emoji :yuhhuh:
     { name: "think", id: "1226311619064234086", isGif: false },
     { name: "amogos", id: "1226314396377288726", isGif: false },
@@ -95,8 +97,6 @@ export const discordEmoji = (
     { name: "sphere", id: "1227279796715917362", isGif: true },
     { name: "spin", id: "1227279798015889498", isGif: true },
     { name: "squish", id: "1227279787072946189", isGif: true },
-    // you know what this is
-    { name: "goobert", id: "1254882434898464922", isGif: false },
   ] satisfies DiscordEmoji[]
 ).sort((a, b) =>
   a.name > b.name ? 1
