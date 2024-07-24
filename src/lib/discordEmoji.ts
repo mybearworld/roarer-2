@@ -95,6 +95,8 @@ export const discordEmoji = (
     { name: "sphere", id: "1227279796715917362", isGif: true },
     { name: "spin", id: "1227279798015889498", isGif: true },
     { name: "squish", id: "1227279787072946189", isGif: true },
+    // you know what this is
+    { name: "goobert", id: "1254882434898464922", isGif: false },
   ] satisfies DiscordEmoji[]
 ).sort((a, b) =>
   a.name > b.name ? 1
