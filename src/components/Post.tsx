@@ -320,6 +320,7 @@ const PostBase = memo((props: PostBaseProps) => {
                       props.reply === "topLevel" ? false : props.reply
                     }
                     inline={!!props.reply}
+                    bigEmoji={!props.reply}
                   >
                     {post}
                   </Markdown>

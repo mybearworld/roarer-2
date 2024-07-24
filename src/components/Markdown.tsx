@@ -35,10 +35,12 @@ export type MarkdownProps = {
   children: string;
   secondaryBackground?: boolean;
   inline?: boolean;
+  bigEmoji?: boolean;
 };
 export const Markdown = (mdProps: MarkdownProps) => {
   const md = mdProps.children;
-  const isBig = !!mdProps.children.match(BIG_REGEX);
+  const isBig =
+    (mdProps?.bigEmoji ?? true) && !!mdProps.children.match(BIG_REGEX);
   return (
     <div className={isBig ? "text-2xl" : ""}>
       <Marked
