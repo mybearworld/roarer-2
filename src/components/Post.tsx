@@ -507,7 +507,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
     <div className="relative inline-flex flex-col items-center">
       <a ref={download} download={props.attachment.filename} hidden />
       {closeRow}
-      <button
+      <Button
         onClick={async () => {
           const url = URL.createObjectURL(
             await (
@@ -523,7 +523,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
           download.current.click();
         }}
         type="button"
-        className="flex h-36 w-36 max-w-36 flex-col items-center justify-center gap-2 rounded-xl bg-lime-200 px-2 py-1 text-center dark:bg-lime-800"
+        className="flex h-36 w-36 max-w-36 flex-col items-center justify-center gap-2 text-center"
         title={props.attachment.filename}
       >
         <File className="h-14 w-14" strokeWidth={1.25} />
@@ -533,7 +533,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
           </div>
           <div className="text-sm">({byteToHuman(props.attachment.size)})</div>
         </div>
-      </button>
+      </Button>
     </div>
   );
 };
