@@ -464,7 +464,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
             <button type="button" aria-label={props.attachment.filename}>
               <img
                 key={props.attachment.id}
-                className="max-h-40 rounded-xl"
+                className="max-h-40"
                 src={`${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
                 alt={props.attachment.filename}
                 title={props.attachment.filename}
@@ -496,7 +496,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
     return (
       <video
         src={`${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}`}
-        className="max-h-40 rounded-xl"
+        className="max-h-40"
         controls
         title={props.attachment.filename}
       />
