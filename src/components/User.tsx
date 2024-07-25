@@ -1,4 +1,5 @@
 import { useState, ReactNode } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { Check, Copy } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
@@ -56,19 +57,24 @@ export const User = (props: UserProps) => {
       controlled={{ open, onOpenChange: setOpen }}
     >
       {!user ?
-        <div>Loading {props.username}...</div>
+        <Dialog.Title>Loading {props.username}...</Dialog.Title>
       : user.error ?
-        <div>
-          An error occured getting {props.username}!
+        <>
+          <Dialog.Title>
+            An error occured getting {props.username}!
+            <br />
+          </Dialog.Title>
           <br />
           Message: {user.message}
-        </div>
+        </>
       : <div className="flex gap-2">
           <div>
             <div className="flex items-center gap-4">
               <ProfilePicture username={props.username} />
               <div>
-                <span className="text-xl font-bold">{props.username}</span>
+                <Dialog.Title>
+                  <span className="text-xl font-bold">{props.username}</span>
+                </Dialog.Title>
                 {user.created ?
                   <p className="text-sm italic opacity-60">
                     Joined <RelativeTime time={user.created} />
