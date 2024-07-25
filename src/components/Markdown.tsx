@@ -190,6 +190,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
                           big: isBig,
                         })}
                         alt={`:${match.groups?.emojiName}:`}
+                        title={`:${match.groups?.emojiName}:`}
                       />
                     : match[0]}
                   </Fragment>
