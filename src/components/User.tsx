@@ -68,48 +68,44 @@ export const User = (props: UserProps) => {
           <br />
           Message: {user.message}
         </>
-      : <div className="flex gap-2">
-          <div>
-            <div className="flex items-center gap-4">
-              <ProfilePicture username={props.username} />
-              <div>
-                <Dialog.Title>
-                  <span className="text-xl font-bold">{props.username}</span>
-                </Dialog.Title>
-                {user.created ?
-                  <p className="text-sm italic opacity-60">
-                    Joined <RelativeTime time={user.created} />
-                  </p>
-                : undefined}
+      : <div className="max-w-full">
+          <div className="flex items-center gap-4">
+            <ProfilePicture username={props.username} />
+            <div>
+              <Dialog.Title>
+                <span className="text-xl font-bold">{props.username}</span>
+              </Dialog.Title>
+              {user.created ?
+                <p className="text-sm italic opacity-60">
+                  Joined <RelativeTime time={user.created} />
+                </p>
+              : undefined}
+            </div>
+            {credentials && credentials.username !== props.username ?
+              <div className="flex grow justify-end gap-2">
+                <Button type="button" onClick={dm}>
+                  DM
+                </Button>
+                <IconButton type="button" aria-label="Copy link" onClick={copy}>
+                  {copiedUser ?
+                    <Check className="h-5 w-5" aria-hidden />
+                  : <Copy className="h-5 w-5" aria-hidden />}
+                </IconButton>
               </div>
-              {credentials && credentials.username !== props.username ?
-                <div className="flex grow justify-end gap-2">
-                  <Button type="button" onClick={dm}>
-                    DM
-                  </Button>
-                  <IconButton
-                    type="button"
-                    aria-label="Copy link"
-                    onClick={copy}
-                  >
-                    {copiedUser ?
-                      <Check className="h-5 w-5" aria-hidden />
-                    : <Copy className="h-5 w-5" aria-hidden />}
-                  </IconButton>
-                </div>
-              : undefined}
-            </div>
-            <div className="mt-2 flex flex-col gap-2">
-              {user.quote ?
+            : undefined}
+          </div>
+          <div className="mt-2 flex max-w-full flex-col gap-2">
+            {user.quote ?
+              <div className="max-w-full overflow-auto">
                 <Markdown children={user.quote} />
-              : undefined}
-              {user.permissions ?
-                <Permissions permissions={user.permissions} />
-              : undefined}
-              {error ?
-                <div className="text-red-500">{error}</div>
-              : undefined}
-            </div>
+              </div>
+            : undefined}
+            {user.permissions ?
+              <Permissions permissions={user.permissions} />
+            : undefined}
+            {error ?
+              <div className="text-red-500">{error}</div>
+            : undefined}
           </div>
         </div>
       }
