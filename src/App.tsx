@@ -29,7 +29,7 @@ export const App = () => {
         defaultValue="ulist"
         className="z-[--z-sidebar] h-screen max-h-full w-screen shrink-0 snap-center overflow-auto bg-white pb-2 dark:bg-gray-950 lg:shrink"
       >
-        <Tabs.List className="sticky top-0 z-[--z-sidebar-top] flex items-center justify-between bg-white px-2 pt-2 dark:bg-gray-950">
+        <Tabs.List className="sticky top-0 z-[--z-sidebar-top] flex items-center justify-between bg-white px-2 py-2 dark:bg-gray-950">
           <div className="flex items-center gap-2">
             <Tabs.Trigger
               className="border-b-2 border-transparent aria-selected:border-lime-500 aria-selected:font-bold dark:aria-selected:border-lime-600"
@@ -53,7 +53,9 @@ export const App = () => {
           <div className="flex gap-2">
             <NotificationToggle />
             <DarkMode />
-            <Account />
+            <div className="ml-2">
+              <Account />
+            </div>
           </div>
         </Tabs.List>
         <Tabs.Content value="ulist">
