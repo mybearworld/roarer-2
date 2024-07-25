@@ -9,6 +9,7 @@ import { Markdown } from "./Markdown";
 import { ProfilePicture } from "./ProfilePicture";
 import { RelativeTime } from "./RelativeTime";
 import { PERMISSIONS } from "../lib/permissions";
+import { IconButton } from "./IconButton";
 
 export type UserProps = {
   username: string;
@@ -86,11 +87,15 @@ export const User = (props: UserProps) => {
                   <Button type="button" onClick={dm}>
                     DM
                   </Button>
-                  <button type="button" aria-label="Copy link" onClick={copy}>
+                  <IconButton
+                    type="button"
+                    aria-label="Copy link"
+                    onClick={copy}
+                  >
                     {copiedUser ?
                       <Check className="h-5 w-5" aria-hidden />
                     : <Copy className="h-5 w-5" aria-hidden />}
-                  </button>
+                  </IconButton>
                 </div>
               : undefined}
             </div>

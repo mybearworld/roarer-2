@@ -20,6 +20,7 @@ import { RelativeTime } from "./RelativeTime";
 import { twMerge } from "tailwind-merge";
 import { EmojiPicker } from "./EmojiPicker";
 import { DiscordEmoji } from "../lib/discordEmoji";
+import { IconButton } from "./IconButton";
 
 export type PostProps = {
   id: string;
@@ -218,29 +219,29 @@ const PostBase = memo((props: PostBaseProps) => {
                         onEmoji={handleReaction}
                         discordEmoji={false}
                         trigger={
-                          <button type="button" aria-label="React">
+                          <IconButton type="button" aria-label="React">
                             <SmilePlus className="h-5 w-5" aria-hidden />
-                          </button>
+                          </IconButton>
                         }
                       />
                       {isInbox ?
                         undefined
-                      : <button
+                      : <IconButton
                           type="button"
                           aria-label="Reply"
                           onClick={doReply}
                         >
                           <Reply className="h-6 w-6" aria-hidden />
-                        </button>
+                        </IconButton>
                       }
                       <Menu
                         trigger={
-                          <button
+                          <IconButton
                             aria-label="Actions"
                             className="flex items-center"
                           >
                             <MenuIcon className="h-6 w-6" aria-hidden />
-                          </button>
+                          </IconButton>
                         }
                       >
                         <MenuItem disabled>Report</MenuItem>

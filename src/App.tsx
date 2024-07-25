@@ -13,6 +13,7 @@ import { Button } from "./components/Button";
 import { Ulist } from "./components/Ulist";
 import { Popup } from "./components/Popup";
 import { User } from "./components/User";
+import { IconButton } from "./components/IconButton";
 
 export const App = () => {
   const [showSideNav, setShowSideNav] = useState(false);
@@ -65,14 +66,14 @@ export const App = () => {
             <NotificationToggle />
             <DarkMode />
             <Account />
-            <button
+            <IconButton
               type="button"
               className="lg:hidden"
               aria-label="Close"
               onClick={() => setShowSideNav(false)}
             >
               <X aria-hidden />
-            </button>
+            </IconButton>
           </div>
         </Tabs.List>
         <Tabs.Content value="ulist">
@@ -105,11 +106,11 @@ const DarkMode = () => {
   }, [darkMode]);
 
   return (
-    <button type="button" onClick={() => setDarkMode((d) => !d)}>
+    <IconButton type="button" onClick={() => setDarkMode((d) => !d)}>
       {darkMode ?
         <Sun />
       : <Moon />}
-    </button>
+    </IconButton>
   );
 };
 
@@ -124,31 +125,31 @@ const NotificationToggle = () => {
 
   return (
     notificationState === "disabled" ?
-      <button
+      <IconButton
         type="button"
         aria-label="Enable notifications"
         onClick={enableNotifications}
       >
         <BellOff aria-hidden />
-      </button>
+      </IconButton>
     : notificationState === "enabled" ?
-      <button
+      <IconButton
         type="button"
         aria-label="Disable notifications"
         onClick={disableNotifications}
       >
         <Bell aria-hidden />
-      </button>
+      </IconButton>
     : <Popup
         triggerAsChild
         trigger={
-          <button
+          <IconButton
             className="opacity-70"
             type="button"
             aria-label="Enable notifications"
           >
             <BellOff aria-hidden />
-          </button>
+          </IconButton>
         }
       >
         <div className="flex flex-col items-start gap-2">
