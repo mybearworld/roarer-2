@@ -124,7 +124,10 @@ const Permissions = (props: PermissionsProps) => {
         {PERMISSIONS.map((permission, index) =>
           (props.permissions & (1 << index)) !== 0 ?
             <div className="flex items-center gap-4 px-2 py-1">
-              <permission.icon aria-hidden />
+              <permission.icon
+                aria-hidden
+                className="h-6 min-h-6 w-6 min-w-6"
+              />
               <div className="flex flex-col">
                 <p className="font-bold">{permission.name}</p>
                 <p className="text-sm italic">{permission.description}</p>
