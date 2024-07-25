@@ -12,12 +12,14 @@ import { Chats } from "./components/Chats";
 import { Button } from "./components/Button";
 import { Ulist } from "./components/Ulist";
 import { Popup } from "./components/Popup";
+import { User } from "./components/User";
 
 export const App = () => {
   const [showSideNav, setShowSideNav] = useState(false);
   const [openChat, setOpenChat] = useAPI(
     useShallow((state) => [state.openChat, state.setOpenChat]),
   );
+  const user = new URLSearchParams(location.search).get("user");
 
   return (
     <div className="flex h-screen max-h-screen divide-x divide-gray-200 overflow-auto bg-white dark:divide-gray-800 dark:bg-gray-950">
@@ -83,6 +85,9 @@ export const App = () => {
           <About />
         </Tabs.Content>
       </Tabs.Root>
+      {user ?
+        <User username={user} children={undefined} openInitially />
+      : undefined}
     </div>
   );
 };

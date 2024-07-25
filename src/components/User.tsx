@@ -1,4 +1,5 @@
 import { useState, ReactNode } from "react";
+import { Check, Copy } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
 import { Button } from "./Button";
@@ -11,6 +12,7 @@ import { PERMISSIONS } from "../lib/permissions";
 export type UserProps = {
   username: string;
   children: ReactNode;
+  openInitially?: boolean;
 };
 export const User = (props: UserProps) => {
   const [credentials, user, loadUser, setOpenChat, getDM] = useAPI(
@@ -23,7 +25,8 @@ export const User = (props: UserProps) => {
     ]),
   );
   const [error, setError] = useState<string>();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(props.openInitially ?? false);
+  const [copiedUser, setCopiedUser] = useState(false);
   loadUser(props.username);
 
   const dm = async () => {
@@ -34,6 +37,16 @@ export const User = (props: UserProps) => {
     }
     setOpenChat(chat.chat);
     setOpen(false);
+  };
+
+  const copy = () => {
+    navigator.clipboard.writeText(
+      `https://mybearworld.github.io/roarer-2?user=${encodeURIComponent(props.username)}`,
+    );
+    setCopiedUser(true);
+    setTimeout(() => {
+      setCopiedUser(false);
+    }, 1000);
   };
 
   return (
@@ -63,10 +76,15 @@ export const User = (props: UserProps) => {
                 : undefined}
               </div>
               {credentials && credentials.username !== props.username ?
-                <div className="flex grow justify-end">
+                <div className="flex grow justify-end gap-2">
                   <Button type="button" onClick={dm}>
                     DM
                   </Button>
+                  <button type="button" aria-label="Copy link" onClick={copy}>
+                    {copiedUser ?
+                      <Check className="h-5 w-5" aria-hidden />
+                    : <Copy className="h-5 w-5" aria-hidden />}
+                  </button>
                 </div>
               : undefined}
             </div>
