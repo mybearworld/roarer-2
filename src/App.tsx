@@ -21,13 +21,13 @@ export const App = () => {
   const user = new URLSearchParams(location.search).get("user");
 
   return (
-    <div className="flex h-screen max-h-screen w-screen snap-x snap-mandatory divide-x divide-gray-200 overflow-auto bg-white dark:divide-gray-800 dark:bg-gray-950">
+    <div className="flex h-[100dvh] max-h-[100dvh] w-screen snap-x snap-mandatory divide-x divide-gray-200 overflow-auto bg-white dark:divide-gray-800 dark:bg-gray-950">
       <div className="max-h-full w-screen shrink-0 snap-center overflow-auto bg-white p-2 dark:bg-gray-950 lg:max-w-[65%]">
         <Chat chat={openChat} />
       </div>
       <Tabs.Root
         defaultValue="ulist"
-        className="z-[--z-sidebar] h-screen max-h-full w-screen shrink-0 snap-center overflow-auto bg-white pb-2 dark:bg-gray-950 lg:shrink"
+        className="z-[--z-sidebar] max-h-full w-screen shrink-0 snap-center overflow-auto bg-white pb-2 dark:bg-gray-950 lg:shrink"
       >
         <Tabs.List className="sticky top-0 z-[--z-sidebar-top] flex items-center justify-between bg-white px-2 py-2 dark:bg-gray-950">
           <div className="flex items-center gap-2">
