@@ -21,7 +21,7 @@ export const App = () => {
   const user = new URLSearchParams(location.search).get("user");
 
   return (
-    <div className="flex h-[100dvh] max-h-[100dvh] w-screen snap-x snap-mandatory divide-x divide-gray-200 overflow-auto bg-white dark:divide-gray-800 dark:bg-gray-950">
+    <div className="flex h-dvh max-h-dvh w-screen snap-x snap-mandatory divide-x divide-gray-200 overflow-auto bg-white dark:divide-gray-800 dark:bg-gray-950">
       <div className="max-h-full w-screen shrink-0 snap-start overflow-auto bg-white p-2 dark:bg-gray-950 lg:max-w-[65%]">
         <Chat chat={openChat} />
       </div>
