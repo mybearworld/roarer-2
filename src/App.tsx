@@ -10,6 +10,7 @@ import { Chat } from "./components/Chat";
 import { Chats } from "./components/Chats";
 import { Button } from "./components/Button";
 import { Ulist } from "./components/Ulist";
+import { PostPopup } from "./components/PostPopup";
 import { Popup } from "./components/Popup";
 import { User } from "./components/User";
 import { IconButton } from "./components/IconButton";
@@ -19,6 +20,7 @@ export const App = () => {
     useShallow((state) => [state.openChat, state.setOpenChat]),
   );
   const user = new URLSearchParams(location.search).get("user");
+  const post = new URLSearchParams(location.search).get("post");
 
   return (
     <div className="flex h-dvh max-h-dvh w-screen snap-x snap-mandatory divide-x divide-gray-200 overflow-auto bg-white dark:divide-gray-800 dark:bg-gray-950">
@@ -70,6 +72,8 @@ export const App = () => {
       </Tabs.Root>
       {user ?
         <User username={user} children={undefined} openInitially />
+      : post ?
+        <PostPopup id={post} children={undefined} openInitially />
       : undefined}
     </div>
   );
