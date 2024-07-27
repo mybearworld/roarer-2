@@ -16,6 +16,7 @@ import { Markdown } from "./Markdown";
 import { Mention } from "./Mention";
 import { MarkdownInput } from "./MarkdownInput";
 import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
+import { ReactionUsers } from "./ReactionUsers";
 import { RelativeTime } from "./RelativeTime";
 import { twMerge } from "tailwind-merge";
 import { EmojiPicker } from "./EmojiPicker";
@@ -271,15 +272,6 @@ const PostBase = memo((props: PostBaseProps) => {
                             : "View source"}
                           </MenuItem>
                         : undefined}
-                        <MenuItem
-                          onClick={() => {
-                            navigator.clipboard.writeText(
-                              `https://mybearworld.github.io/roarer-2?post=${props.post.post_id}`,
-                            );
-                          }}
-                        >
-                          Copy link
-                        </MenuItem>
                         {credentials.username === props.post.u ?
                           <>
                             <MenuItem
@@ -293,6 +285,20 @@ const PostBase = memo((props: PostBaseProps) => {
                             </MenuItem>
                             <MenuItem onClick={handleDelete}>Delete</MenuItem>
                           </>
+                        : undefined}
+                        <MenuItem
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              `https://mybearworld.github.io/roarer-2?post=${props.post.post_id}`,
+                            );
+                          }}
+                        >
+                          Copy link
+                        </MenuItem>
+                        {props.post.reactions.length ?
+                          <ReactionUsers post={props.post.post_id}>
+                            <MenuItem dontClose>Reactions</MenuItem>
+                          </ReactionUsers>
                         : undefined}
                       </Menu>
                     </>

@@ -4,6 +4,7 @@ import { getCloudlink } from "./cloudlink";
 import { Errorable, loadMore, request } from "./utils";
 import { api } from "../servers";
 import { getReply } from "../reply";
+import { USER_SCHEMA } from "./users";
 
 export type Attachment = z.infer<typeof ATTACHMENT_SCHEMA>;
 const ATTACHMENT_SCHEMA = z.object({
@@ -64,6 +65,10 @@ const POST_PACKET_SCHEMA = z.object({
   cmd: z.literal("post"),
   val: POST_SCHEMA,
 });
+const REACTION_USERS_SCHEMA = z.object({
+  autoget: USER_SCHEMA.array(),
+  pages: z.number(),
+});
 
 const POST_REACTION_PACKET_SCHEMA = z.object({
   cmd: z.literal("post_reaction_add").or(z.literal("post_reaction_remove")),
@@ -84,6 +89,10 @@ export type PostsSlice = {
     }>
   >;
   posts: Record<string, Errorable<Post | { isDeleted: true }>>;
+  reactionUsers: Record<
+    `${string}/${string}`,
+    Errorable<{ users: string[]; stopLoadingMore: boolean }>
+  >;
   addPost: (post: SchemaPost) => SchemaPost;
   loadChatPosts: (id: string) => Promise<void>;
   loadMorePosts: (
@@ -115,6 +124,13 @@ export type PostsSlice = {
     emoji: string,
     type: "add" | "delete",
   ) => Promise<Errorable>;
+  loadMoreReactionUsers: (id: string, emoji: string) => Promise<Errorable>;
+  loadReactionUsersByAmount: (
+    id: string,
+    emoji: string,
+    current: number,
+  ) => Promise<Errorable<{ users: string[]; stop: boolean }>>;
+  loadReactionUsers: (id: string, emoji: string) => Promise<void>;
 };
 export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
   getCloudlink().then((cloudlink) => {
@@ -195,37 +211,62 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       if (!parsed.success) {
         return;
       }
+      const { post_id: postID, username, emoji } = parsed.data.val;
       set((draft) => {
-        const post = draft.posts[parsed.data.val.post_id];
+        const post = draft.posts[postID];
         if (!post || post.error || post.isDeleted) {
           return;
         }
         const existingReaction = post.reactions.find(
-          (reaction) => reaction.emoji === parsed.data.val.emoji,
+          (reaction) => reaction.emoji === emoji,
         );
+        const reactionUsersKey = `${postID}/${emoji}` as const;
+        const add = parsed.data.cmd === "post_reaction_add";
         if (existingReaction) {
-          const newReactionCount =
-            existingReaction.count +
-            (parsed.data.cmd === "post_reaction_add" ? 1 : -1);
+          const newReactionCount = existingReaction.count + (add ? 1 : -1);
           if (newReactionCount === 0) {
             post.reactions = post.reactions.filter(
               (reaction) => reaction !== existingReaction,
             );
           } else {
-            existingReaction.count +=
-              parsed.data.cmd === "post_reaction_add" ? 1 : -1;
-            if (parsed.data.val.username === draft.credentials?.username) {
-              existingReaction.user_reacted =
-                parsed.data.cmd === "post_reaction_add";
+            existingReaction.count = newReactionCount;
+            if (username === draft.credentials?.username) {
+              existingReaction.user_reacted = add;
+            }
+          }
+          if (
+            draft.reactionUsers[reactionUsersKey] &&
+            !draft.reactionUsers[reactionUsersKey].error
+          ) {
+            if (add) {
+              if (
+                draft.reactionUsers[reactionUsersKey].users.includes(username)
+              ) {
+                return;
+              }
+              draft.reactionUsers[reactionUsersKey].users.unshift(username);
+            } else {
+              const index = draft.reactionUsers[
+                reactionUsersKey
+              ].users.findIndex((user) => user === username);
+              const users = draft.reactionUsers[reactionUsersKey].users;
+              draft.reactionUsers[reactionUsersKey].users = users
+                .slice(0, index)
+                .concat(users.slice(index + 1));
             }
           }
         } else {
           post.reactions.push({
-            count: parsed.data.cmd === "post_reaction_add" ? 1 : -1,
+            count: add ? 1 : -1,
             emoji: parsed.data.val.emoji,
             user_reacted:
               parsed.data.val.username === draft.credentials?.username,
           });
+          draft.reactionUsers[reactionUsersKey] = {
+            users: [parsed.data.val.username],
+            stopLoadingMore: true,
+            error: false,
+          };
         }
       });
     });
@@ -236,6 +277,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
 
   const loadingPosts = new Set<string>();
   const loadingChats = new Set<string>();
+  const loadingReactionUsers = new Set<string>();
   return {
     posts: {},
     chatPosts: {
@@ -246,6 +288,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         error: false,
       },
     },
+    reactionUsers: {},
     addPost: (post) => {
       const state = get();
       const replies = post.reply_to.filter((reply) => reply !== null);
@@ -460,6 +503,80 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
         z.object({}),
       );
       return response;
+    },
+    loadReactionUsers: async (id: string, emoji: string) => {
+      const state = get();
+      if (state.reactionUsers[`${id}/${emoji}`]) {
+        return;
+      }
+      const response = await state.loadMoreReactionUsers(id, emoji);
+      if (response.error) {
+        set((draft) => {
+          draft.reactionUsers[`${id}/${emoji}`] = response;
+        });
+      }
+    },
+    loadMoreReactionUsers: async (id, emoji) => {
+      const state = get();
+      const reactionUsers = state.reactionUsers[`${id}/${emoji}`];
+      if (
+        loadingReactionUsers.has(`${id}/${emoji}`) ||
+        (reactionUsers && reactionUsers.error)
+      ) {
+        return { error: false };
+      }
+      loadingReactionUsers.add(`${id}/${emoji}`);
+      const response = await state.loadReactionUsersByAmount(
+        id,
+        emoji,
+        reactionUsers?.users.length ?? 0,
+      );
+      if (response.error) {
+        return response;
+      }
+      set((draft) => {
+        const reactionUsers = draft.reactionUsers[`${id}/${emoji}`];
+        draft.reactionUsers[`${id}/${emoji}`] = {
+          users: [
+            ...(reactionUsers && !reactionUsers.error ?
+              reactionUsers.users
+            : []),
+            ...response.users,
+          ],
+          stopLoadingMore: response.stop,
+          error: false,
+        };
+      });
+      loadingReactionUsers.delete(`${id}/${emoji}`);
+      return { error: false };
+    },
+    loadReactionUsersByAmount: async (id, emoji, current) => {
+      const { page, remove } = loadMore(current);
+      const state = get();
+      const response = await request(
+        fetch(
+          `${api}/posts/${encodeURIComponent(id)}/reactions/${encodeURIComponent(emoji)}?page=${encodeURIComponent(page)}`,
+          {
+            headers:
+              state.credentials ?
+                { Token: state.credentials.token }
+              : undefined,
+          },
+        ),
+        REACTION_USERS_SCHEMA,
+      );
+      if (response.error) {
+        return response;
+      }
+      const users = response.response.autoget.slice(remove);
+      users.forEach((user) => {
+        state.addUser(user);
+      });
+      return {
+        error: false,
+        stop: page === response.response.pages,
+        users: users.map((user) => user._id),
+      };
     },
   };
 };
