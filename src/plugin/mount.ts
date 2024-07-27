@@ -21,9 +21,20 @@ export abstract class RoarerPlugin {
     website?: string;
     icon?: string;
   };
-  abstract start(): void | Promise<void>;
+  /*
+       const ref = React.useRef({});
+       const [setState, STATE] = React.useState(ref.current);
+       useEffect(() => {
+          (async () => {
+          let current = ref.current;
+          await plugins.flip("some-plugin", current);
+          setState(current);
+         })();
+       }, []);
+   */
+  abstract start(state: object): void | Promise<void>;
   abstract stop(): void | Promise<void>;
-  abstract settings(): ReactElement | Promise<ReactElement>;
+  abstract settings(state: React.ComponentState): ReactElement | Promise<ReactElement>;
 }
 
 export class Plugins {
@@ -46,14 +57,14 @@ export class Plugins {
     })();
   }
 
-  async flip(identifier: string) {
+  async flip(identifier: string, state: object) {
     const plugin = this.plugins.get(identifier);
     if (!plugin) {
       console.error("[PluginManager] Plugin not found: ", identifier);
       return;
     }
 
-    (await plugin.enabled) ? plugin.cls.stop() : plugin.cls.start();
+    (await plugin.enabled) ? plugin.cls.stop() : plugin.cls.start(state);
     plugin.enabled = !plugin.enabled;
   }
 
