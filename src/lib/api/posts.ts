@@ -86,10 +86,10 @@ export type PostsSlice = {
   posts: Record<string, Errorable<Post | { isDeleted: true }>>;
   addPost: (post: SchemaPost) => SchemaPost;
   loadChatPosts: (id: string) => Promise<void>;
-  loadMore: (
+  loadMorePosts: (
     id: string,
   ) => Promise<{ error: true; message: string } | { error: false }>;
-  loadPosts: (
+  loadPostsByAmount: (
     id: string,
     current: number,
   ) => Promise<
@@ -284,14 +284,14 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       }
       loadingPosts.delete(post);
     },
-    loadMore: async (id: string) => {
+    loadMorePosts: async (id: string) => {
       const state = get();
       const posts = state.chatPosts[id];
       if (loadingChats.has(id) || posts?.error) {
         return { error: false };
       }
       loadingChats.add(id);
-      const response = await state.loadPosts(
+      const response = await state.loadPostsByAmount(
         id,
         posts?.posts?.filter(
           (post) => !state.posts[post]?.error && !state.posts[post]?.isDeleted,
@@ -320,9 +320,9 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       if (state.chatPosts[id]) {
         return;
       }
-      state.loadMore(id);
+      state.loadMorePosts(id);
     },
-    loadPosts: async (id: string, current: number) => {
+    loadPostsByAmount: async (id: string, current: number) => {
       const state = get();
       await state.finishedAuth();
       const newState = get();
