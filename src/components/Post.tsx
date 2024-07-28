@@ -29,7 +29,7 @@ export type PostProps = {
   topLevel?: boolean;
   onReply?: (id: string, content: string, username: string) => void;
 };
-export const Post = (props: PostProps) => {
+export const Post = memo((props: PostProps) => {
   const [post, loadPost] = useAPI(
     useShallow((state) => [state.posts[props.id], state.loadPost]),
   );
@@ -98,7 +98,7 @@ export const Post = (props: PostProps) => {
       onReply={props.onReply}
     />
   );
-};
+});
 
 type PostBaseProps = {
   post: APIPost;
