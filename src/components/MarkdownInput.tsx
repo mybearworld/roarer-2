@@ -22,7 +22,7 @@ export type MarkdownInputProps = {
   chat: string;
   replies?: string[];
   setReplies?: (replies: string[]) => void;
-  basePostContent?: string;
+  value?: string;
   onSuccess?: () => void;
   dontDisableWhenPosting?: boolean;
   onSubmit: (
@@ -38,7 +38,7 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
   const [credentials, sendTyping] = useAPI(
     useShallow((state) => [state.credentials, state.sendTyping]),
   );
-  const [postContent, setPostContent] = useState(props.basePostContent ?? "");
+  const [postContent, setPostContent] = useState(props.value ?? "");
   const [error, setError] = useState("");
   const [state, setState] = useState<"posting" | "writing" | "uploading">(
     "writing",

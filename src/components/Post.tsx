@@ -337,7 +337,7 @@ const PostBase = memo((props: PostBaseProps) => {
                   <MarkdownInput
                     chat={props.post.post_origin}
                     onSubmit={handleEdit}
-                    basePostContent={post}
+                    value={post}
                     onSuccess={() => setViewState("view")}
                     noAttachments
                   />
