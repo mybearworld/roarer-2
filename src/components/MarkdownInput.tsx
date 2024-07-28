@@ -24,13 +24,13 @@ export type MarkdownInputProps = {
   setReplies?: (replies: string[]) => void;
   value?: string;
   onSuccess?: () => void;
-  dontDisableWhenPosting?: boolean;
+  disableWhenSending?: boolean;
   onSubmit: (
     postContent: string,
     replies: string[],
     attachments: string[],
   ) => Promise<{ error: true; message: string } | { error: false }>;
-  noAttachments?: boolean;
+  attachments?: boolean;
 };
 export const MarkdownInput = (props: MarkdownInputProps) => {
   const replies = props.replies ?? [];
@@ -91,7 +91,7 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
     );
   };
 
-  const showAttachments = !props.noAttachments;
+  const showAttachments = props.attachments ?? true;
 
   const upload = async (files: FileList) => {
     const errors: string[] = [];
@@ -136,7 +136,7 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
         }}
         disabled={
           state === "uploading" ||
-          (!props.dontDisableWhenPosting && state === "posting")
+          ((props.disableWhenSending ?? true) && state === "posting")
         }
         onEnter={handlePost}
         before={

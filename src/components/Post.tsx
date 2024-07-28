@@ -339,7 +339,7 @@ const PostBase = memo((props: PostBaseProps) => {
                     onSubmit={handleEdit}
                     value={post}
                     onSuccess={() => setViewState("view")}
-                    noAttachments
+                    attachments={false}
                   />
                 </div>
               : viewState === "view" ?
