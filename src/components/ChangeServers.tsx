@@ -54,7 +54,7 @@ export const ChangeServers = (props: ChangeServersProps) => {
         </div>
         <Button
           onClick={() =>
-            location.replace(location.origin + location.pathname + `?api=${apiValue}&cl=${clValue}&uploads=${uploadsValue}`)
+            location.replace(location.origin + location.pathname + encodeURIComponent(`?api=${apiValue}&cl=${clValue}&uploads=${uploadsValue}`))
           }
           disabled={!canSubmit}
         >
