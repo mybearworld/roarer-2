@@ -69,9 +69,7 @@ export const About = () => {
           Disconnect
         </Button>
         <ChangeServers>
-          <Button>
-            Change servers
-          </Button>
+          <Button>Change servers</Button>
         </ChangeServers>
       </div>
     </div>
