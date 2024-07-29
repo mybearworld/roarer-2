@@ -18,22 +18,24 @@ export const UserColor = (props: UserColorProps) => {
     return <span>{props.children}</span>;
   }
 
-  try {
-    const [h, s, _l, a] = parseToHsla(`#${user.avatar_color}`);
-    return (
-      <span
-        className="text-[var(--dark,--fallback)] dark:text-[var(--light,--fallback)]"
-        style={
-          {
-            "--light": hsla(h, s - 0.2, 0.8, a),
-            "--dark": hsla(h, s, 0.4, a),
-          } as CSSProperties
-        }
-      >
-        {props.children}
-      </span>
-    );
-  } catch {
-    return <span>{props.children}</span>;
-  }
+  const [h, s, _l, a] = (() => {
+    try {
+      return parseToHsla(`#${user.avatar_color}`);
+    } catch {
+      return [0, 0, 0, 1];
+    }
+  })();
+  return (
+    <span
+      className="text-[var(--dark,--fallback)] dark:text-[var(--light,--fallback)]"
+      style={
+        {
+          "--light": hsla(h, s - 0.2, 0.8, a),
+          "--dark": hsla(h, s, 0.4, a),
+        } as CSSProperties
+      }
+    >
+      {props.children}
+    </span>
+  );
 };
