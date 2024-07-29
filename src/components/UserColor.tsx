@@ -25,7 +25,7 @@ export const UserColor = (props: UserColorProps) => {
         className="text-[var(--dark,--fallback)] dark:text-[var(--light,--fallback)]"
         style={
           {
-            "--light": hsla(h, s, 0.8, a),
+            "--light": hsla(h, s - 0.2, 0.8, a),
             "--dark": hsla(h, s, 0.4, a),
           } as CSSProperties
         }
