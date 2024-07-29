@@ -214,17 +214,17 @@ const PostBase = memo((props: PostBaseProps) => {
                   <Mention username={props.post.u} />
                 : <div className="space-x-2">
                     <User username={props.post.u}>
-                      <UserColor username={props.post.u}>
-                        <button
-                          className={twMerge(
-                            "text-nowrap text-left font-bold",
-                            props.reply ? "" : "text-sm",
-                          )}
-                        >
+                      <button
+                        className={twMerge(
+                          "text-nowrap text-left font-bold",
+                          props.reply ? "" : "text-sm",
+                        )}
+                      >
+                        <UserColor username={props.post.u}>
                           {props.post.u}
                           {props.post.u === "noodles" ? " 🧀" : undefined}
-                        </button>
-                      </UserColor>
+                        </UserColor>
+                      </button>
                     </User>
                     <span className="text-sm opacity-70">
                       <RelativeTime time={props.post.t.e} />
