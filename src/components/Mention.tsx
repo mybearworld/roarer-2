@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { ProfilePicture } from "./ProfilePicture";
 import { User } from "./User";
 import { Username } from "./Username";
+import { UserColor } from "./UserColor";
 
 export type MentionProps = {
   username: string;
@@ -17,8 +18,8 @@ export const Mention = (props: MentionProps) => {
         className={twMerge(
           "inline-flex items-center gap-1 align-top font-bold",
           props.username === credentials?.username ?
-            "text-yellow-600"
-          : "text-lime-600",
+            "[--fallback:theme(colors.yellow.600)]"
+          : "[--fallback:theme(text-lime-600)]",
         )}
       >
         <span className="inline-block align-text-top">
@@ -32,7 +33,9 @@ export const Mention = (props: MentionProps) => {
         </span>
         <span className="inline-block">
           <span className="sr-only">@</span>
-          <Username username={props.username} />
+          <UserColor username={props.username}>
+            <Username username={props.username} />
+          </UserColor>
         </span>
       </button>
     </User>
