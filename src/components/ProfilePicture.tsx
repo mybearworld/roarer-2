@@ -29,7 +29,7 @@ export const ProfilePicture = (props: ProfilePictureProps) => {
       pfp={user && !user.error ? user : NO_PROFILE_PICTURE}
       className={props.className}
       online={
-        props.dontShowOnline ?? false ? false
+        (props.dontShowOnline ?? false) ? false
         : props.username ?
           ulist.includes(props.username)
         : false
@@ -85,6 +85,7 @@ export type ProfilePictureBaseProps = {
   placeholder?: number;
 };
 export const ProfilePictureBase = (props: ProfilePictureBaseProps) => {
+  const settings = useAPI((state) => state.settings);
   return (
     <div
       className={twMerge(
@@ -102,7 +103,11 @@ export const ProfilePictureBase = (props: ProfilePictureBaseProps) => {
           {
             "--border-color": "#" + props.pfp.avatar_color,
             "--border-style":
-              props.pfp.avatar && props.pfp.avatar_color !== "!color" ?
+              (
+                settings.avatarBorders &&
+                props.pfp.avatar &&
+                props.pfp.avatar_color !== "!color"
+              ) ?
                 "solid"
               : "none",
           } as CSSProperties

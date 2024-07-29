@@ -1,5 +1,4 @@
 import { FormEvent, useState, useEffect, useRef } from "react";
-import * as Popover from "@radix-ui/react-popover";
 import { CirclePlus, SendHorizontal, Smile, X } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
@@ -9,7 +8,6 @@ import {
   DiscordEmoji,
 } from "../lib/discordEmoji";
 import { getImageSize } from "../lib/imageSize";
-import { trimmedPost } from "../lib/reply";
 import { uploadFile } from "../lib/upload";
 import { useShallow } from "zustand/react/shallow";
 import { Textarea } from "./Input";
@@ -18,32 +16,33 @@ import { Attachment } from "../lib/api/posts";
 import { Checkbox } from "./Checkbox";
 import { EmojiPicker } from "./EmojiPicker";
 import { Markdown } from "./Markdown";
+import { IconButton } from "./IconButton";
 
-export type Reply = {
-  id: string;
-  content: string;
-  username: string;
-};
 export type MarkdownInputProps = {
-  chat: string;
-  replies?: Reply[];
-  setReplies?: (replies: Reply[]) => void;
-  basePostContent?: string;
+  chat?: string;
+  replies?: string[];
+  setReplies?: (replies: string[]) => void;
+  value?: string;
   onSuccess?: () => void;
-  dontDisableWhenPosting?: boolean;
+  disableWhenSending?: boolean;
   onSubmit: (
     postContent: string,
+    replies: string[],
     attachments: string[],
   ) => Promise<{ error: true; message: string } | { error: false }>;
-  noAttachments?: boolean;
+  attachments?: boolean;
 };
 export const MarkdownInput = (props: MarkdownInputProps) => {
   const replies = props.replies ?? [];
 
   const [credentials, sendTyping] = useAPI(
-    useShallow((state) => [state.credentials, state.sendTyping]),
+    useShallow((state) => [
+      state.credentials,
+      state.sendTyping,
+      state.settings,
+    ]),
   );
-  const [postContent, setPostContent] = useState(props.basePostContent ?? "");
+  const [postContent, setPostContent] = useState(props.value ?? "");
   const [error, setError] = useState("");
   const [state, setState] = useState<"posting" | "writing" | "uploading">(
     "writing",
@@ -55,6 +54,9 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
   useEffect(() => {
     textArea.current?.focus?.();
   }, [props.replies]);
+  useEffect(() => {
+    setPostContent(props.value ?? "");
+  }, [props.value]);
 
   if (!credentials) {
     return <></>;
@@ -67,12 +69,8 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
     }
     setState("posting");
     const response = await props.onSubmit(
-      replies
-        .map(
-          (reply) =>
-            `@${reply.username} ${trimmedPost(reply.content)} (${reply.id})\n`,
-        )
-        .join("") + userToRegularDiscordEmojiSyntax(postContent),
+      userToRegularDiscordEmojiSyntax(postContent),
+      replies,
       attachments.map((attachment) => attachment.id),
     );
     setState("writing");
@@ -80,7 +78,9 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
       setError(response.message);
     } else {
       props.onSuccess?.();
-      setPostContent("");
+      if (!props.value) {
+        setPostContent("");
+      }
       setAttachments([]);
       setError("");
       setPreview(false);
@@ -100,7 +100,7 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
     );
   };
 
-  const showAttachments = !props.noAttachments;
+  const showAttachments = props.attachments ?? true;
 
   const upload = async (files: FileList) => {
     const errors: string[] = [];
@@ -137,7 +137,11 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
         ref={textArea}
         value={postContent}
         onChange={(e) => setPostContent(e.currentTarget.value)}
-        onInput={() => sendTyping(props.chat)}
+        onInput={() => {
+          if (props.chat) {
+            sendTyping(props.chat);
+          }
+        }}
         onKeyDown={(e) => {
           if (e.key === "Escape") {
             props.setReplies?.([]);
@@ -145,13 +149,13 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
         }}
         disabled={
           state === "uploading" ||
-          (!props.dontDisableWhenPosting && state === "posting")
+          ((props.disableWhenSending ?? true) && state === "posting")
         }
         onEnter={handlePost}
         before={
           <>
             {showAttachments ?
-              <button
+              <IconButton
                 type="button"
                 aria-label="Upload attachment"
                 disabled={state !== "writing"}
@@ -172,36 +176,31 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
                   ref={fileInput}
                 />
                 <CirclePlus aria-hidden />
-              </button>
+              </IconButton>
             : undefined}
           </>
         }
         after={
           <div className="flex gap-2">
-            <Popover.Root>
-              <Popover.Trigger asChild>
-                <button
+            <EmojiPicker
+              onEmoji={handleEmoji}
+              trigger={
+                <IconButton
                   type="button"
                   aria-label="Pick an emoji"
                   disabled={state !== "writing"}
                 >
                   <Smile aria-hidden />
-                </button>
-              </Popover.Trigger>
-              <Popover.Anchor />
-              <Popover.Portal>
-                <Popover.Content align="end" sideOffset={4}>
-                  <EmojiPicker onEmoji={handleEmoji} />
-                </Popover.Content>
-              </Popover.Portal>
-            </Popover.Root>
-            <button
+                </IconButton>
+              }
+            />
+            <IconButton
               type="submit"
               aria-label="Send"
               disabled={state !== "writing"}
             >
               <SendHorizontal aria-hidden />
-            </button>
+            </IconButton>
           </div>
         }
         above={
@@ -209,7 +208,7 @@ export const MarkdownInput = (props: MarkdownInputProps) => {
             {replies.map((reply, index) => (
               <div className="flex gap-2" key={index}>
                 <div className="grow">
-                  <Post id={reply.id} reply="topLevel" />
+                  <Post id={reply} reply />
                 </div>
                 <button
                   type="button"

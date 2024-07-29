@@ -1,4 +1,4 @@
-import { z, ZodSchema } from "zod";
+import { z, ZodError, ZodSchema } from "zod";
 
 export const orError = <TSchema extends ZodSchema>(schema: TSchema) => {
   return schema.and(z.object({ error: z.literal(false) })).or(
@@ -27,7 +27,10 @@ export const request = async <TSchema extends ZodSchema>(
   try {
     response = orError(schema).parse(await (await fetchCall).json());
   } catch (e) {
-    console.warn("API returned invalid JSON or schema didn't match", e);
+    console.warn(
+      "API returned invalid JSON or schema didn't match",
+      e instanceof ZodError ? e.message : e,
+    );
     return { error: true, message: (e as Error)?.message };
   }
   if ("error" in response && response.error) {
@@ -36,6 +39,6 @@ export const request = async <TSchema extends ZodSchema>(
   return { error: false, response };
 };
 
-export type Errorable<T> =
+export type Errorable<T = {}> =
   | (T & { error: false })
   | { error: true; message: string };

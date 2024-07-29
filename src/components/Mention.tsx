@@ -1,27 +1,18 @@
-import { useAPI } from "../lib/api";
-import { twMerge } from "tailwind-merge";
 import { ProfilePicture } from "./ProfilePicture";
 import { User } from "./User";
+import { Username } from "./Username";
+import { UserColor } from "./UserColor";
 
 export type MentionProps = {
   username: string;
   pfp?: boolean;
 };
 export const Mention = (props: MentionProps) => {
-  const credentials = useAPI((state) => state.credentials);
-
   return (
     <User username={props.username}>
-      <button
-        className={twMerge(
-          "text-nowrap font-bold",
-          props.username === credentials?.username ?
-            "text-yellow-600"
-          : "text-lime-600",
-        )}
-      >
+      <button className="inline-flex items-center gap-1 align-top font-bold">
         <span className="inline-block align-text-top">
-          {props.pfp ?? true ?
+          {(props.pfp ?? true) ?
             <ProfilePicture
               username={props.username}
               dontShowOnline
@@ -29,10 +20,11 @@ export const Mention = (props: MentionProps) => {
             />
           : undefined}
         </span>
-        &nbsp;
         <span className="inline-block">
           <span className="sr-only">@</span>
-          {props.username}
+          <UserColor username={props.username}>
+            <Username username={props.username} />
+          </UserColor>
         </span>
       </button>
     </User>

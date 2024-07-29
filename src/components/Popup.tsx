@@ -11,6 +11,7 @@ export type PopupProps = {
     onOpenChange: (open: boolean) => void;
   };
   className?: string;
+  size?: "regular" | "extend" | "wide";
 };
 export const Popup = (props: PopupProps) => {
   return (
@@ -23,8 +24,11 @@ export const Popup = (props: PopupProps) => {
         <Dialog.Content
           aria-describedby={undefined}
           className={twMerge(
-            "absolute inset-0 z-[--z-popup] m-auto h-fit max-h-[90vh] w-fit max-w-[90vw] overflow-auto rounded-xl bg-white px-4 py-2 dark:bg-gray-900",
+            "absolute inset-0 z-[--z-popup] m-auto h-fit max-h-[80vh] w-fit overflow-auto rounded-xl bg-white px-4 py-2 focus:outline-0 dark:bg-gray-900",
             props.className,
+            props.size === "wide" ? "max-w-[90vw]"
+            : props.size === "extend" ? "w-[min(90vw,30rem)]"
+            : "max-w-[min(90vw,30rem)]",
           )}
         >
           {props.children}

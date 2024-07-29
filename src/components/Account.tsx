@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronUp } from "lucide-react";
 import { Button } from "./Button";
 import { isCaptcha, Captcha } from "./Captcha";
 import { Checkbox } from "./Checkbox";
@@ -161,8 +161,12 @@ const AccountMenu = (props: AccountMenuProps) => {
     <Menu
       trigger={
         <button type="button" className="flex items-center gap-1">
-          <ProfilePicture username={props.username} dontShowOnline />
-          <ChevronDown />
+          <ProfilePicture
+            size="w-7 h-7 min-w-7 min-h-7"
+            username={props.username}
+            dontShowOnline
+          />
+          <ChevronUp />
         </button>
       }
     >

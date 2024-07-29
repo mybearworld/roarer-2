@@ -1,9 +1,9 @@
-import { File, Menu as MenuIcon, Reply, X } from "lucide-react";
+import { File, Menu as MenuIcon, SmilePlus, Reply, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { ReactNode, useRef, useState, memo } from "react";
+import { ReactNode, useRef, useState, memo, FormEventHandler } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAPI } from "../lib/api";
-import { getReply } from "../lib/reply";
+import { getReply, PostWithReplies } from "../lib/reply";
 import { Attachment, Post as APIPost } from "../lib/api/posts";
 import { NO_PROFILE_PICTURE } from "../lib/noProfilePicture";
 import { uploads } from "../lib/servers";
@@ -11,20 +11,29 @@ import { byteToHuman } from "../lib/byteToHuman";
 import { Button } from "./Button";
 import { Popup } from "./Popup";
 import { User } from "./User";
+import { Input } from "./Input";
 import { Menu, MenuItem } from "./Menu";
 import { Markdown } from "./Markdown";
 import { Mention } from "./Mention";
+import { Select, Option } from "./Select";
 import { MarkdownInput } from "./MarkdownInput";
 import { ProfilePicture, ProfilePictureBase } from "./ProfilePicture";
+import { ReactionUsers } from "./ReactionUsers";
 import { RelativeTime } from "./RelativeTime";
 import { twMerge } from "tailwind-merge";
+import { EmojiPicker } from "./EmojiPicker";
+import { DiscordEmoji } from "../lib/discordEmoji";
+import { IconButton } from "./IconButton";
+import { REPORT_REASONS } from "../lib/reportReasons";
+import { UserColor } from "./UserColor";
 
 export type PostProps = {
   id: string;
-  reply?: boolean | "topLevel";
+  reply?: boolean;
+  topLevel?: boolean;
   onReply?: (id: string, content: string, username: string) => void;
 };
-export const Post = (props: PostProps) => {
+export const Post = memo((props: PostProps) => {
   const [post, loadPost] = useAPI(
     useShallow((state) => [state.posts[props.id], state.loadPost]),
   );
@@ -39,7 +48,8 @@ export const Post = (props: PostProps) => {
             />
           }
           bubble="This post was deleted."
-          reply
+          reply={props.reply}
+          topLevel={props.topLevel}
         />
       );
     }
@@ -57,6 +67,7 @@ export const Post = (props: PostProps) => {
           />
         }
         reply={props.reply}
+        topLevel={props.topLevel}
         bubble="Loading..."
       />
     );
@@ -71,6 +82,7 @@ export const Post = (props: PostProps) => {
           />
         }
         reply={props.reply}
+        topLevel={props.topLevel}
         bubble={
           <>
             There was an error loading this post.
@@ -82,27 +94,48 @@ export const Post = (props: PostProps) => {
     );
   }
 
-  return <PostBase post={post} reply={props.reply} onReply={props.onReply} />;
-};
+  return (
+    <PostBase
+      post={post}
+      reply={props.reply}
+      topLevel={props.topLevel}
+      onReply={props.onReply}
+    />
+  );
+});
 
 type PostBaseProps = {
   post: APIPost;
-  reply?: boolean | "topLevel";
+  reply?: boolean;
+  topLevel?: boolean;
   onReply?: (id: string, content: string, username: string) => void;
 };
 const PostBase = memo((props: PostBaseProps) => {
   const [deleteError, setDeleteError] = useState<string>();
+  const [reactionError, setReactionError] = useState<string>();
   const [viewState, setViewState] = useState<"view" | "edit" | "source">(
     "view",
   );
-  const [credentials, editPost, deletePost] = useAPI(
+  const [reportOpen, setReportOpen] = useState(false);
+  const [credentials, editPost, deletePost, reactToPost] = useAPI(
     useShallow((state) => [
       state.credentials,
       state.editPost,
       state.deletePost,
+      state.reactToPost,
     ]),
   );
-  const reply = getReply(props.post.p);
+  const reply =
+    props.post.reply_to && props.post.reply_to.length !== 0 ?
+      ({
+        ids: props.post.reply_to,
+        postContent: props.post.p,
+        replyText: "",
+        legacy: false,
+      } satisfies PostWithReplies)
+    : getReply(props.post.p);
+
+  const isInbox = props.post.type === 2;
 
   const doReply = () => {
     props.onReply?.(props.post.post_id, post, props.post.u);
@@ -123,12 +156,39 @@ const PostBase = memo((props: PostBaseProps) => {
     }
   };
 
+  const handleReaction = async (
+    emoji: string | DiscordEmoji,
+    type?: "add" | "delete",
+  ) => {
+    if (typeof emoji !== "string") {
+      return;
+    }
+    const response = await reactToPost(
+      props.post.post_id,
+      emoji,
+      type ??
+        ((
+          props.post.reactions.some(
+            (reaction) => reaction.emoji === emoji && reaction.user_reacted,
+          )
+        ) ?
+          "delete"
+        : "add"),
+    );
+    if (response.error) {
+      setReactionError(response.message);
+    } else {
+      setReactionError(undefined);
+    }
+  };
+
   return (
     <div>
       <SpeechBubble
         reply={props.reply}
+        topLevel={props.topLevel}
         transparent={!!props.post.optimistic}
-        arrow={false}
+        arrow={!props.reply}
         speaker={
           props.reply ? undefined : (
             <User username={props.post.u}>
@@ -154,15 +214,17 @@ const PostBase = memo((props: PostBaseProps) => {
                   <Mention username={props.post.u} />
                 : <div className="space-x-2">
                     <User username={props.post.u}>
-                      <button
-                        className={twMerge(
-                          "text-nowrap text-left font-bold",
-                          props.reply ? "" : "text-sm",
-                        )}
-                      >
-                        {props.post.u}
-                        {props.post.u === "noodles" ? " 🧀" : undefined}
-                      </button>
+                      <UserColor username={props.post.u}>
+                        <button
+                          className={twMerge(
+                            "text-nowrap text-left font-bold",
+                            props.reply ? "" : "text-sm",
+                          )}
+                        >
+                          {props.post.u}
+                          {props.post.u === "noodles" ? " 🧀" : undefined}
+                        </button>
+                      </UserColor>
                     </User>
                     <span className="text-sm opacity-70">
                       <RelativeTime time={props.post.t.e} />
@@ -174,24 +236,50 @@ const PostBase = memo((props: PostBaseProps) => {
                 <div className="flex gap-1">
                   {credentials ?
                     <>
-                      <button
-                        type="button"
-                        aria-label="Reply"
-                        onClick={doReply}
-                      >
-                        <Reply className="h-6 w-6" aria-hidden />
-                      </button>
+                      <EmojiPicker
+                        onEmoji={handleReaction}
+                        discordEmoji={false}
+                        trigger={
+                          <IconButton type="button" aria-label="React">
+                            <SmilePlus className="h-5 w-5" aria-hidden />
+                          </IconButton>
+                        }
+                      />
+                      {isInbox ?
+                        undefined
+                      : <IconButton
+                          type="button"
+                          aria-label="Reply"
+                          onClick={doReply}
+                        >
+                          <Reply className="h-6 w-6" aria-hidden />
+                        </IconButton>
+                      }
                       <Menu
                         trigger={
-                          <button
+                          <IconButton
                             aria-label="Actions"
                             className="flex items-center"
                           >
                             <MenuIcon className="h-6 w-6" aria-hidden />
-                          </button>
+                          </IconButton>
                         }
                       >
-                        <MenuItem disabled>Report</MenuItem>
+                        {credentials ?
+                          <Popup
+                            trigger={<MenuItem dontClose>Report</MenuItem>}
+                            triggerAsChild
+                            controlled={{
+                              open: reportOpen,
+                              onOpenChange: setReportOpen,
+                            }}
+                          >
+                            <ReportModal
+                              post={props.post.post_id}
+                              onSuccess={() => setReportOpen(false)}
+                            />
+                          </Popup>
+                        : undefined}
                         {credentials.username !== props.post.u ?
                           <MenuItem
                             onClick={() =>
@@ -219,6 +307,20 @@ const PostBase = memo((props: PostBaseProps) => {
                             <MenuItem onClick={handleDelete}>Delete</MenuItem>
                           </>
                         : undefined}
+                        <MenuItem
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              `https://mybearworld.github.io/roarer-2?post=${props.post.post_id}`,
+                            );
+                          }}
+                        >
+                          Copy link
+                        </MenuItem>
+                        {props.post.reactions.length ?
+                          <ReactionUsers post={props.post.post_id}>
+                            <MenuItem dontClose>Reactions</MenuItem>
+                          </ReactionUsers>
+                        : undefined}
                       </Menu>
                     </>
                   : undefined}
@@ -235,10 +337,14 @@ const PostBase = memo((props: PostBaseProps) => {
                 Couldn't delete post. Message: {deleteError}
               </div>
             : undefined}
-            {!props.reply && reply?.ids ?
+            {(
+              !props.reply &&
+              reply?.ids &&
+              !(viewState === "source" && reply?.legacy)
+            ) ?
               <div className="my-1 flex flex-col gap-2">
                 {reply.ids.map((id) => (
-                  <Post id={id} reply key={id} />
+                  <Post id={id} reply topLevel={false} key={id} />
                 ))}
               </div>
             : undefined}
@@ -252,18 +358,17 @@ const PostBase = memo((props: PostBaseProps) => {
                   <MarkdownInput
                     chat={props.post.post_origin}
                     onSubmit={handleEdit}
-                    basePostContent={post}
+                    value={post}
                     onSuccess={() => setViewState("view")}
-                    noAttachments
+                    attachments={false}
                   />
                 </div>
               : viewState === "view" ?
                 <>
                   <Markdown
-                    secondaryBackground={
-                      props.reply === "topLevel" ? false : props.reply
-                    }
+                    secondaryBackground={props.topLevel ? false : props.reply}
                     inline={!!props.reply}
+                    bigEmoji={!props.reply}
                   >
                     {post}
                   </Markdown>
@@ -282,6 +387,32 @@ const PostBase = memo((props: PostBaseProps) => {
             {!props.reply ?
               <Attachments attachments={props.post.attachments} />
             : undefined}
+            {props.post.reactions.length && !props.reply ?
+              <div className="mt-1 flex flex-wrap gap-2">
+                {props.post.reactions.map((reaction) => (
+                  <Button
+                    secondary={!reaction.user_reacted}
+                    key={reaction.emoji}
+                    onClick={() =>
+                      handleReaction(
+                        reaction.emoji,
+                        reaction.user_reacted ? "delete" : "add",
+                      )
+                    }
+                    type="button"
+                  >
+                    <div className="flex items-center gap-2">
+                      {reaction.emoji} {reaction.count}
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            : undefined}
+            {reactionError ?
+              <div className="text-red-500">
+                Couldn't change post reaction. Message: {reactionError}
+              </div>
+            : undefined}
           </div>
         }
       />
@@ -290,18 +421,20 @@ const PostBase = memo((props: PostBaseProps) => {
 });
 
 type SpeechBubbleProps = {
-  reply?: boolean | "topLevel";
+  reply?: boolean;
+  topLevel?: boolean;
   speaker: ReactNode;
   bubble: ReactNode;
   transparent?: boolean;
   arrow?: boolean;
 };
 const SpeechBubble = (props: SpeechBubbleProps) => {
+  const topLevel = props.topLevel ?? true;
   return (
     <div
       className={twMerge(
         "flex",
-        props.arrow ?? true ? "gap-3" : "gap-1",
+        (props.arrow ?? true) ? "gap-2" : "gap-1",
         props.reply ? "items-center" : "",
         props.transparent ? "opacity-70" : "",
       )}
@@ -310,19 +443,19 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
       <div
         className={twMerge(
           "relative min-w-0 grow break-words rounded-lg px-2 py-1",
-          props.reply && props.reply !== "topLevel" ?
-            "bg-gray-200 dark:bg-gray-800"
-          : "bg-gray-100 dark:bg-gray-900",
-          props.arrow ?? true ? "rounded-ss-none" : "",
+          topLevel ?
+            "bg-gray-100 dark:bg-gray-900"
+          : "bg-gray-200 dark:bg-gray-800",
+          (props.arrow ?? true) ? "rounded-ss-none" : "",
         )}
       >
-        {props.arrow ?? true ?
+        {(props.arrow ?? true) ?
           <div
             className={twMerge(
               "absolute left-[calc(-0.5rem-theme(spacing.2))] top-0 box-content h-0 w-0 border-[length:0.5rem] border-transparent border-r-gray-100 contrast-more:hidden",
-              props.reply && props.reply !== "topLevel" ?
-                "border-r-gray-200 dark:border-r-gray-800"
-              : "border-r-gray-100 dark:border-r-gray-900",
+              topLevel ?
+                "border-r-gray-100 dark:border-r-gray-900"
+              : "border-r-gray-200 dark:border-r-gray-800",
             )}
             aria-hidden
           />
@@ -330,6 +463,54 @@ const SpeechBubble = (props: SpeechBubbleProps) => {
         {props.bubble}
       </div>
     </div>
+  );
+};
+
+type ReportModalProps = {
+  post: string;
+  onSuccess: () => void;
+};
+const ReportModal = (props: ReportModalProps) => {
+  const reportPost = useAPI((state) => state.reportPost);
+  const [reason, setReason] = useState<string>();
+  const [comment, setComment] = useState("");
+  const [error, setError] = useState<string>();
+
+  const handleReport: FormEventHandler = async (e) => {
+    e.preventDefault();
+    const response = await reportPost(props.post, reason, comment);
+    if (response.error) {
+      setError(response.message);
+      return;
+    }
+    props.onSuccess();
+  };
+
+  return (
+    <form className="flex flex-col gap-2" onSubmit={handleReport}>
+      <Dialog.Title className="text-lg font-bold">
+        Report this post
+      </Dialog.Title>
+      <Select label="Reason" onInput={(e) => setReason(e.currentTarget.value)}>
+        <Option selected disabled>
+          Choose a reason...
+        </Option>
+        {REPORT_REASONS.map((reason) => (
+          <Option value={reason} key={reason}>
+            {reason}
+          </Option>
+        ))}
+      </Select>
+      <Input
+        label="Comment"
+        value={comment}
+        onInput={(e) => setComment(e.currentTarget.value)}
+      />
+      <Button type="submit">Report</Button>
+      {error ?
+        <div className="text-red-500">{error}</div>
+      : undefined}
+    </form>
   );
 };
 
@@ -373,13 +554,14 @@ export const AttachmentView = (props: AttachmentViewProps) => {
     return (
       <Popup
         triggerAsChild
+        size="wide"
         trigger={
           <div className="flex flex-col items-center">
             {closeRow}
             <button type="button" aria-label={props.attachment.filename}>
               <img
                 key={props.attachment.id}
-                className="ounded-xl max-h-40"
+                className="max-h-40"
                 src={`${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
                 alt={props.attachment.filename}
                 title={props.attachment.filename}
@@ -407,11 +589,22 @@ export const AttachmentView = (props: AttachmentViewProps) => {
     );
   }
 
+  if (props.attachment.mime.startsWith("video/")) {
+    return (
+      <video
+        src={`${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}`}
+        className="max-h-40"
+        controls
+        title={props.attachment.filename}
+      />
+    );
+  }
+
   return (
     <div className="relative inline-flex flex-col items-center">
       <a ref={download} download={props.attachment.filename} hidden />
       {closeRow}
-      <button
+      <Button
         onClick={async () => {
           const url = URL.createObjectURL(
             await (
@@ -427,7 +620,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
           download.current.click();
         }}
         type="button"
-        className="flex h-36 w-36 max-w-36 flex-col items-center justify-center gap-2 rounded-xl bg-lime-200 px-2 py-1 text-center dark:bg-lime-800"
+        className="flex h-36 w-36 max-w-36 flex-col items-center justify-center gap-2 text-center"
         title={props.attachment.filename}
       >
         <File className="h-14 w-14" strokeWidth={1.25} />
@@ -437,7 +630,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
           </div>
           <div className="text-sm">({byteToHuman(props.attachment.size)})</div>
         </div>
-      </button>
+      </Button>
     </div>
   );
 };

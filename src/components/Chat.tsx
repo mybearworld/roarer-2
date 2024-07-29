@@ -1,40 +1,47 @@
-import { useState, useCallback } from "react";
+import { useRef, useState, useCallback } from "react";
 import { Keyboard } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useAPI } from "../lib/api";
 import { useShallow } from "zustand/react/shallow";
 import { Button } from "./Button";
-import { Reply, MarkdownInput } from "./MarkdownInput";
+import { MarkdownInput } from "./MarkdownInput";
+import { Mention } from "./Mention";
+import { ChatSettings } from "./ChatSettings";
 import { Post } from "./Post";
 
 export type ChatProps = {
   chat: string;
 };
 export const Chat = (props: ChatProps) => {
-  const [replies, setReplies] = useState<Reply[]>([]);
+  const [replies, setReplies] = useState<string[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState<string>();
-  const [credentials, chat, loadChat, posts, loadChatPosts, loadMore] = useAPI(
+  const container = useRef<HTMLDivElement | null>(null);
+  const [
+    credentials,
+    chat,
+    loadChat,
+    posts,
+    loadChatPosts,
+    loadMore,
+    updateChat,
+  ] = useAPI(
     useShallow((state) => [
       state.credentials,
       state.chats[props.chat],
       state.loadChat,
       state.chatPosts[props.chat],
       state.loadChatPosts,
-      state.loadMore,
+      state.loadMorePosts,
+      state.updateChat,
     ]),
   );
-  if (props.chat !== "home" && props.chat !== "lievchat") {
-    loadChat(props.chat);
-  }
+  loadChat(props.chat);
   loadChatPosts(props.chat);
 
-  const setReplyFromPost = useCallback(
-    (id: string, content: string, username: string) => {
-      setReplies((replies) => [...replies, { id, content, username }]);
-    },
-    [],
-  );
+  const setReplyFromPost = useCallback((id: string) => {
+    setReplies((replies) => [...replies, id]);
+  }, []);
 
   if (!posts) {
     return <>Loading posts...</>;
@@ -58,27 +65,77 @@ export const Chat = (props: ChatProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2" ref={container}>
       {props.chat === "home" ?
         undefined
-      : <p className="font-bold">
-          {props.chat === "livechat" ?
-            "Livechat"
-          : chat ?
-            chat.error ?
-              `Failed getting chat. Message: ${chat.message}`
-            : chat.deleted ?
-              ""
-            : chat.nickname ??
-              "@" +
-                chat.members.find((member) => member !== credentials?.username)
+      : <p className="flex justify-between font-bold">
+          <div>
+            {props.chat === "livechat" ?
+              "Livechat"
+            : props.chat === "inbox" ?
+              "Inbox"
+            : chat ?
+              chat.error ?
+                `Failed getting chat. Message: ${chat.message}`
+              : chat.deleted ?
+                ""
+              : (chat.nickname ?? (
+                  <Mention
+                    username={
+                      chat.members.find(
+                        (member) => member !== credentials?.username,
+                      ) ?? ""
+                    }
+                  />
+                ))
 
-          : "Loading chat name..."}
-          <span className="ml-2 text-xs font-medium">({props.chat})</span>
+            : "Loading chat name..."}
+            <span className="ml-2 text-xs font-medium">({props.chat})</span>
+          </div>
+          {(
+            chat &&
+            !chat.error &&
+            !chat.deleted &&
+            chat.nickname &&
+            chat.owner === credentials?.username
+          ) ?
+            <ChatSettings
+              trigger={<Button>Edit</Button>}
+              base={{
+                nickname: chat.nickname,
+                icon: chat.icon,
+                icon_color: chat.icon_color,
+                allow_pinning: chat.allow_pinning,
+              }}
+              onSubmit={async (options) => {
+                const response = await updateChat(props.chat, options);
+                if (response.error) {
+                  return response;
+                }
+                return { error: false };
+              }}
+            />
+          : undefined}
         </p>
       }
-      <EnterPost chat={props.chat} replies={replies} setReplies={setReplies} />
-      <TypingIndicator chat={props.chat} />
+      {props.chat !== "inbox" ?
+        <>
+          {credentials ?
+            <EnterPost
+              chat={props.chat}
+              replies={replies}
+              setReplies={setReplies}
+              onPost={() => {
+                if (!container.current || !container.current.parentElement) {
+                  return;
+                }
+                container.current.parentElement.scrollTop = 0;
+              }}
+            />
+          : undefined}
+          <TypingIndicator chat={props.chat} />
+        </>
+      : undefined}
       {posts.posts.map((post) => (
         <Post key={post} id={post} onReply={setReplyFromPost} />
       ))}
@@ -124,17 +181,29 @@ const TypingIndicator = (props: TypingIndicatorProps) => {
 
 type EnterPostProps = {
   chat: string;
-  replies?: Reply[];
-  setReplies?: (replies: Reply[]) => void;
+  replies?: string[];
+  setReplies?: (replies: string[]) => void;
+  onPost?: () => void;
 };
 const EnterPost = (props: EnterPostProps) => {
   const post = useAPI((state) => state.post);
-  const handleSubmit = (postContent: string, attachments: string[]) => {
-    post(postContent, props.chat, attachments);
+  const handleSubmit = (
+    postContent: string,
+    replies: string[],
+    attachments: string[],
+  ) => {
+    post(postContent, props.chat, replies, attachments);
+    props.onPost?.();
     return Promise.resolve({ error: false } as const);
   };
 
   return (
-    <MarkdownInput {...props} onSubmit={handleSubmit} dontDisableWhenPosting />
+    <div className="sticky top-0 z-[--z-enter-post] bg-white dark:bg-gray-950">
+      <MarkdownInput
+        {...props}
+        onSubmit={handleSubmit}
+        disableWhenSending={false}
+      />
+    </div>
   );
 };

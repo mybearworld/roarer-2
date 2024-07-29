@@ -63,6 +63,8 @@ export const discordEmoji = (
     { name: "yuhhuh", id: "1227268820213698611", isGif: false },
     { name: "nuhhuh", id: "1233290735999258664", isGif: false },
     { name: "freya", id: "1244778372953935922", isGif: false },
+    // goobert
+    { name: "goobert", id: "1265711321727500340", isGif: false },
     // Meo emoji :yuhhuh:
     { name: "think", id: "1226311619064234086", isGif: false },
     { name: "amogos", id: "1226314396377288726", isGif: false },
@@ -102,8 +104,10 @@ export const discordEmoji = (
   : 0,
 );
 
-export const urlFromDiscordEmoji = (emoji: DiscordEmoji) => {
-  return `https://cdn.discordapp.com/emojis/${encodeURIComponent(emoji.id)}.${emoji.isGif ? "gif" : "webp"}?size=24&quality=lossless`;
+export const urlFromDiscordEmoji = (
+  emoji: DiscordEmoji & { big?: boolean },
+) => {
+  return `https://cdn.discordapp.com/emojis/${encodeURIComponent(emoji.id)}.${emoji.isGif ? "gif" : "webp"}?size=${emoji.big ? "32" : "24"}&quality=lossless`;
 };
 export const syntaxForDiscordEmoji = (emoji: DiscordEmoji) => {
   return `<${emoji.isGif ? "a" : ""}:${emoji.name}:${emoji.id}>`;

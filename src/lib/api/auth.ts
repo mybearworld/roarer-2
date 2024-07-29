@@ -9,12 +9,15 @@ const AUTH_RESPONSE = z.object({
   account: USER_SCHEMA,
   token: z.string(),
 });
-const AUTH_CL_RESPOSNE = z.object({
+const AUTH_CL_RESPONSE = z.object({
   cmd: z.literal("auth"),
   val: AUTH_RESPONSE,
 });
 
-const STORED_ACCOUNTS_SCHEMA = z.record(z.string(), z.string());
+const STORED_ACCOUNTS_SCHEMA = z.object({
+  newTokenSystem: z.literal(true),
+  accounts: z.record(z.string(), z.string()),
+});
 
 export const USERNAME_STORAGE = "roarer2:username";
 export const TOKEN_STORAGE = "roarer2:token";
@@ -23,7 +26,7 @@ export const STORED_ACCOUNTS_STORAGE = "roarer2:storedAccounts";
 const parseStoredAccounts = (maybeJSON: string) => {
   try {
     const parsed = STORED_ACCOUNTS_SCHEMA.parse(JSON.parse(maybeJSON));
-    return { error: false, accounts: parsed } as const;
+    return { error: false, accounts: parsed.accounts } as const;
   } catch {
     return { error: true } as const;
   }
@@ -34,9 +37,10 @@ export type AuthSlice = {
     username: string;
     token: string;
   } | null;
-  storedAccounts: z.infer<typeof STORED_ACCOUNTS_SCHEMA>;
+  storedAccounts: Record<string, string>;
   storeAccount: (username: string, token: string) => void;
   removeStoredAccount: (username: string) => void;
+  finishedAuth: () => Promise<void>;
   logIn: (
     username: string,
     password: string,
@@ -51,12 +55,20 @@ export const createAuthSlice: Slice<AuthSlice> = (set, get) => {
   const parsedStoredAccounts = parseStoredAccounts(
     localStorage.getItem(STORED_ACCOUNTS_STORAGE) ?? "",
   );
+  const finishedAuthResolve: (() => void)[] = [];
+  const finishedAuthPromise = new Promise<void>((resolve) => {
+    finishedAuthResolve.push(resolve);
+  });
   const storedAccounts =
     parsedStoredAccounts.error ? {} : parsedStoredAccounts.accounts;
-  initCloudlink(localStorage.getItem(TOKEN_STORAGE));
+  const token = localStorage.getItem(TOKEN_STORAGE);
+  if (!token) {
+    finishedAuthResolve.forEach((fn) => fn());
+  }
+  initCloudlink(token);
   getCloudlink().then((cloudlink) => {
     cloudlink.on("packet", (packet: unknown) => {
-      const parsed = AUTH_CL_RESPOSNE.safeParse(packet);
+      const parsed = AUTH_CL_RESPONSE.safeParse(packet);
       if (!parsed.success) {
         return;
       }
@@ -66,17 +78,20 @@ export const createAuthSlice: Slice<AuthSlice> = (set, get) => {
           username: parsed.data.val.account._id,
           token: parsed.data.val.token,
         };
+        draft.storeAccount(draft.credentials.username, draft.credentials.token);
         const home = draft.chatPosts.home;
         if (!home || home.error) {
           return;
         }
         home.stopLoadingMore = false;
       });
+      finishedAuthResolve.forEach((fn) => fn());
     });
   });
   return {
     credentials: null,
     storedAccounts,
+    finishedAuth: () => finishedAuthPromise,
     logIn: async (username, password, options) => {
       const state = get();
       if (state.credentials) {
