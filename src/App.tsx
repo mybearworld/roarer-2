@@ -10,6 +10,7 @@ import { Chat } from "./components/Chat";
 import { Chats } from "./components/Chats";
 import { Button } from "./components/Button";
 import { Ulist } from "./components/Ulist";
+import { InitPlugins } from "./plugin/init";
 import { PostPopup } from "./components/PostPopup";
 import { Popup } from "./components/Popup";
 import { Settings } from "./components/Settings";
@@ -17,6 +18,8 @@ import { User } from "./components/User";
 import { IconButton } from "./components/IconButton";
 
 export const App = () => {
+  const [showSideNav, setShowSideNav] = useState(false);
+
   const [openChat, setOpenChat] = useAPI(
     useShallow((state) => [state.openChat, state.setOpenChat]),
   );
@@ -25,6 +28,7 @@ export const App = () => {
 
   return (
     <div className="flex h-dvh max-h-dvh w-screen snap-x snap-mandatory divide-x divide-gray-200 overflow-auto bg-white dark:divide-gray-800 dark:bg-gray-950">
+      <InitPlugins />
       <div className="max-h-full w-screen shrink-0 snap-start overflow-auto bg-white p-2 dark:bg-gray-950 lg:max-w-[65%]">
         <Chat chat={openChat} />
       </div>

@@ -19,9 +19,10 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "checkJs": true
   },
-  "include": ["src"],
+  "include": ["src", "public/plugins"],
   "exclude": ["src/lib/emoji/generate"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
