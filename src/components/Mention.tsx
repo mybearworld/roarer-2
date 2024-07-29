@@ -2,6 +2,7 @@ import { useAPI } from "../lib/api";
 import { twMerge } from "tailwind-merge";
 import { ProfilePicture } from "./ProfilePicture";
 import { User } from "./User";
+import { Username } from "./Username";
 
 export type MentionProps = {
   username: string;
@@ -31,7 +32,7 @@ export const Mention = (props: MentionProps) => {
         </span>
         <span className="inline-block">
           <span className="sr-only">@</span>
-          {props.username}
+          <Username username={props.username} />
         </span>
       </button>
     </User>
