@@ -1,5 +1,3 @@
-import { useAPI } from "../lib/api";
-import { twMerge } from "tailwind-merge";
 import { ProfilePicture } from "./ProfilePicture";
 import { User } from "./User";
 import { Username } from "./Username";
@@ -10,18 +8,9 @@ export type MentionProps = {
   pfp?: boolean;
 };
 export const Mention = (props: MentionProps) => {
-  const credentials = useAPI((state) => state.credentials);
-
   return (
     <User username={props.username}>
-      <button
-        className={twMerge(
-          "inline-flex items-center gap-1 align-top font-bold",
-          props.username === credentials?.username ?
-            "[--fallback:theme(colors.yellow.600)]"
-          : "[--fallback:theme(text-lime-600)]",
-        )}
-      >
+      <button className="inline-flex items-center gap-1 align-top font-bold">
         <span className="inline-block align-text-top">
           {(props.pfp ?? true) ?
             <ProfilePicture

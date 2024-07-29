@@ -27,7 +27,7 @@ export const UserColor = (props: UserColorProps) => {
   })();
   return (
     <span
-      className="text-[var(--dark,--fallback)] dark:text-[var(--light,--fallback)]"
+      className="text-[var(--dark)] dark:text-[var(--light)]"
       style={
         {
           "--light": hsla(h, s - 0.2, 0.8, a),
