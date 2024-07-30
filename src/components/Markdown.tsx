@@ -19,7 +19,7 @@ const TEXT_REGEX = new RegExp(
 );
 // It's inlined because Microsoft Edge literally crashes if I don't do that
 const BIG_REGEX =
-  /^(?:\p{Emoji_Presentation}|(?<emoji><(?<emojiAnimated>a?):(?<emojiName>\w+):(?<emojiId>\d+)>)|(?:<:(?<nativeEmojiID>[a-zA-Z0-9]+)>))+$/gu;
+  /^(?:\p{Emoji_Presentation}|(?<emoji><(?<emojiAnimated>a?):(?<emojiName>\w+):(?<emojiId>\d+)>)|(?:<:(?<nativeEmojiID>[a-zA-Z0-9]+)>)|\s)+$/gu;
 
 const HEADING_TO_SIZE = {
   1: "text-2xl",
