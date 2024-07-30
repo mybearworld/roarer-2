@@ -25,7 +25,6 @@ import { EmojiPicker } from "./EmojiPicker";
 import { DiscordEmoji } from "../lib/discordEmoji";
 import { IconButton } from "./IconButton";
 import { REPORT_REASONS } from "../lib/reportReasons";
-import { UserColor } from "./UserColor";
 
 export type PostProps = {
   id: string;
@@ -220,10 +219,8 @@ const PostBase = memo((props: PostBaseProps) => {
                           props.reply ? "" : "text-sm",
                         )}
                       >
-                        <UserColor username={props.post.u}>
-                          {props.post.u}
-                          {props.post.u === "noodles" ? " 🧀" : undefined}
-                        </UserColor>
+                        {props.post.u}
+                        {props.post.u === "noodles" ? " 🧀" : undefined}
                       </button>
                     </User>
                     <span className="text-sm opacity-70">

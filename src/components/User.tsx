@@ -11,7 +11,6 @@ import { RelativeTime } from "./RelativeTime";
 import { Username } from "./Username";
 import { PERMISSIONS } from "../lib/permissions";
 import { IconButton } from "./IconButton";
-import { UserColor } from "./UserColor";
 
 export type UserProps = {
   username: string;
@@ -76,9 +75,7 @@ export const User = (props: UserProps) => {
             <div>
               <Dialog.Title>
                 <span className="text-xl font-bold">
-                  <UserColor username={props.username}>
-                    <Username username={props.username} />
-                  </UserColor>
+                  <Username username={props.username} />
                 </span>
               </Dialog.Title>
               {user.created ?
