@@ -198,7 +198,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
                       <img
                         className={twMerge(
                           "inline-block",
-                          isBig ? "h-9 w-9" : "h-6 w-6",
+                          isBig ? "h-9" : "h-6",
                         )}
                         src={`https://uploads.meower.org/emojis/${encodeURIComponent(match.groups.nativeEmojiID)}`}
                       />
