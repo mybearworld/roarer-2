@@ -16,7 +16,7 @@ export type ProfilePictureProps = {
 export const ProfilePicture = (props: ProfilePictureProps) => {
   const [user, loadUser, ulist] = useAPI(
     useShallow((state) => [
-      props.username ? state.users[props.username] : undefined,
+      props.username ? state.users[props.username.toLowerCase()] : undefined,
       state.loadUser,
       state.ulist,
     ]),

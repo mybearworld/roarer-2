@@ -21,7 +21,7 @@ export const User = (props: UserProps) => {
   const [credentials, user, loadUser, setOpenChat, getDM] = useAPI(
     useShallow((state) => [
       state.credentials,
-      state.users[props.username],
+      state.users[props.username.toLowerCase()],
       state.loadUser,
       state.setOpenChat,
       state.getDM,
