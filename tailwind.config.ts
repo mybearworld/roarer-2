@@ -10,7 +10,7 @@ export default {
         sans: [
           "Inter",
           "Noto Color Emoji",
-          "sitelen seli kiwen juniko",
+          "nasin nanpa",
           ...defaultTheme.fontFamily.sans,
         ],
         mono: ["monospace"],
