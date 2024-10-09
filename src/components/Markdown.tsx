@@ -163,7 +163,11 @@ export const Markdown = (mdProps: MarkdownProps) => {
           },
           image: (src, alt, title) =>
             mdProps.inline ? <></>
-            : hostWhitelist.some((host) => src.startsWith(host)) ?
+            : (
+              hostWhitelist.some((host) =>
+                src.startsWith(typeof host === "string" ? host : host.url),
+              )
+            ) ?
               <img
                 src={src}
                 alt={alt}
@@ -236,6 +240,30 @@ const Link = (props: LinkProps) => {
           {props.children}
         </button>
       </User>
+    );
+  }
+  // meo has a bug where invalid URLs within images crash meo. instead of fixing
+  // this, meo now does not support markdown images. meo also supports simply
+  // putting an image url to load an image. this leads to most meo users
+  // just sending links instead of using the proper syntax. this copies meo's
+  // behavior for this such that images sent using meo still look correct.
+  // todo: if this is ever properly fixed in meo, this should be removed
+  if (
+    hostWhitelist.some((host) => {
+      if (typeof host !== "string" && !host.autolink) {
+        return;
+      }
+      const url = typeof host === "string" ? host : host.url;
+      return url !== props.href && props.href.startsWith(url);
+    })
+  ) {
+    return (
+      <img
+        className="inline-block max-h-40"
+        src={props.href}
+        alt={props.href}
+        title={props.href}
+      />
     );
   }
   return (
