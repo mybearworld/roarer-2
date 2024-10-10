@@ -183,12 +183,16 @@ export const Markdown = (mdProps: MarkdownProps) => {
             const matches = [...(text?.toString() ?? "").matchAll(TEXT_REGEX)];
             return (
               <Fragment key={getKey()}>
-                {matches.map((match) => (
-                  <Fragment key={getKey()}>
-                    {match.groups?.mention ?
-                      <Mention username={match[0].slice(1)} />
-                    : match.groups?.emoji ?
+                {matches.map((match) => {
+                  if (match.groups?.mention) {
+                    return (
+                      <Mention key={getKey()} username={match[0].slice(1)} />
+                    );
+                  }
+                  if (match.groups?.emoji) {
+                    return (
                       <img
+                        key={getKey()}
                         className="inline-block"
                         src={urlFromDiscordEmoji({
                           name: match.groups?.emojiName ?? "",
@@ -199,7 +203,10 @@ export const Markdown = (mdProps: MarkdownProps) => {
                         alt={`:${match.groups?.emojiName}:`}
                         title={`:${match.groups?.emojiName}:`}
                       />
-                    : match.groups?.nativeEmojiID ?
+                    );
+                  }
+                  if (match.groups?.nativeEmojiID) {
+                    return (
                       <img
                         className={twMerge(
                           "inline-block",
@@ -212,13 +219,16 @@ export const Markdown = (mdProps: MarkdownProps) => {
                           )?.name
                         }
                       />
-                    : match.groups?.lt ?
-                      "<"
-                    : match.groups?.gt ?
-                      ">"
-                    : match[0]}
-                  </Fragment>
-                ))}
+                    );
+                  }
+                  if (match.groups?.lt) {
+                    return "<";
+                  }
+                  if (match.groups?.gt) {
+                    return ">";
+                  }
+                  return match[0];
+                })}
               </Fragment>
             );
           },
