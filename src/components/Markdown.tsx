@@ -206,6 +206,9 @@ export const Markdown = (mdProps: MarkdownProps) => {
                     );
                   }
                   if (match.groups?.nativeEmojiID) {
+                    const name = mdProps.knownEmoji?.find(
+                      (e) => e._id === match.groups?.nativeEmojiID,
+                    )?.name;
                     return (
                       <img
                         className={twMerge(
@@ -213,11 +216,8 @@ export const Markdown = (mdProps: MarkdownProps) => {
                           isBig ? "h-9" : "h-6",
                         )}
                         src={`https://uploads.meower.org/emojis/${encodeURIComponent(match.groups.nativeEmojiID)}`}
-                        alt={
-                          mdProps.knownEmoji?.find(
-                            (e) => e._id === match.groups?.nativeEmojiID,
-                          )?.name
-                        }
+                        alt={name}
+                        title={name}
                       />
                     );
                   }
