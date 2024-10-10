@@ -366,6 +366,7 @@ const PostBase = memo((props: PostBaseProps) => {
                     secondaryBackground={props.topLevel ? false : props.reply}
                     inline={!!props.reply}
                     bigEmoji={!props.reply}
+                    knownEmoji={props.post.emojis}
                   >
                     {post}
                   </Markdown>

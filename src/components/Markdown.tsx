@@ -38,6 +38,7 @@ export type MarkdownProps = {
   secondaryBackground?: boolean;
   inline?: boolean;
   bigEmoji?: boolean;
+  knownEmoji?: { _id: string; name: string }[];
 };
 export const Markdown = (mdProps: MarkdownProps) => {
   const md = mdProps.children;
@@ -205,6 +206,11 @@ export const Markdown = (mdProps: MarkdownProps) => {
                           isBig ? "h-9" : "h-6",
                         )}
                         src={`https://uploads.meower.org/emojis/${encodeURIComponent(match.groups.nativeEmojiID)}`}
+                        alt={
+                          mdProps.knownEmoji?.find(
+                            (e) => e._id === match.groups?.nativeEmojiID,
+                          )?.name
+                        }
                       />
                     : match.groups?.lt ?
                       "<"
