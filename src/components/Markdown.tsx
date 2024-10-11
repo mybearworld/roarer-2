@@ -1,4 +1,4 @@
-import { Fragment, ReactNode, useState } from "react";
+import { Fragment, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Marked from "marked-react";
 import { codeToHtml } from "shiki";
@@ -160,7 +160,55 @@ export const Markdown = (mdProps: MarkdownProps) => {
             );
           },
           link: (href, text) => {
-            return <Link href={href} children={text} key={getKey()} />;
+            const match = href.match(
+              /^https?:\/\/app.meower.org\/users\/([a-z0-9\-_]+)$/i,
+            );
+            if (match) {
+              const username = match[1]!;
+              return (
+                <User username={username} key={getKey()}>
+                  <button type="button" className="font-bold text-lime-600">
+                    {text}
+                  </button>
+                </User>
+              );
+            }
+            // meo has a bug where invalid URLs within images crash meo.
+            // instead of fixing this, meo now does not support markdown
+            // images. meo also supports simply putting an image url to load an
+            // image. this leads to most meo users just sending links instead
+            // of using the proper syntax. this copies meo's behavior for this
+            // such that images sent using meo still look correct.
+            // todo: if this is ever properly fixed in meo, this should be
+            // removed
+            if (
+              hostWhitelist.some((host) => {
+                if (typeof host !== "string" && !host.autolink) {
+                  return;
+                }
+                const url = typeof host === "string" ? host : host.url;
+                return url !== href && href.startsWith(url);
+              })
+            ) {
+              return (
+                <img
+                  className="inline-block max-h-40"
+                  src={href}
+                  alt={href}
+                  title={href}
+                />
+              );
+            }
+            return (
+              <a
+                href={urlFor(href)}
+                className="font-bold text-lime-600"
+                key={getKey()}
+                target="_blank"
+              >
+                {text}
+              </a>
+            );
           },
           image: (src, alt, title) =>
             mdProps.inline ? <></>
@@ -237,60 +285,6 @@ export const Markdown = (mdProps: MarkdownProps) => {
         {md}
       </Marked>
     </div>
-  );
-};
-
-type LinkProps = {
-  href: string;
-  children?: ReactNode;
-};
-const Link = (props: LinkProps) => {
-  const match = props.href.match(
-    /^https?:\/\/app.meower.org\/users\/([a-z0-9\-_]+)$/i,
-  );
-  if (match) {
-    const username = match[1]!;
-    return (
-      <User username={username} key={getKey()}>
-        <button type="button" className="font-bold text-lime-600">
-          {props.children}
-        </button>
-      </User>
-    );
-  }
-  // meo has a bug where invalid URLs within images crash meo. instead of fixing
-  // this, meo now does not support markdown images. meo also supports simply
-  // putting an image url to load an image. this leads to most meo users
-  // just sending links instead of using the proper syntax. this copies meo's
-  // behavior for this such that images sent using meo still look correct.
-  // todo: if this is ever properly fixed in meo, this should be removed
-  if (
-    hostWhitelist.some((host) => {
-      if (typeof host !== "string" && !host.autolink) {
-        return;
-      }
-      const url = typeof host === "string" ? host : host.url;
-      return url !== props.href && props.href.startsWith(url);
-    })
-  ) {
-    return (
-      <img
-        className="inline-block max-h-40"
-        src={props.href}
-        alt={props.href}
-        title={props.href}
-      />
-    );
-  }
-  return (
-    <a
-      href={urlFor(props.href)}
-      className="font-bold text-lime-600"
-      key={getKey()}
-      target="_blank"
-    >
-      {props.children}
-    </a>
   );
 };
 
