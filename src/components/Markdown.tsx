@@ -221,7 +221,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
               <img
                 src={src}
                 alt={alt}
-                title={title ?? ""}
+                title={title ?? alt}
                 className="inline-block max-h-40"
                 key={getKey()}
               />
