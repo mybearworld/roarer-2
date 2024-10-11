@@ -182,6 +182,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
             // todo: if this is ever properly fixed in meo, this should be
             // removed
             if (
+              !mdProps.inline &&
               hostWhitelist.some((host) => {
                 if (typeof host !== "string" && !host.autolink) {
                   return;
