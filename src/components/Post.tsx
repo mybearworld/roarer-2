@@ -400,7 +400,13 @@ const PostBase = memo((props: PostBaseProps) => {
                     type="button"
                   >
                     <div className="flex items-center gap-2">
-                      {reaction.emoji} {reaction.count}
+                      {reaction.emoji.length === 24 ?
+                        <img
+                          src={`https://uploads.meower.org/emojis/${reaction.emoji}`}
+                          className="h-6 min-h-6 w-6 min-w-6"
+                        />
+                      : reaction.emoji}{" "}
+                      {reaction.count}
                     </div>
                   </Button>
                 ))}
