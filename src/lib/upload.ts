@@ -49,13 +49,8 @@ export const uploadFile = async (
 };
 
 const IMAGE_SCHEMA = z.object({
-  bucket: z.string(),
-  claimed: z.boolean(),
   filename: z.string(),
-  hash: z.string(),
   id: z.string(),
-  uploaded_at: z.number(),
-  uploaded_by: z.string(),
 });
 
 export type UploadedFile = z.infer<typeof IMAGE_SCHEMA>;
