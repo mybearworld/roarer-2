@@ -9,11 +9,11 @@ import { USER_SCHEMA } from "./users";
 export type Attachment = z.infer<typeof ATTACHMENT_SCHEMA>;
 const ATTACHMENT_SCHEMA = z.object({
   filename: z.string(),
-  height: z.number(),
+  height: z.number().optional(),
   id: z.string(),
   mime: z.string(),
   size: z.number(),
-  width: z.number(),
+  width: z.number().optional(),
 });
 
 type SchemaPost = z.infer<typeof BASE_POST_SCHEMA> & {

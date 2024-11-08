@@ -569,7 +569,7 @@ export const AttachmentView = (props: AttachmentViewProps) => {
                 src={`${uploads}/attachments/${props.attachment.id}/${props.attachment.filename}?preview`}
                 alt={props.attachment.filename}
                 title={props.attachment.filename}
-                height={Math.min(160, props.attachment.height)} // max-h-40
+                height={Math.min(160, props.attachment.height ?? 0)} // max-h-40
               />
             </button>
           </div>
