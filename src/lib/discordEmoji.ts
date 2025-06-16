@@ -85,7 +85,6 @@ export const discordEmoji = (
     { name: "GarfTrue", id: "1228207760047472670", isGif: false },
     { name: "thubsup", id: "1229994631840927774", isGif: false },
     { name: "miau", id: "1237207275870097519", isGif: false },
-    { name: "marker", id: "1238203265229914132", isGif: false },
     { name: "ow", id: "1251723597630931065", isGif: false },
     { name: "yippe", id: "1226318495147495505", isGif: true },
     { name: "hooray", id: "1230023947777609808", isGif: true },
