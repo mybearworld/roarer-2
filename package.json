@@ -17,7 +17,7 @@
     "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-toggle": "^1.1.0",
-    "@williamhorning/cloudlink": "==4.1.1",
+    "@williamhorning/cloudlink": "link:cloudlink",
     "immer": "^10.1.1",
     "lucide-react": "^0.454.0",
     "marked-react": "^2.0.0",
