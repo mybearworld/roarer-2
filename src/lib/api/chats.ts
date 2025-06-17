@@ -136,7 +136,7 @@ export const createChatsSlice: Slice<ChatsSlice> = (set, get) => {
     updateChat: async (chat, options) => {
       const state = get();
       const response = await request(
-        fetch(`https://api.meower.org/chats/${encodeURIComponent(chat)}`, {
+        fetch(`${api}/chats/${encodeURIComponent(chat)}`, {
           method: "PATCH",
           headers: {
             ...(state.credentials ? { Token: state.credentials.token } : {}),

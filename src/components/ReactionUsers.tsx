@@ -6,6 +6,7 @@ import { useAPI } from "../lib/api";
 import { Popup } from "./Popup";
 import { UserView } from "./UserView";
 import { Button } from "./Button";
+import { uploads } from "../lib/servers";
 
 export type ReactionUsersProps = {
   post: string;
@@ -49,7 +50,7 @@ export const ReactionUsers = (props: ReactionUsersProps) => {
                 >
                   {reaction.emoji.length === 24 ?
                     <img
-                      src={`https://uploads.meower.org/emojis/${encodeURIComponent(reaction.emoji)}`}
+                      src={`${uploads}/emojis/${encodeURIComponent(reaction.emoji)}`}
                       className="mb-1 h-6 min-h-6 w-6 min-w-6"
                     />
                   : reaction.emoji}

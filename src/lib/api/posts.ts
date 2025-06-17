@@ -501,7 +501,7 @@ export const createPostsSlice: Slice<PostsSlice> = (set, get) => {
       const state = get();
       const response = await request(
         fetch(
-          `https://api.meower.org/posts/${id}/reactions/${encodeURIComponent(emoji)}${type === "delete" ? "/@me" : ""}`,
+          `${api}/posts/${id}/reactions/${encodeURIComponent(emoji)}${type === "delete" ? "/@me" : ""}`,
           {
             headers: {
               "Content-Type": "application/json",

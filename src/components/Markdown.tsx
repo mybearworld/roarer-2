@@ -7,6 +7,7 @@ import { hostWhitelist } from "../lib/hostWhitelist";
 import { Mention } from "./Mention";
 import { User } from "./User";
 import { Scratchblocks } from "./Scratchblocks";
+import { uploads } from "../lib/servers";
 
 const MENTION_REGEX = /@(?<mention>[a-zA-Z0-9\-_]+)/g;
 const EMOJI_REGEX =
@@ -264,7 +265,7 @@ export const Markdown = (mdProps: MarkdownProps) => {
                           "inline-block",
                           isBig ? "h-9" : "h-6",
                         )}
-                        src={`https://uploads.meower.org/emojis/${encodeURIComponent(match.groups.nativeEmojiID)}`}
+                        src={`${uploads}/emojis/${encodeURIComponent(match.groups.nativeEmojiID)}`}
                         alt={name}
                         title={name}
                       />
