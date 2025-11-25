@@ -47,6 +47,41 @@ const SignInButton = () => {
     setLoading(false);
   };
 
+  const logIntoGithub = () => {
+    setLoading(true);
+    const popup = window.open(
+      "https://meower.org/oauth/github",
+      "GitHub Login",
+      "height=700,width=500",
+    );
+    if (!popup) {
+      setLoading(false);
+      return;
+    }
+    const closedTimer = setInterval(() => {
+      console.log(popup.closed);
+      if (popup.closed) {
+        clearInterval(closedTimer);
+        setLoading(false);
+      }
+    }, 500);
+    window.addEventListener("message", async (ev) => {
+      if (ev.origin !== "https://meower.org") return;
+      if (ev.data.type === "ready") {
+        popup.postMessage({ type: "start-oauth" }, ev.origin);
+      } else if (ev.data.type === "finish-oauth") {
+        const loginResult = await logIn(ev.data.account._id, ev.data.token, {
+          signUp: false,
+          storeAccount,
+        });
+        if (loginResult.error) {
+          setError(loginResult.message);
+        }
+        setLoading(false);
+      }
+    });
+  };
+
   return (
     <Menu
       trigger={<Button>Sign in</Button>}
@@ -115,6 +150,9 @@ const SignInButton = () => {
         {error ?
           <div className="text-red-500">{error}</div>
         : null}
+        <Button type="button" onClick={logIntoGithub} disabled={loading}>
+          Sign in with GitHub
+        </Button>
         <div>
           <div className="flex gap-2">
             <Button
